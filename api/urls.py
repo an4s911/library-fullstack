@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import index
+from .views import get_books
 
 urlpatterns = [
-    path("", index),
+    path("get-books/", get_books, name="get_books"),
 ]
