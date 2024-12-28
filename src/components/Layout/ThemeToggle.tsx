@@ -23,7 +23,7 @@ function ThemeToggle({}: ThemeToggleProps) {
     return (
         <div
             onClick={() => setIsDark(!isDark)}
-            className="cursor-pointer w-6 h-6 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
+            className="cursor-pointer w-7 h-7 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
         >
             {isDark ? (
                 <Sun className="w-full h-full" />

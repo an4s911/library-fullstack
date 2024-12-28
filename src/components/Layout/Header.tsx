@@ -21,7 +21,7 @@ function Header({}: HeaderProps) {
                 <SearchBar />
             </div>
 
-            <div className="actions flex items-center">
+            <div className="actions flex items-center gap-3">
                 <div className="theme-toggle">
                     <ThemeToggle />
                 </div>
