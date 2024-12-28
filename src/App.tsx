@@ -1,5 +1,13 @@
+import { Header } from "./components/Layout";
+import MainContent from "./components/Layout/MainContent";
+
 function App() {
-    return <h1>App</h1>;
+    return (
+        <div>
+            <Header />
+            <MainContent />
+        </div>
+    );
 }
 
 export default App;
