@@ -3,7 +3,7 @@ import MainContent from "./components/Layout/MainContent";
 
 function App() {
     return (
-        <div>
+        <div className="text-gray-900 dark:text-white">
             <Header />
             <MainContent />
         </div>
