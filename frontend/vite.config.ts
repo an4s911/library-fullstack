@@ -12,10 +12,13 @@ export default defineConfig(({ mode }) => {
             outDir: "dist/frontend",
             emptyOutDir: true,
             rollupOptions: {
-                input: "./src/main.tsx",
+                input: {
+                    main: "./src/main.tsx",
+                    login: "./src/login/main.tsx",
+                },
                 output: {
-                    entryFileNames: "main.js",
-                    chunkFileNames: "[name].js",
+                    entryFileNames: "[name].js",
+                    chunkFileNames: "chunk-[name][hash].js",
                     assetFileNames: "[name].[ext]",
                 },
             },

@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+form {
+    input {
+        &[type="text"],
+        &[type="password"] {
+            @apply border rounded-md px-3 py-1;
+        }
+    }
+    section {
+        @apply flex flex-col;
+
+        label {
+            @apply text-sm text-gray-600;
+        }
+    }
+}
