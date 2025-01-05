@@ -42,9 +42,18 @@ def login_view(request: HttpRequest):
 
 @csrf_exempt
 def logout_view(request):
+    is_post = request.method == "POST"
+    post_response = {"message": "Logout successful", "status": 200}
+
     try:
         logout(request)
     except Exception as e:
         print(e)
-        return HttpResponseRedirect("/")
-    return HttpResponseRedirect("/login/")
+        post_response = {"message": "Logout failed", "status": 500}
+
+    if is_post:
+        return JsonResponse(
+            {"message": post_response["message"]}, status=post_response["status"]
+        )
+
+    return HttpResponseRedirect("/")
