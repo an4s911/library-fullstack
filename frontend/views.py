@@ -1,4 +1,3 @@
-from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
@@ -34,7 +33,6 @@ def login_view(request: HttpRequest):
             return JsonResponse({"message": "Login successful"})
         else:
             # Add an error message if authentication fails
-            messages.error(request, "Invalid username or password.")
             return JsonResponse(
                 {"message": "Invalid username or password."}, status=401
             )
