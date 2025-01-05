@@ -21,7 +21,6 @@ function App({}: AppProps) {
         })
             .then(async (response) => {
                 if (response.ok) {
-                    form.reset();
                     window.location.reload();
                 } else {
                     const resData = await response.json();

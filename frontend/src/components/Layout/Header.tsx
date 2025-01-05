@@ -1,4 +1,4 @@
-import { Library } from "lucide-react";
+import { Library, LogOut } from "lucide-react";
 import { AddBookBtn } from "../Book";
 import { SearchBar } from "../SearchFilter";
 import ThemeToggle from "./ThemeToggle";
@@ -27,6 +27,15 @@ function Header({}: HeaderProps) {
                 </div>
                 <div className="add-book-btn">
                     <AddBookBtn />
+                </div>
+                <div className="logout">
+                    <a href="/logout/">
+                        <LogOut
+                            size={24}
+                            strokeWidth={3}
+                            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:scale-105"
+                        />
+                    </a>
                 </div>
             </div>
         </header>
