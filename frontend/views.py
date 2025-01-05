@@ -56,4 +56,4 @@ def logout_view(request):
             {"message": post_response["message"]}, status=post_response["status"]
         )
 
-    return HttpResponseRedirect("/")
+    return HttpResponseRedirect("/login/")

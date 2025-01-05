@@ -60,6 +60,7 @@ function App({}: AppProps) {
                                 name="username"
                                 type="text"
                                 className="username"
+                                required
                             />
                         </section>
                         <section>
@@ -68,6 +69,7 @@ function App({}: AppProps) {
                                 name="password"
                                 type="password"
                                 className="password"
+                                required
                             />
                         </section>
                         <button
