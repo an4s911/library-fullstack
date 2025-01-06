@@ -3,7 +3,13 @@ import MainContent from "./components/Layout/MainContent";
 
 function App() {
     return (
-        <div className="text-primary-900 dark:text-primary-100 h-screen">
+        <div
+            style={{
+                display: "grid",
+                gridTemplateRows: "auto 1fr",
+            }}
+            className="text-primary-900 dark:text-primary-100 h-screen"
+        >
             <Header />
             <MainContent />
         </div>
