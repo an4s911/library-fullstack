@@ -1,5 +1,6 @@
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
+import GenericSelect from "../UI/GenericSelect";
 
 type SearchBarProps = {};
 
@@ -28,20 +29,24 @@ function SearchBar({}: SearchBarProps) {
                 />
                 <SearchIcon className="absolute left-3 top-2.5 w-5 h-5" />
             </div>
-            <select
+            <GenericSelect
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                className="px-3 py-2 rounded-lg
-                    focus:outline-none focus:ring-2
-                    focus:ring-primary-400 dark:focus:ring-primary-500
-                    bg-primary-100 dark:bg-primary-700
-                    border border-primary-700 dark:border-primary-600
-                "
-            >
-                <option value="all">All Fields</option>
-                <option value="title">Title</option>
-                <option value="author">Author</option>
-            </select>
+                optionsList={[
+                    {
+                        value: "all",
+                        label: "All Fields",
+                    },
+                    {
+                        value: "title",
+                        label: "Title",
+                    },
+                    {
+                        value: "author",
+                        label: "Author",
+                    },
+                ]}
+            />
         </form>
     );
 }
