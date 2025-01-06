@@ -5,3 +5,13 @@
 body {
     @apply bg-primary-100 dark:bg-primary-900;
 }
+
+.filter-section {
+    h2 {
+        @apply text-2xl;
+    }
+
+    h3 {
+        @apply text-lg;
+    }
+}
