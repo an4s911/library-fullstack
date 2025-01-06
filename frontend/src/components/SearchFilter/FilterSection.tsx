@@ -13,12 +13,12 @@ function FilterCheckboxList({ header, list }: FilterCheckboxListProps) {
     const [localList, setLocalList] = useState<FliterCheckboxItem[]>([]);
 
     useEffect(() => {
-        if (!isExpanded) setLocalList(list.slice(0, 6));
-        else setLocalList(list);
+        if (isExpanded) setLocalList(list);
+        else setLocalList(list.slice(0, 6));
     }, [isExpanded]);
 
     return (
-        <div className="">
+        <div className="relative">
             <h3>{header}</h3>
             <ul>
                 {localList.map((listItem, index) => {
@@ -35,7 +35,7 @@ function FilterCheckboxList({ header, list }: FilterCheckboxListProps) {
                         </li>
                     );
                 })}
-                <li>
+                <li className="sticky bottom-0 bg-primary-100 dark:bg-primary-800">
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
                         className="text-primary hover:underline text-sm"
