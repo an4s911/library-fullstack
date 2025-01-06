@@ -7,8 +7,8 @@ function GenericButton({ children, onClick }: GenericButtonProps) {
     return (
         <button
             onClick={onClick}
-            className="px-3 py-2 bg-primary text-white dark:bg-primary-dark hover:bg-primary-dark
-                dark:hover:bg-primary rounded-md flex gap-2 items-center"
+            className="px-3 py-2 bg-primary text-white hover:bg-primary-500 dark:hover:bg-primary-400
+            rounded-md flex gap-2 items-center"
         >
             {children}
         </button>
