@@ -1,4 +1,7 @@
-# Django stuff
+# General
+.env
+
+# Django
 *.sqlite3
 .venv
 __pycache__/
@@ -12,6 +15,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# React
 node_modules
 dist
 dist-ssr
