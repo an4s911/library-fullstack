@@ -1,7 +1,7 @@
 type LayoutToggleBtnProps = {};
 
 function LayoutToggleBtn({}: LayoutToggleBtnProps) {
-    return <div>LayoutToggleBtn</div>;
+    return <div className="layout-toggle-btn">LayoutToggleBtn</div>;
 }
 
 export default LayoutToggleBtn;

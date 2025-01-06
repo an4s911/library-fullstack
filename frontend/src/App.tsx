@@ -8,7 +8,7 @@ function App() {
                 display: "grid",
                 gridTemplateRows: "auto 1fr",
             }}
-            className="text-primary-900 dark:text-primary-100 h-screen"
+            className="app text-primary-900 dark:text-primary-100 h-screen"
         >
             <Header />
             <MainContent />

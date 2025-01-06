@@ -4,7 +4,7 @@ type FilterSectionProps = {};
 
 function FilterSection({}: FilterSectionProps) {
     return (
-        <div className="flex flex-col bg-primary-50 dark:bg-primary-700 px-5 py-3 rounded-md shadow h-max sticky top-28">
+        <section className="filter-section flex flex-col bg-primary-50 dark:bg-primary-700 px-5 py-3 rounded-md shadow h-max sticky top-28">
             <div className="flex justify-between">
                 <h2>Filter</h2>
                 <FilterIcon />
@@ -15,7 +15,7 @@ function FilterSection({}: FilterSectionProps) {
             <div className="genres">
                 <h3>Genres</h3>
             </div>
-        </div>
+        </section>
     );
 }
 
