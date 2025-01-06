@@ -17,7 +17,7 @@ function GenericSelect({ optionsList, value, onChange }: GenericSelectProps) {
             className="px-3 py-2 rounded-lg
                     focus:outline-none focus:ring-2
                     focus:ring-primary-400 dark:focus:ring-primary-500
-                    bg-primary-100 dark:bg-primary-700
+                    bg-primary-200 dark:bg-primary-700
                     border border-primary-700 dark:border-primary-600
                 "
         >
