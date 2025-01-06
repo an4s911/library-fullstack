@@ -1,4 +1,4 @@
-import { Moon, Sun } from "lucide-react";
+import { MoonIcon, SunIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type ThemeToggleProps = {};
@@ -26,9 +26,9 @@ function ThemeToggle({}: ThemeToggleProps) {
             className="cursor-pointer w-7 h-7 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
         >
             {isDark ? (
-                <Sun className="w-full h-full" />
+                <SunIcon className="w-full h-full" />
             ) : (
-                <Moon className="w-full h-full" />
+                <MoonIcon className="w-full h-full" />
             )}
         </div>
     );

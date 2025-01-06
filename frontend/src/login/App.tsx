@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { XIcon } from "lucide-react";
 import { useState } from "react";
 
 type AppProps = {};
@@ -39,7 +39,7 @@ function App({}: AppProps) {
                 {errorMessage && (
                     <div className="flex justify-between bg-red-500 text-white p-2 rounded text-center">
                         <span>{errorMessage}</span>
-                        <X
+                        <XIcon
                             className="text-white hover:text-gray-200 cursor-pointer"
                             onClick={() => {
                                 setErrorMessage("");

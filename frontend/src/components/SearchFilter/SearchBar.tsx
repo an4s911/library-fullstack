@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 
 type SearchBarProps = {};
@@ -19,7 +19,7 @@ function SearchBar({}: SearchBarProps) {
                         dark:border-gray-600 bg-white text-gray-900 placeholder-gray-500 border-gray-300 border focus:outline-none
                         focus:ring-2 focus:ring-primary-400 dark:focus:ring-primary-500"
                 />
-                <Search className="absolute left-3 top-2.5 w-5 h-5 dark:text-gray-400 text-gray-500" />
+                <SearchIcon className="absolute left-3 top-2.5 w-5 h-5 dark:text-gray-400 text-gray-500" />
             </div>
             <select
                 value={searchFilter}
