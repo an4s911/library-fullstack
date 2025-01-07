@@ -1,17 +1,17 @@
 import { LayoutGridIcon, LayoutListIcon } from "lucide-react";
-import { useState } from "react";
 
-type LayoutToggleBtnProps = {};
+type LayoutToggleBtnProps = {
+    isGrid: boolean;
+    onClick: () => void;
+};
 
-function LayoutToggleBtn({}: LayoutToggleBtnProps) {
-    const [isGrid, setIsGrid] = useState(true);
-
+function LayoutToggleBtn({ isGrid, onClick }: LayoutToggleBtnProps) {
     const iconClassName =
         "w-7 h-7 p-1 rounded-md relative transition-colors hover:text-primary-900 dark:hover:text-primary-100";
 
     return (
         <div
-            onClick={() => setIsGrid(!isGrid)}
+            onClick={onClick}
             className="layout-toggle-btn relative flex gap-1 rounded-xl bg-primary-300 dark:bg-primary-800
             items-center p-1.5 cursor-pointer text-primary-700 dark:text-primary-600 h-max mr-2"
         >

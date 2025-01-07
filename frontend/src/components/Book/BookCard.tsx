@@ -9,9 +9,10 @@ import { useEffect, useRef, useState } from "react";
 
 type BookCardProps = {
     book: Book;
+    isGrid: boolean;
 };
 
-function BookCard({ book }: BookCardProps) {
+function BookCard({ book, isGrid }: BookCardProps) {
     const [localGenres, setLocalGenres] = useState<Genre[]>([]);
     const genreContainerRef = useRef<HTMLUListElement>(null);
 
@@ -55,7 +56,7 @@ function BookCard({ book }: BookCardProps) {
         window.addEventListener("resize", calculateVisibleGenres);
         return () =>
             window.removeEventListener("resize", calculateVisibleGenres);
-    }, []);
+    }, [isGrid, book.genres]);
 
     return (
         <div

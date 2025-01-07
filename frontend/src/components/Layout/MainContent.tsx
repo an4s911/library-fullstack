@@ -7,6 +7,7 @@ type MainContentProps = {};
 
 function MainContent({}: MainContentProps) {
     const [isLoading, setIsLoading] = useState(true);
+    const [isGrid, setIsGrid] = useState(true);
 
     useEffect(() => {
         setTimeout(() => {
@@ -26,9 +27,12 @@ function MainContent({}: MainContentProps) {
             <div className="flex flex-col gap-5">
                 <div className="w-full flex items-center justify-between sticky top-28 z-10">
                     <SortSection />
-                    <LayoutToggleBtn />
+                    <LayoutToggleBtn
+                        isGrid={isGrid}
+                        onClick={() => setIsGrid(!isGrid)}
+                    />
                 </div>
-                <BookListGrid isLoading={isLoading} />
+                <BookListGrid isGrid={isGrid} isLoading={isLoading} />
             </div>
         </main>
     );
