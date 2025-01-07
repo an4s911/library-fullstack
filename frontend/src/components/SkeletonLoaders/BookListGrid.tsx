@@ -13,7 +13,7 @@ function BookListGrid({}: BookListGridProps) {
                             shadow-gray-500 dark:shadow-gray-800
                             gap-3 shadow-md transition-transform"
                         >
-                            {Array.from({ length: 4 }).map((_, index) => {
+                            {Array.from({ length: 3 }).map((_, index) => {
                                 const minPercentage = 40;
                                 return (
                                     <div
@@ -25,6 +25,18 @@ function BookListGrid({}: BookListGridProps) {
                                     ></div>
                                 );
                             })}
+                            <div className="flex flex-wrap gap-4">
+                                {Array.from({
+                                    length: Math.floor(Math.random() * 2) + 3,
+                                }).map((_, index) => {
+                                    return (
+                                        <div
+                                            key={index}
+                                            className="h-5 w-20 bg-primary-200 dark:bg-primary-600 rounded-md animate-pulse"
+                                        ></div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     );
                 },

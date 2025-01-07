@@ -1,9 +1,11 @@
 import { BookListGridLoader } from "../SkeletonLoaders";
 
-type BookListGridProps = {};
+type BookListGridProps = {
+    isLoading: boolean;
+};
 
-function BookListGrid({}: BookListGridProps) {
-    return <BookListGridLoader />;
+function BookListGrid({ isLoading }: BookListGridProps) {
+    return isLoading ? <BookListGridLoader /> : <div>Books</div>;
 }
 
 export default BookListGrid;
