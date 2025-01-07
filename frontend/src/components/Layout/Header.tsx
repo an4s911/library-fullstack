@@ -9,7 +9,7 @@ function Header({}: HeaderProps) {
     return (
         <header
             className="flex justify-between items-center bg-primary-50 dark:bg-primary-800
-            sticky top-0 w-full shadow px-20 h-20 box-border py-4"
+            fixed top-0 w-full shadow px-20 h-20 py-4 z-10"
         >
             <div className="title-logo flex items-center gap-2">
                 <div className="logo text-primary">

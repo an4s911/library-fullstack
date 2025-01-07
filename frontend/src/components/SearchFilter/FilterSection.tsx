@@ -35,23 +35,21 @@ function FilterCheckboxList({ header, list }: FilterCheckboxListProps) {
                         </li>
                     );
                 })}
-                <li className="sticky bottom-0 bg-primary-100 dark:bg-primary-800">
+                <li className="sticky bottom-0 bg-primary-50 dark:bg-primary-800 pt-1">
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="text-primary hover:underline text-sm"
+                        className="text-primary hover:underline text-sm flex items-center"
                     >
-                        <div className="flex items-center">
-                            <span>
-                                {isExpanded
-                                    ? "Show Less"
-                                    : `Show All (${list.length})`}
-                            </span>
-                            {isExpanded ? (
-                                <ChevronUpIcon size={18} />
-                            ) : (
-                                <ChevronDownIcon size={18} />
-                            )}
-                        </div>
+                        <span>
+                            {isExpanded
+                                ? "Show Less"
+                                : `Show All (${list.length})`}
+                        </span>
+                        {isExpanded ? (
+                            <ChevronUpIcon size={18} />
+                        ) : (
+                            <ChevronDownIcon size={18} />
+                        )}
                     </button>
                 </li>
             </ul>

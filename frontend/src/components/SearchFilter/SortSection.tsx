@@ -9,7 +9,7 @@ function SortSection({}: SortSectionProps) {
     const [isAscending, setIsAscending] = useState(true);
 
     return (
-        <section className="sort-section flex items-center gap-2">
+        <section className="sort-section flex items-center gap-2 bg-primary-100 dark:bg-primary-900 ml-1 pl-2 p-1 rounded-xl">
             <ArrowDownUpIcon className="text-primary-400 dark:text-primary-500" />
             <GenericSelect
                 value={sortBy}
