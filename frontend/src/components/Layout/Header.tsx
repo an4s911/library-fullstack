@@ -11,14 +11,14 @@ function Header({}: HeaderProps) {
             className="flex justify-between items-center bg-primary-50 dark:bg-primary-800
             fixed top-0 w-full shadow px-20 h-20 py-4 z-10"
         >
-            <div className="title-logo flex items-center gap-2">
+            <a href="/" className="title-logo flex items-center gap-2">
                 <div className="logo text-primary">
                     <LibraryIcon size={32} />
                 </div>
                 <div className="title text-2xl font-bold">
                     <h1>A-Library</h1>
                 </div>
-            </div>
+            </a>
 
             <div className="search-bar flex-1 max-w-lg min-w-max">
                 <SearchBar />
