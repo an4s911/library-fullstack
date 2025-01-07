@@ -21,7 +21,7 @@ function ThemeToggle({}: ThemeToggleProps) {
     }, [isDark]);
 
     return (
-        <div
+        <button
             onClick={() => setIsDark(!isDark)}
             className="cursor-pointer w-7 h-7 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
         >
@@ -30,7 +30,7 @@ function ThemeToggle({}: ThemeToggleProps) {
             ) : (
                 <MoonIcon className="w-full h-full" />
             )}
-        </div>
+        </button>
     );
 }
 
