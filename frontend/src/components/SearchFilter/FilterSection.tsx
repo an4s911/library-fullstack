@@ -1,5 +1,6 @@
 import { ChevronDownIcon, ChevronUpIcon, FilterIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { FilterCheckboxListLoader } from "../SkeletonLoaders";
 
 type FliterCheckboxItem = string;
 
@@ -75,46 +76,48 @@ function FilterSection({}: FilterSectionProps) {
                     className="text-primary fill-primary-300 dark:fill-primary-600"
                 />
             </div>
-            <div className="flex flex-col gap-3 overflow-y-scroll">
-                <FilterCheckboxList
-                    header="Authors"
-                    list={[
-                        "Author 1",
-                        "Author 2",
-                        "Author 3",
-                        "Author 4",
-                        "Author 5",
-                        "Author 6",
-                        "Author 7",
-                        "Author 8",
-                        "Author 9",
-                    ]}
-                />
-                <FilterCheckboxList
-                    header="Genres"
-                    list={[
-                        "Genre 1",
-                        "Genre 2",
-                        "Genre 3",
-                        "Genre 4",
-                        "Genre 5",
-                        "Genre 6",
-                        "Genre 7",
-                        "Genre 8",
-                        "Genre 9",
-                        "Genre 10",
-                        "Genre 11",
-                        "Genre 12",
-                        "Genre 13",
-                        "Genre 14",
-                        "Genre 15",
-                        "Genre 16",
-                        "Genre 17",
-                        "Genre 18",
-                        "Genre 19",
-                        "Genre 20",
-                    ]}
-                />
+            <div className="flex flex-col gap-5 overflow-y-scroll">
+                <FilterCheckboxListLoader />
+                <FilterCheckboxListLoader />
+                {/* <FilterCheckboxList */}
+                {/*     header="Authors" */}
+                {/*     list={[ */}
+                {/*         "Author 1", */}
+                {/*         "Author 2", */}
+                {/*         "Author 3", */}
+                {/*         "Author 4", */}
+                {/*         "Author 5", */}
+                {/*         "Author 6", */}
+                {/*         "Author 7", */}
+                {/*         "Author 8", */}
+                {/*         "Author 9", */}
+                {/*     ]} */}
+                {/* /> */}
+                {/* <FilterCheckboxList */}
+                {/*     header="Genres" */}
+                {/*     list={[ */}
+                {/*         "Genre 1", */}
+                {/*         "Genre 2", */}
+                {/*         "Genre 3", */}
+                {/*         "Genre 4", */}
+                {/*         "Genre 5", */}
+                {/*         "Genre 6", */}
+                {/*         "Genre 7", */}
+                {/*         "Genre 8", */}
+                {/*         "Genre 9", */}
+                {/*         "Genre 10", */}
+                {/*         "Genre 11", */}
+                {/*         "Genre 12", */}
+                {/*         "Genre 13", */}
+                {/*         "Genre 14", */}
+                {/*         "Genre 15", */}
+                {/*         "Genre 16", */}
+                {/*         "Genre 17", */}
+                {/*         "Genre 18", */}
+                {/*         "Genre 19", */}
+                {/*         "Genre 20", */}
+                {/*     ]} */}
+                {/* /> */}
             </div>
         </section>
     );
