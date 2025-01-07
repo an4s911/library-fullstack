@@ -1,9 +1,4 @@
-import {
-    BookOpenTextIcon,
-    CalendarIcon,
-    TagIcon,
-    UserRoundIcon,
-} from "lucide-react";
+import { BookOpenTextIcon, TagIcon, UserRoundIcon } from "lucide-react";
 import { Book, Genre } from "../../types/book";
 import { useEffect, useRef, useState } from "react";
 
@@ -61,8 +56,7 @@ function BookCard({ book, isGrid }: BookCardProps) {
     return (
         <button
             className="rounded-md w-full flex flex-col p-4 bg-primary-50 dark:bg-primary-700
-            shadow-gray-500 dark:shadow-gray-800 gap-3 shadow-md transition-transform hover:scale-105
-            cursor-pointer"
+            shadow-gray-500 dark:shadow-gray-800 gap-3 shadow-md transition-transform hover:scale-105"
         >
             <div className="top flex items-center gap-2 max-w-max">
                 <BookOpenTextIcon
@@ -79,10 +73,6 @@ function BookCard({ book, isGrid }: BookCardProps) {
                     className="opacity-75 text-primary dark:text-primary-300"
                 />
                 <span className="">{book.author}</span>
-            </div>
-            <div className="date-added flex items-center gap-2 opacity-75">
-                <CalendarIcon size={14} className="opacity-75" />
-                <span>{book.dateAdded.toDateString()}</span>
             </div>
             <div className="genres">
                 <ul
