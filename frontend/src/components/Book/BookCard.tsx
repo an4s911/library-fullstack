@@ -59,7 +59,7 @@ function BookCard({ book, isGrid }: BookCardProps) {
     }, [isGrid, book.genres]);
 
     return (
-        <div
+        <button
             className="rounded-md w-full flex flex-col p-4 bg-primary-50 dark:bg-primary-700
             shadow-gray-500 dark:shadow-gray-800 gap-3 shadow-md transition-transform hover:scale-105
             cursor-pointer"
@@ -113,7 +113,7 @@ function BookCard({ book, isGrid }: BookCardProps) {
                     )}
                 </ul>
             </div>
-        </div>
+        </button>
     );
 }
 
