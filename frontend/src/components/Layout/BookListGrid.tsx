@@ -40,19 +40,27 @@ function BookListGrid({ isLoading }: BookListGridProps) {
                 genres: [
                     {
                         id: 1,
-                        name: "Thriller",
+                        name: "Suspense",
                     },
                     {
                         id: 2,
-                        name: "Mystery",
+                        name: "Thriller",
                     },
                     {
                         id: 3,
-                        name: "Suspense",
+                        name: "Mystery",
                     },
                     {
                         id: 4,
                         name: "Psychological Thriller",
+                    },
+                    {
+                        id: 5,
+                        name: "Horror",
+                    },
+                    {
+                        id: 6,
+                        name: "Horror",
                     },
                 ],
             },
@@ -63,7 +71,7 @@ function BookListGrid({ isLoading }: BookListGridProps) {
         return <BookListGridLoader />;
     } else {
         return (
-            <div className="book-list-grid grid grid-cols-3 gap-5">
+            <div className="book-list-grid grid grid-cols-2 lg:grid-cols-3 gap-5">
                 {bookList.map((book) => {
                     return <BookCard book={book} key={book.id} />;
                 })}
