@@ -10,7 +10,7 @@ function LayoutToggleBtn({ isGrid, onClick }: LayoutToggleBtnProps) {
         "w-7 h-7 p-1 rounded-md relative transition-colors hover:text-primary-900 dark:hover:text-primary-100";
 
     return (
-        <div
+        <button
             onClick={onClick}
             className="layout-toggle-btn relative flex gap-1 rounded-xl bg-primary-300 dark:bg-primary-800
             items-center p-1.5 cursor-pointer text-primary-700 dark:text-primary-600 h-max mr-2"
@@ -28,7 +28,7 @@ function LayoutToggleBtn({ isGrid, onClick }: LayoutToggleBtnProps) {
             <LayoutListIcon
                 className={`${iconClassName} ${!isGrid ? "text-primary dark:text-primary-200" : ""}`}
             />
-        </div>
+        </button>
     );
 }
 
