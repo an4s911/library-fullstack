@@ -23,7 +23,7 @@ function ThemeToggle({}: ThemeToggleProps) {
     return (
         <button
             onClick={() => setIsDark(!isDark)}
-            className="cursor-pointer w-7 h-7 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
+            className="cursor-pointer flex items-center w-7 h-7 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
         >
             {isDark ? (
                 <SunIcon className="w-full h-full" />
