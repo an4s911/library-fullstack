@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FilterSection, SortSection } from "../SearchFilter";
 import BookListGrid from "./BookListGrid";
 import LayoutToggleBtn from "./LayoutToggleBtn";
@@ -8,12 +8,6 @@ type MainContentProps = {};
 function MainContent({}: MainContentProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [isGrid, setIsGrid] = useState(true);
-
-    useEffect(() => {
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 2000);
-    }, []);
 
     return (
         <main
@@ -32,7 +26,12 @@ function MainContent({}: MainContentProps) {
                         onClick={() => setIsGrid(!isGrid)}
                     />
                 </div>
-                <BookListGrid isGrid={isGrid} isLoading={isLoading} />
+                <BookListGrid
+                    onStartLoading={() => setIsLoading(true)}
+                    onStopLoading={() => setIsLoading(false)}
+                    isGrid={isGrid}
+                    isLoading={isLoading}
+                />
             </div>
         </main>
     );

@@ -5,67 +5,37 @@ import { Book } from "../../types/book";
 
 type BookListGridProps = {
     isLoading: boolean;
+    onStartLoading: () => void;
+    onStopLoading: () => void;
     isGrid: boolean;
 };
 
-function BookListGrid({ isLoading, isGrid }: BookListGridProps) {
+function BookListGrid({
+    isLoading,
+    onStartLoading,
+    onStopLoading,
+    isGrid,
+}: BookListGridProps) {
     const [bookList, setBookList] = useState<Book[]>([]);
 
     useEffect(() => {
-        setBookList([
-            {
-                id: 1,
-                title: "The Alchemist",
-                author: "Paulo Coelho",
-                dateAdded: new Date("2024-11-24"),
-                genres: [
-                    {
-                        id: 1,
-                        name: "Fiction",
-                    },
-                    {
-                        id: 2,
-                        name: "Adventure",
-                    },
-                    {
-                        id: 3,
-                        name: "Fantasy",
-                    },
-                ],
+        onStartLoading();
+        fetch("/api/get-books/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
             },
-            {
-                id: 2,
-                title: "Silent Patient",
-                author: "Alex Michaelides",
-                dateAdded: new Date("2024-12-05"),
-                genres: [
-                    {
-                        id: 1,
-                        name: "Suspense",
-                    },
-                    {
-                        id: 2,
-                        name: "Thriller",
-                    },
-                    {
-                        id: 3,
-                        name: "Mystery",
-                    },
-                    {
-                        id: 4,
-                        name: "Psychological Thriller",
-                    },
-                    {
-                        id: 5,
-                        name: "Horror",
-                    },
-                    {
-                        id: 6,
-                        name: "Horror",
-                    },
-                ],
-            },
-        ]);
+        })
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                setBookList(data.books);
+                onStopLoading();
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }, []);
 
     if (isLoading) {
