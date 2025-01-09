@@ -1,5 +1,5 @@
 import { BookOpenTextIcon, TagIcon, UserRoundIcon } from "lucide-react";
-import { Book, Genre } from "../../types/book";
+import { Book } from "../../types/book";
 import { useEffect, useRef, useState } from "react";
 
 type BookCardProps = {
@@ -8,7 +8,7 @@ type BookCardProps = {
 };
 
 function BookCard({ book, isGrid }: BookCardProps) {
-    const [localGenres, setLocalGenres] = useState<Genre[]>([]);
+    const [localGenres, setLocalGenres] = useState<string[]>([]);
     const genreContainerRef = useRef<HTMLUListElement>(null);
 
     useEffect(() => {
@@ -29,7 +29,7 @@ function BookCard({ book, isGrid }: BookCardProps) {
 
             // Measure each genre
             for (let i = 0; i < book.genres.length; i++) {
-                tempSpan.textContent = book.genres[i].name;
+                tempSpan.textContent = book.genres[i];
 
                 //                 span width  + icon width + gap + ul (parent padding)
                 const genreWidth = tempSpan.offsetWidth + 12 + 4 + 12;
@@ -49,8 +49,7 @@ function BookCard({ book, isGrid }: BookCardProps) {
 
         calculateVisibleGenres();
         window.addEventListener("resize", calculateVisibleGenres);
-        return () =>
-            window.removeEventListener("resize", calculateVisibleGenres);
+        return () => window.removeEventListener("resize", calculateVisibleGenres);
     }, [isGrid, book.genres]);
 
     return (
@@ -79,18 +78,15 @@ function BookCard({ book, isGrid }: BookCardProps) {
                     ref={genreContainerRef}
                     className="flex gap-2 flex-wrap text-xs text-primary-50"
                 >
-                    {localGenres.map((genre) => {
+                    {localGenres.map((genre, index) => {
                         return (
                             <li
-                                key={genre.id}
-                                // text no allowed to wrap but allowed to truncate
+                                key={index}
                                 className="genre-elem text-nowrap bg-primary-400 dark:bg-primary-400
                                 max-w-full px-3 py-1 rounded-full flex items-center gap-1"
                             >
                                 <TagIcon className="min-w-3 min-h-3 max-w-3 max-h-3" />
-                                <span className="truncate max-w-full">
-                                    {genre.name}
-                                </span>
+                                <span className="truncate max-w-full">{genre}</span>
                             </li>
                         );
                     })}
