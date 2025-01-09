@@ -2,7 +2,12 @@ import { ChevronDownIcon, ChevronUpIcon, FilterIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FilterCheckboxListLoader } from "../SkeletonLoaders";
 
-type FliterCheckboxItem = string;
+type Author = {
+    id: number;
+    name: string;
+};
+
+type FliterCheckboxItem = Author;
 
 type FilterCheckboxListProps = {
     header: string;
@@ -24,14 +29,14 @@ function FilterCheckboxList({ header, list }: FilterCheckboxListProps) {
             <ul>
                 {localList.map((listItem, index) => {
                     return (
-                        <li key={listItem} className="flex items-center gap-2">
+                        <li key={index} className="flex items-center gap-2">
                             <input
-                                id={`${listItem}-${index}`}
+                                id={`${listItem.name}-${index}`}
                                 type="checkbox"
                                 name=""
                             />
-                            <label htmlFor={`${listItem}-${index}`}>
-                                {listItem}
+                            <label htmlFor={`${listItem.name}-${index}`}>
+                                {listItem.name}
                             </label>
                         </li>
                     );
@@ -42,9 +47,7 @@ function FilterCheckboxList({ header, list }: FilterCheckboxListProps) {
                         className="text-primary hover:underline text-sm flex items-center"
                     >
                         <span>
-                            {isExpanded
-                                ? "Show Less"
-                                : `Show All (${list.length})`}
+                            {isExpanded ? "Show Less" : `Show All (${list.length})`}
                         </span>
                         {isExpanded ? (
                             <ChevronUpIcon size={18} />
@@ -63,6 +66,26 @@ type FilterSectionProps = {
 };
 
 function FilterSection({ isLoading }: FilterSectionProps) {
+    const [authorsList, setAuthorsList] = useState<Author[]>([]);
+
+    useEffect(() => {
+        fetch("/api/get-authors/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                setAuthorsList(data.authors);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
     return (
         <section
             style={{
@@ -86,20 +109,7 @@ function FilterSection({ isLoading }: FilterSectionProps) {
                     </>
                 ) : (
                     <>
-                        <FilterCheckboxList
-                            header="Authors"
-                            list={[
-                                "Author 1",
-                                "Author 2",
-                                "Author 3",
-                                "Author 4",
-                                "Author 5",
-                                "Author 6",
-                                "Author 7",
-                                "Author 8",
-                                "Author 9",
-                            ]}
-                        />
+                        <FilterCheckboxList header="Authors" list={authorsList} />
                         <FilterCheckboxList
                             header="Genres"
                             list={[

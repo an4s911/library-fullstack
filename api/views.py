@@ -2,7 +2,7 @@ from django.core.paginator import Page
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, JsonResponse
 
-from .models import Book
+from .models import Author, Book
 from .utils import filter_books, paginate_books, sort_books
 
 
@@ -65,3 +65,17 @@ def get_books(request: HttpRequest) -> JsonResponse:
             "total_items": page.paginator.count,
         }
     )
+
+
+def get_authors(request: HttpRequest) -> JsonResponse:
+    authors = Author.objects.all()
+
+    result: list[dict] = [
+        {
+            "id": author.id,
+            "name": author.name,
+        }
+        for author in authors
+    ]
+
+    return JsonResponse({"authors": result})
