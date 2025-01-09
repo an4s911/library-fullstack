@@ -92,9 +92,7 @@ function BookCard({ book, isGrid }: BookCardProps) {
                     })}
                     {book.genres.length > localGenres.length && (
                         <li className="bg-primary-400 dark:bg-primary-400 px-3 py-1 rounded-2xl flex items-center gap-1">
-                            <span>
-                                +{book.genres.length - localGenres.length}
-                            </span>
+                            <span>+{book.genres.length - localGenres.length}</span>
                         </li>
                     )}
                 </ul>

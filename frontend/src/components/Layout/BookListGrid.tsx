@@ -76,9 +76,7 @@ function BookListGrid({ isLoading, isGrid }: BookListGridProps) {
                 className={`book-list-grid gap-5 ${isGrid ? "grid grid-cols-2 lg:grid-cols-3" : "flex flex-col"}`}
             >
                 {bookList.map((book) => {
-                    return (
-                        <BookCard isGrid={isGrid} book={book} key={book.id} />
-                    );
+                    return <BookCard isGrid={isGrid} book={book} key={book.id} />;
                 })}
             </div>
         );
