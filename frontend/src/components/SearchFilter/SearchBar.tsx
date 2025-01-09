@@ -45,6 +45,10 @@ function SearchBar({}: SearchBarProps) {
                         value: "author",
                         label: "Author",
                     },
+                    {
+                        value: "borrower",
+                        label: "Borrower",
+                    },
                 ]}
             />
         </form>
