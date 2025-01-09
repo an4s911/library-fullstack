@@ -6,7 +6,6 @@ import LayoutToggleBtn from "./LayoutToggleBtn";
 type MainContentProps = {};
 
 function MainContent({}: MainContentProps) {
-    const [isLoading, setIsLoading] = useState(true);
     const [isGrid, setIsGrid] = useState(true);
 
     return (
@@ -17,7 +16,7 @@ function MainContent({}: MainContentProps) {
             }}
             className="px-20 py-8 w-full h-max gap-8 mt-20"
         >
-            <FilterSection isLoading={isLoading} />
+            <FilterSection />
             <div className="flex flex-col gap-5">
                 <div className="w-full flex items-center justify-between sticky top-28 z-10">
                     <SortSection />
@@ -26,12 +25,7 @@ function MainContent({}: MainContentProps) {
                         onClick={() => setIsGrid(!isGrid)}
                     />
                 </div>
-                <BookListGrid
-                    onStartLoading={() => setIsLoading(true)}
-                    onStopLoading={() => setIsLoading(false)}
-                    isGrid={isGrid}
-                    isLoading={isLoading}
-                />
+                <BookListGrid isGrid={isGrid} />
             </div>
         </main>
     );

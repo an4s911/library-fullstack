@@ -79,3 +79,17 @@ def get_authors(request: HttpRequest) -> JsonResponse:
     ]
 
     return JsonResponse({"authors": result})
+
+
+def get_genres(request: HttpRequest) -> JsonResponse:
+    genres = Author.objects.all()
+
+    result: list[dict] = [
+        {
+            "id": genre.id,
+            "name": genre.name,
+        }
+        for genre in genres
+    ]
+
+    return JsonResponse({"genres": result})

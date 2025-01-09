@@ -7,27 +7,57 @@ type Author = {
     name: string;
 };
 
-type FliterCheckboxItem = Author;
+type Genre = {
+    id: number;
+    name: string;
+};
+
+type FliterCheckboxItem = Author | Genre;
 
 type FilterCheckboxListProps = {
     header: string;
-    list: FliterCheckboxItem[];
+    fetchUrl: string;
 };
 
-function FilterCheckboxList({ header, list }: FilterCheckboxListProps) {
+function FilterCheckboxList({ header, fetchUrl }: FilterCheckboxListProps) {
     const [isExpanded, setIsExpanded] = useState(false);
-    const [localList, setLocalList] = useState<FliterCheckboxItem[]>([]);
+    const [list, setList] = useState<FliterCheckboxItem[]>([]);
+    const [shorterList, setShorterList] = useState<FliterCheckboxItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (isExpanded) setLocalList(list);
-        else setLocalList(list.slice(0, 6));
-    }, [isExpanded]);
+        if (isExpanded) setShorterList(list);
+        else setShorterList(list.slice(0, 6));
+    }, [isExpanded, isLoading]);
 
-    return (
+    useEffect(() => {
+        setIsLoading(true);
+
+        fetch(fetchUrl, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                setList(data[header.toLowerCase()]);
+                setIsLoading(false);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
+    return isLoading ? (
+        <FilterCheckboxListLoader />
+    ) : (
         <div className="relative">
             <h3>{header}</h3>
             <ul>
-                {localList.map((listItem, index) => {
+                {shorterList.map((listItem, index) => {
                     return (
                         <li key={index} className="flex items-center gap-2">
                             <input
@@ -61,38 +91,16 @@ function FilterCheckboxList({ header, list }: FilterCheckboxListProps) {
     );
 }
 
-type FilterSectionProps = {
-    isLoading: boolean;
-};
+type FilterSectionProps = {};
 
-function FilterSection({ isLoading }: FilterSectionProps) {
-    const [authorsList, setAuthorsList] = useState<Author[]>([]);
-
-    useEffect(() => {
-        fetch("/api/get-authors/", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((res) => {
-                return res.json();
-            })
-            .then((data) => {
-                setAuthorsList(data.authors);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
-
+function FilterSection({}: FilterSectionProps) {
     return (
         <section
             style={{
                 maxHeight: "80vh",
             }}
             className="filter-section flex flex-col bg-primary-50 dark:bg-primary-800 px-5
-            py-3 rounded-md shadow h-max sticky top-28 gap-3"
+            py-3 rounded-md shadow h-full sticky top-28 gap-3"
         >
             <div className="flex justify-between items-center">
                 <h2>Filter</h2>
@@ -102,41 +110,8 @@ function FilterSection({ isLoading }: FilterSectionProps) {
                 />
             </div>
             <div className="flex flex-col gap-5 overflow-y-scroll">
-                {isLoading ? (
-                    <>
-                        <FilterCheckboxListLoader />
-                        <FilterCheckboxListLoader />
-                    </>
-                ) : (
-                    <>
-                        <FilterCheckboxList header="Authors" list={authorsList} />
-                        <FilterCheckboxList
-                            header="Genres"
-                            list={[
-                                "Genre 1",
-                                "Genre 2",
-                                "Genre 3",
-                                "Genre 4",
-                                "Genre 5",
-                                "Genre 6",
-                                "Genre 7",
-                                "Genre 8",
-                                "Genre 9",
-                                "Genre 10",
-                                "Genre 11",
-                                "Genre 12",
-                                "Genre 13",
-                                "Genre 14",
-                                "Genre 15",
-                                "Genre 16",
-                                "Genre 17",
-                                "Genre 18",
-                                "Genre 19",
-                                "Genre 20",
-                            ]}
-                        />
-                    </>
-                )}
+                <FilterCheckboxList header="Authors" fetchUrl="/api/get-authors/" />
+                <FilterCheckboxList header="Genres" fetchUrl="/api/get-genres/" />
             </div>
         </section>
     );

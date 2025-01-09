@@ -5,22 +5,15 @@ import { Book } from "../../types/book";
 import { BookIcon } from "lucide-react";
 
 type BookListGridProps = {
-    isLoading: boolean;
-    onStartLoading: () => void;
-    onStopLoading: () => void;
     isGrid: boolean;
 };
 
-function BookListGrid({
-    isLoading,
-    onStartLoading,
-    onStopLoading,
-    isGrid,
-}: BookListGridProps) {
+function BookListGrid({ isGrid }: BookListGridProps) {
     const [bookList, setBookList] = useState<Book[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        onStartLoading();
+        setIsLoading(true);
         fetch("/api/get-books/", {
             method: "GET",
             headers: {
@@ -32,7 +25,7 @@ function BookListGrid({
             })
             .then((data) => {
                 setBookList(data.books);
-                onStopLoading();
+                setIsLoading(false);
             })
             .catch((err) => {
                 console.log(err);
