@@ -8,12 +8,12 @@ function BookListGrid({}: BookListGridProps) {
                     return (
                         <div
                             key={index}
-                            className="rounded-md h-44 w-full flex flex-col p-4 justify-between
+                            className="rounded-md h-32 w-full flex flex-col p-4 justify-between
                             bg-primary-50 dark:bg-primary-700
                             shadow-gray-500 dark:shadow-gray-800
                             gap-3 shadow-md transition-transform"
                         >
-                            {Array.from({ length: 3 }).map((_, index) => {
+                            {Array.from({ length: 2 }).map((_, index) => {
                                 const minPercentage = 40;
                                 return (
                                     <div
@@ -25,14 +25,14 @@ function BookListGrid({}: BookListGridProps) {
                                     ></div>
                                 );
                             })}
-                            <div className="flex flex-wrap gap-4">
+                            <div className="flex gap-4">
                                 {Array.from({
-                                    length: Math.floor(Math.random() * 2) + 3,
+                                    length: Math.floor(Math.random() * 3) + 2,
                                 }).map((_, index) => {
                                     return (
                                         <div
                                             key={index}
-                                            className="h-5 w-20 bg-primary-200 dark:bg-primary-600 rounded-md animate-pulse"
+                                            className="h-5 w-20 bg-primary-200 dark:bg-primary-600 rounded-full animate-pulse"
                                         ></div>
                                     );
                                 })}
