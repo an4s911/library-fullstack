@@ -1,14 +1,38 @@
 import { PlusIcon } from "lucide-react";
 import { GenericButton } from "../UI";
+import { useEffect, useState } from "react";
+import AddBookModal from "./AddBookModal";
 
-type AddBookBtnProps = {};
+type AddBookBtnProps = {
+    onModalOpen: () => void;
+    onModalClose: () => void;
+};
 
-function AddBookBtn({}: AddBookBtnProps) {
+function AddBookBtn({ onModalOpen, onModalClose }: AddBookBtnProps) {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        open ? onModalOpen() : onModalClose();
+    }, [open]);
+
     return (
-        <GenericButton onClick={() => {}}>
-            <PlusIcon size={20} />
-            <div>Add Book</div>
-        </GenericButton>
+        <>
+            <GenericButton
+                onClick={() => {
+                    setOpen(true);
+                }}
+            >
+                <PlusIcon size={20} />
+                <div>Add Book</div>
+            </GenericButton>
+            {open && (
+                <AddBookModal
+                    onClose={() => {
+                        setOpen(false);
+                    }}
+                />
+            )}
+        </>
     );
 }
 

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-    @apply bg-primary-100 dark:bg-primary-900;
+    @apply text-primary-900 dark:text-primary-100 bg-primary-100 dark:bg-primary-900 h-screen;
 }
 
 .filter-section {
@@ -13,5 +13,29 @@ body {
 
     h3 {
         @apply text-lg;
+    }
+}
+
+.add-book-modal {
+    form {
+        > div:not(:last-child) {
+            @apply flex flex-col w-full gap-1;
+
+            label {
+                @apply text-sm font-semibold;
+            }
+
+            input {
+                &[type="text"] {
+                    @apply rounded-md px-3 py-2 bg-gray-300 dark:bg-gray-700 border-none border-0;
+                }
+            }
+        }
+
+        > div:last-child {
+            > button {
+                @apply px-4 py-2 rounded-md;
+            }
+        }
     }
 }
