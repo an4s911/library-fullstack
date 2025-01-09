@@ -1,7 +1,6 @@
 from django.core.paginator import Page
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 from .models import Book
 from .utils import filter_books, paginate_books, sort_books
@@ -11,7 +10,6 @@ def index(request):
     return HttpResponse("Hello, world. You're at the api index.")
 
 
-@csrf_exempt
 def get_books(request: HttpRequest) -> JsonResponse:
     """
     Handle GET requests to fetch books with filtering, sorting, and pagination.
