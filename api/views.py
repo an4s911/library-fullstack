@@ -2,7 +2,7 @@ from django.core.paginator import Page
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, JsonResponse
 
-from .models import Author, Book
+from .models import Author, Book, Genre
 from .utils import filter_books, paginate_books, sort_books
 
 
@@ -32,7 +32,7 @@ def get_books(request: HttpRequest) -> JsonResponse:
 
     # Extract query parameters for pagination (prefixed with pg_)
     pg_num: int = int(request.GET.get("pg_num", 1))
-    pg_size: int = int(request.GET.get("pg_size", 6))
+    pg_size: int = int(request.GET.get("pg_size", 20))
 
     # Fetch all books
     books: QuerySet = Book.objects.all()
