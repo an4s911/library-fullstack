@@ -93,3 +93,11 @@ def get_genres(request: HttpRequest) -> JsonResponse:
     ]
 
     return JsonResponse({"genres": result})
+
+
+def add_book(request: HttpRequest) -> JsonResponse:
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
+    # book_data = request.POST
+    return JsonResponse({"message": "Book added successfully!"})
