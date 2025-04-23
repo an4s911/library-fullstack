@@ -22,9 +22,33 @@ def get_books(request: HttpRequest) -> JsonResponse:
     # Extract query parameters for filtering (prefixed with filter_)
     filter_authors: list[str] = request.GET.getlist("filter_author", [])
     filter_genres: list[str] = request.GET.getlist("filter_genre", [])
+    filter_borrowed_q: str = request.GET.get("filter_borrowed", "null").lower()
+
+    # Validate filter_borrowed parameter
+    allowed_filter_borrowed_values = ["true", "false", "null"]
+    if filter_borrowed_q not in allowed_filter_borrowed_values:
+        return JsonResponse(
+            {
+                "error": (
+                    f"Invalid value for filter_borrowed parameter. Allowed values: {
+                        ', '.join(allowed_filter_borrowed_values)}"
+                )
+            },
+            status=400,
+        )
+
+    # Convert filter_borrowed parameter to boolean if provided
+    # If filter_borrowed_q is not "true" or "false", set it to None
+    filter_borrowed = (
+        filter_borrowed_q == "true" if filter_borrowed_q in ["true", "false"] else None
+    )
 
     # Create a dictionary to hold the filter criteria
-    filters: dict = {"authors": filter_authors, "genres": filter_genres}
+    filters: dict = {
+        "authors": filter_authors,
+        "genres": filter_genres,
+        "borrowed": filter_borrowed,
+    }
 
     # Extract query parameters for sorting (prefixed with sort_)
     sort_by: str = request.GET.get("sort_by", "id")

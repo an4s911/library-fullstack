@@ -25,9 +25,20 @@ def filter_books(books: QuerySet, filters: dict) -> QuerySet:
     if genres:
         filter_conditions["genres__name__in"] = genres
 
-    # Apply filters if any are specified
+    # Apply all filter conditions other than 'borrowed' if present
     if filter_conditions:
         books = books.filter(**filter_conditions)
+
+    borrowed_status = filters.get("borrowed")  # could be 'true' or 'false' or None
+
+    # Filter by borrowed status
+    if borrowed_status is True:
+        # Only include books that are currently borrowed
+        books = books.filter(borrow__is_borrowed=True)
+    elif borrowed_status is False:
+        # Exclude books that are borrowed
+        # Basically, books that are not borrowed or once borrowed and returned
+        books = books.exclude(borrow__is_borrowed=True)
 
     return books.distinct()  # Ensure no duplicate results
 
