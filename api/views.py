@@ -325,6 +325,37 @@ def add_book(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
 
+def delete_book(request: HttpRequest, book_id: int) -> JsonResponse:
+    """
+    Deletes a book and its associated borrow records (due to on_delete=CASCADE).
+    Requires book_id in the URL path.
+    """
+    if request.method != "DELETE":
+        return JsonResponse(
+            {"error": "Invalid request method. Use DELETE."}, status=405
+        )
+
+    try:
+        book = Book.objects.get(pk=book_id)
+        book_title = book.title  # Get title for the message before deleting
+        book.delete()
+        # Note: Associated Borrow records are automatically deleted due to
+        # on_delete=CASCADE
+
+        return JsonResponse(
+            {"message": f"Book '{book_title}' (ID: {book_id}) deleted successfully."},
+            status=200,
+        )
+        # Alternative: return HttpResponse(status=204) # No Content is common for DELETE
+
+    except Book.DoesNotExist:
+        return JsonResponse({"error": f"Book with id {book_id} not found"}, status=404)
+    except Exception as e:
+        print(e)
+        # Log the exception e
+        return JsonResponse(
+            {"error": "An unexpected error occurred during deletion"}, status=500
+        )
 
     # book_data = request.POST
     return JsonResponse({"message": "Book added successfully!"})
