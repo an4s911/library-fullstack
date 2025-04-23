@@ -6,8 +6,8 @@ from .models import Author, Book, Genre
 from .utils import filter_books, paginate_books, sort_books
 
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the api index.")
+def index(request) -> HttpResponse:
+    return HttpResponse("Hello, world. You're at the api index.", status=200)
 
 
 def get_books(request: HttpRequest) -> JsonResponse:
