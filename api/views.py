@@ -52,7 +52,7 @@ def get_books(request: HttpRequest) -> JsonResponse:
 
     # Extract query parameters for sorting (prefixed with sort_)
     sort_by: str = request.GET.get("sort_by", "id")
-    sort_desc: bool = request.GET.get("sort_desc", "false") == "true"
+    sort_desc: bool = request.GET.get("sort_desc", "false").lower() == "true"
 
     # Extract query parameters for pagination (prefixed with pg_)
     pg_num: int = int(request.GET.get("pg_num", 1))
