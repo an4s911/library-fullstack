@@ -1,8 +1,9 @@
 from django.core.paginator import EmptyPage, Page, PageNotAnInteger
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
 
-from .models import Author, Book, Genre
+from .models import Author, Book, Borrow, Genre
 from .utils import filter_books, paginate_books, sort_books
 
 
@@ -185,6 +186,64 @@ def get_books(request: HttpRequest) -> JsonResponse:
             "total_items": page.paginator.count,
         }
     )
+
+
+def get_book(request: HttpRequest, book_id: int) -> JsonResponse:
+    """
+    Handle GET requests to fetch details for a specific book, including borrow history.
+    """
+    if request.method != "GET":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
+    # Use get_object_or_404 for cleaner handling of Not Found
+    book = get_object_or_404(Book, pk=book_id)
+
+    try:
+        # Fetch borrow for book with is_borrowed=True
+        borrow = Borrow.objects.filter(book=book, is_borrowed=True).first()
+
+        # Convert borrow object to dictionary
+        borrow_info_dict = (
+            {
+                "id": borrow.id,
+                "borrower_name": borrow.borrower_name,
+                "borrowed_date": borrow.borrowed_date.isoformat(),
+                "is_currently_borrowed": borrow.is_borrowed,
+            }
+            if borrow
+            else {
+                "id": None,
+                "borrower_name": None,
+                "borrowed_date": None,
+                "is_currently_borrowed": False,
+            }
+        )
+
+        # Format the result for the specific book
+        result = {
+            "id": book.id,
+            "title": book.title,
+            "author": (
+                {"id": book.author.id, "name": book.author.name}
+                if book.author
+                else None
+            ),
+            "genres": [
+                {"id": genre.id, "name": genre.name} for genre in book.genres.all()
+            ],
+            "allow_borrow": book.allow_borrow,
+            "date_added": book.date_added.isoformat(),
+            "borrow": borrow_info_dict,
+        }
+
+        return JsonResponse(result)
+
+    except Exception as e:
+        # Log the exception e for debugging
+        print(f"Unexpected error in get_book: {e}")  # Basic logging
+        return JsonResponse(
+            {"error": "An unexpected server error occurred"}, status=500
+        )
 
 
 def get_authors(request: HttpRequest) -> JsonResponse:
