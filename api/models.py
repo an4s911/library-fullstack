@@ -36,7 +36,11 @@ class Borrow(Model):
     returned_date = DateField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.borrower_name} - {self.book.title}"
+        return (
+            f"{self.borrower_name} - {self.book.title}"
+            + " "
+            + f"({'borrowed' if self.is_borrowed else 'returned'})"
+        )
 
 
 class Log(Model):
