@@ -1,3 +1,5 @@
+import json
+
 from django.core.paginator import EmptyPage, Page, PageNotAnInteger
 from django.db.models import Count, QuerySet
 from django.http import HttpRequest, HttpResponse, JsonResponse
@@ -265,8 +267,64 @@ def get_genres(request: HttpRequest) -> JsonResponse:
 
 
 def add_book(request: HttpRequest) -> JsonResponse:
+    """
+    Adds a new book. Expects JSON data in the request body.
+    """
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request method"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        title = data.get("title")
+        author_id = data.get("author_id")
+        genre_ids = data.get("genre_ids", [])  # List of genre IDs
+        allow_borrow = data.get("allow_borrow", True)
+
+        if not title:
+            return JsonResponse({"error": "Title is required"}, status=400)
+
+        # --- Find Author (optional) ---
+        author = None
+        if author_id:
+            try:
+                author = Author.objects.get(pk=author_id)
+            except Author.DoesNotExist:
+                return JsonResponse(
+                    {"error": f"Author with id {author_id} not found"}, status=404
+                )
+
+        # --- Create Book ---
+        book = Book(title=title, author=author, allow_borrow=allow_borrow)
+        book.save()  # Save first to get an ID for M2M relationships
+
+        # --- Find and Set Genres (optional) ---
+        if genre_ids:
+            genres = []
+            for genre_id in genre_ids:
+                try:
+                    genre = Genre.objects.get(pk=genre_id)
+                    genres.append(genre)
+                except Genre.DoesNotExist:
+                    # Rollback or handle error: Decide if adding book should fail if a
+                    # genre is invalid
+                    book.delete()  # Simple rollback: delete the created book
+                    return JsonResponse(
+                        {"error": f"Genre with id {genre_id} not found"}, status=404
+                    )
+            book.genres.set(genres)
+
+        return JsonResponse(
+            {"message": "Book added successfully!", "book_id": book.id}, status=201
+        )
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
+    except Exception as e:
+        print(e)
+        # Log the exception e
+        return JsonResponse({"error": "An unexpected error occurred"}, status=500)
+
+
 
     # book_data = request.POST
     return JsonResponse({"message": "Book added successfully!"})

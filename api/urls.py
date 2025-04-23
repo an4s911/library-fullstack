@@ -8,5 +8,6 @@ urlpatterns = [
     path("get-genres/", views.get_genres, name="get_genres"),
     path("get-book/<int:book_id>/", views.get_book, name="get_book"),
     path("search-books/", views.get_books, name="search_books"),
+    path("add-book/", views.add_book, name="add_book"),
     path("", views.index, name="api_index"),
 ]
