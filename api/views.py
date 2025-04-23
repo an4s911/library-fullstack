@@ -357,5 +357,3 @@ def delete_book(request: HttpRequest, book_id: int) -> JsonResponse:
             {"error": "An unexpected error occurred during deletion"}, status=500
         )
 
-    # book_data = request.POST
-    return JsonResponse({"message": "Book added successfully!"})
