@@ -1,8 +1,12 @@
-type BookListGridProps = {};
+type BookListGridProps = {
+    isGrid: boolean;
+};
 
-function BookListGrid({}: BookListGridProps) {
+function BookListGrid({ isGrid }: BookListGridProps) {
     return (
-        <div className="book-list-grid grid grid-cols-3 gap-5">
+        <div
+            className={`book-list-grid ${isGrid ? "grid grid-cols-3" : "flex flex-col"} gap-5`}
+        >
             {Array.from({ length: Math.floor(Math.random() * 4) + 4 }).map(
                 (_, index) => {
                     return (
