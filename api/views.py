@@ -1,5 +1,6 @@
 import json
 
+from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, Page, PageNotAnInteger
 from django.db.models import Count, QuerySet
 from django.http import HttpRequest, HttpResponse, JsonResponse
@@ -455,3 +456,202 @@ def unborrow_book(request: HttpRequest, book_id: int) -> JsonResponse:
         print(e)
         # Log the exception e
         return JsonResponse({"error": "An unexpected error occurred"}, status=500)
+
+
+# --- Helper Functions for edit_book ---
+def _update_basic_book_fields(book: Book, data: dict) -> JsonResponse | None:
+    """Updates basic fields like title and allow_borrow."""
+    if "title" in data:
+        title = data["title"]
+        if not title:  # Basic validation
+            return JsonResponse({"error": "Title cannot be empty"}, status=400)
+        book.title = title
+
+    if "allow_borrow" in data:
+        # Ensure it's explicitly converted to bool
+        allow_borrow_value = data["allow_borrow"]
+        if not isinstance(allow_borrow_value, bool):
+            # You might want stricter type checking depending on input source
+            allow_borrow_value = str(allow_borrow_value).lower() in ("true", "1", "yes")
+        book.allow_borrow = allow_borrow_value
+    return None  # Indicate success
+
+
+def _update_book_author(book: Book, data: dict) -> JsonResponse | None:
+    """Updates the book's author."""
+    if "author_id" in data:
+        author_id = data["author_id"]
+        if author_id is None:
+            book.author = None
+        else:
+            try:
+                # Ensure author_id is an integer if it's not None
+                author_id_int = int(author_id)
+                author = Author.objects.get(pk=author_id_int)
+                book.author = author
+            except Author.DoesNotExist:
+                return JsonResponse(
+                    {"error": f"Author with id {author_id} not found"}, status=404
+                )
+            except (ValueError, TypeError):
+                return JsonResponse(
+                    {"error": f"Invalid author_id format: {author_id}"}, status=400
+                )
+    return None  # Indicate success
+
+
+def _update_book_genres(book: Book, data: dict) -> JsonResponse | None:
+    """Updates the book's genres."""
+    if "genre_ids" in data:
+        genre_ids = data["genre_ids"]
+        if not isinstance(genre_ids, list):
+            return JsonResponse({"error": "genre_ids must be a list"}, status=400)
+
+        # Validate and fetch all genres at once
+        valid_genre_ids = []
+        for gid in genre_ids:
+            try:
+                valid_genre_ids.append(int(gid))
+            except (ValueError, TypeError):
+                return JsonResponse(
+                    {"error": f"Invalid genre_id format in list: {gid}"}, status=400
+                )
+
+        # Fetch genres matching the provided IDs
+        genres = list(Genre.objects.filter(pk__in=valid_genre_ids))
+
+        # Check if all requested genres were found
+        if len(genres) != len(valid_genre_ids):
+            # Find which IDs were missing (more informative error)
+            found_ids = {genre.id for genre in genres}
+            missing_ids = [gid for gid in valid_genre_ids if gid not in found_ids]
+            return JsonResponse(
+                {"error": f"Genres with the following ids not found: {missing_ids}"},
+                status=404,  # Or 400, arguably bad data provided by client
+            )
+
+        book.genres.set(genres)  # .set() handles add/remove efficiently
+    return None  # Indicate success
+
+
+def edit_book(request: HttpRequest, book_id: int) -> JsonResponse:
+    """
+    Handles PUT requests to edit an existing book identified by `book_id`.
+
+    Updates specified fields of the book based on the JSON data provided in the
+    request body. Uses helper functions for modularity. Fields not included in
+    the request body will remain unchanged.
+
+    URL Parameters:
+        - `book_id` (int): The primary key of the book to edit.
+
+    Request Body (JSON):
+        An object containing the fields to update. All fields are optional.
+        - `title` (str, optional): The new title for the book. Cannot be empty if
+           provided.
+        - `author_id` (int | None, optional): The ID of the new author for the book.
+          Providing `null` or omitting the key removes the author association.
+        - `genre_ids` (list[int], optional): A list of IDs for the genres to associate
+          with the book. This will replace the existing set of genres. An empty list
+          `[]` removes all genre associations.
+        - `allow_borrow` (bool, optional): Set to `true` or `false` to update the
+          borrowing permission for the book. Accepts boolean `true`/`false` or
+          string representations like "true", "false", "1", "0".
+
+    Successful Response (200 OK):
+        A JSON object containing:
+        - `message` (str): A confirmation message (e.g., "Book updated successfully!").
+        - `book` (dict): An object representing the updated state of the book,
+           including:
+            - `id` (int): The book's ID.
+            - `title` (str): The updated title.
+            - `author` (str | None): The name of the updated author, or None.
+            - `genres` (list[str]): A list of names of the updated associated genres.
+            - `allow_borrow` (bool): The updated borrow status.
+
+    Error Responses:
+        - 400 Bad Request:
+            - Invalid JSON data in the request body.
+            - Request body is empty.
+            - Invalid data types for fields (e.g., `genre_ids` not a list, `author_id`
+              not integer/null).
+            - Validation error during `book.full_clean()` (e.g., empty title).
+            - Missing required data if a specific field requires it (though all are
+              optional here for PUT partial updates).
+        - 404 Not Found:
+            - Book with the specified `book_id` does not exist.
+            - An `author_id` provided in the request body does not exist.
+            - One or more `genre_ids` provided in the request body do not exist.
+        - 405 Method Not Allowed:
+            - Request method is not PUT.
+        - 500 Internal Server Error:
+            - An unexpected error occurred on the server.
+    """
+    if request.method != "PUT":
+        return JsonResponse({"error": "Invalid request method. Use PUT."}, status=405)
+
+    try:
+        book = Book.objects.get(pk=book_id)
+    except Book.DoesNotExist:
+        return JsonResponse({"error": f"Book with id {book_id} not found"}, status=404)
+
+    try:
+        # Ensure request body is not empty before trying to parse
+        if not request.body:
+            return JsonResponse(
+                {"error": "Request body cannot be empty for PUT"}, status=400
+            )
+        data = json.loads(request.body)
+        if not isinstance(data, dict):
+            return JsonResponse(
+                {"error": "Invalid JSON data: Expected an object"}, status=400
+            )
+
+        # --- Call helper functions to update parts of the book ---
+        # Each helper returns a JsonResponse on error, otherwise None
+        error_response = _update_basic_book_fields(book, data)
+        if error_response:
+            return error_response
+
+        error_response = _update_book_author(book, data)
+        if error_response:
+            return error_response
+
+        error_response = _update_book_genres(book, data)
+        if error_response:
+            return error_response
+
+        # --- Save if all updates were successful ---
+        book.full_clean()  # Run model validation before saving
+        book.save()
+
+        # --- Format and return success response ---
+        updated_book_data = {
+            "id": book.id,
+            "title": book.title,
+            "author": book.author.name if book.author else None,
+            "genres": [genre.name for genre in book.genres.all()],
+            "allow_borrow": book.allow_borrow,
+        }
+        return JsonResponse(
+            {"message": "Book updated successfully!", "book": updated_book_data},
+            status=200,
+        )
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
+    except ValidationError as ve:
+        print(ve)
+        # Catches validation errors from book.full_clean() or potentially save()
+        return JsonResponse(
+            {"error": f"Validation Error: {ve.message_dict}"}, status=400
+        )
+    except Exception as e:
+        # Log the exception e for debugging
+        print(f"Unexpected error in edit_book: {e}")  # Basic logging
+        # Consider using Python's logging module for production
+        # import logging
+        # logging.exception("An unexpected error occurred during book edit")
+        return JsonResponse(
+            {"error": "An unexpected server error occurred"}, status=500
+        )
