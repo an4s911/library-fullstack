@@ -54,9 +54,37 @@ def get_books(request: HttpRequest) -> JsonResponse:
     sort_by: str = request.GET.get("sort_by", "id")
     sort_desc: bool = request.GET.get("sort_desc", "false").lower() == "true"
 
-    # Extract query parameters for pagination (prefixed with pg_)
-    pg_num: int = int(request.GET.get("pg_num", 1))
-    pg_size: int = int(request.GET.get("pg_size", 20))
+    try:
+        # Extract query parameters for pagination (prefixed with pg_)
+        pg_num_str: str = request.GET.get("pg_num", "1")
+        pg_size_str: str = request.GET.get("pg_size", "20")
+
+        pg_num: int = int(pg_num_str)
+        pg_size: int = int(pg_size_str)
+
+        if pg_num < 1 or pg_size < 1:
+            return JsonResponse(
+                {
+                    "error": (
+                        "Page number (pg_num) and page size (pg_size) "
+                        "must be positive integers."
+                    )
+                },
+                status=400,
+            )
+
+        MAX_PAGE_SIZE = 50
+
+        if pg_size > MAX_PAGE_SIZE:
+            return JsonResponse(
+                {"error": f"Page size cannot exceed {MAX_PAGE_SIZE}."}, status=400
+            )
+
+    except ValueError:
+        return JsonResponse(
+            {"error": "Invalid parameters: pg_num and pg_size must be integers."},
+            status=400,
+        )
 
     # Fetch all books
     books: QuerySet = Book.objects.all()
