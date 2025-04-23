@@ -1,5 +1,5 @@
 from django.core.paginator import EmptyPage, Page, PageNotAnInteger
-from django.db.models import QuerySet
+from django.db.models import Count, QuerySet
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 
@@ -247,30 +247,20 @@ def get_book(request: HttpRequest, book_id: int) -> JsonResponse:
 
 
 def get_authors(request: HttpRequest) -> JsonResponse:
-    authors = Author.objects.all()
-
-    result: list[dict] = [
-        {
-            "id": author.id,
-            "name": author.name,
-        }
-        for author in authors
-    ]
-
+    # order by number of books
+    authors = (
+        Author.objects.annotate(book_count=Count("book")).order_by("-book_count").all()
+    )
+    result: list[dict] = [{"id": author.id, "name": author.name} for author in authors]
     return JsonResponse({"authors": result})
 
 
 def get_genres(request: HttpRequest) -> JsonResponse:
-    genres = Genre.objects.all()
-
-    result: list[dict] = [
-        {
-            "id": genre.id,
-            "name": genre.name,
-        }
-        for genre in genres
-    ]
-
+    # order by number of books
+    genres = (
+        Genre.objects.annotate(book_count=Count("book")).order_by("-book_count").all()
+    )
+    result: list[dict] = [{"id": genre.id, "name": genre.name} for genre in genres]
     return JsonResponse({"genres": result})
 
 
