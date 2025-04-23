@@ -357,3 +357,57 @@ def delete_book(request: HttpRequest, book_id: int) -> JsonResponse:
             {"error": "An unexpected error occurred during deletion"}, status=500
         )
 
+
+def borrow_book(request: HttpRequest) -> JsonResponse:
+    """
+    Marks a book as borrowed by creating a Borrow record.
+    Expects JSON: {"book_id": int, "borrower_name": str}
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        book_id = data.get("book_id")
+        borrower_name = data.get("borrower_name")
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
+
+    # --- Validate Input ---
+    if not all([book_id, borrower_name]):  # Check  for book_id and borrower_name
+        return JsonResponse(
+            {"error": "Missing required fields: book_id, borrower_name"}, status=400
+        )
+
+    book = get_object_or_404(Book, pk=book_id)
+
+    if not book.allow_borrow:
+        # 409 Conflict
+        return JsonResponse(
+            {"error": "This book is not allowed to be borrowed"}, status=409
+        )
+
+    try:
+        # Check if already borrowed (active borrow record exists)
+        if Borrow.objects.filter(book=book, is_borrowed=True).exists():
+            # 409 Conflict
+            return JsonResponse({"error": "Book is already borrowed"}, status=409)
+
+        # --- Create Borrow Record ---
+        # borrowed_date is automatically set by the model
+        borrow = Borrow(
+            book=book,
+            borrower_name=borrower_name,
+            is_borrowed=True,
+        )
+        borrow.save()
+
+        return JsonResponse(
+            {"message": "Book borrowed successfully!", "borrow_id": borrow.id},
+            status=201,
+        )
+
+    except Exception as e:
+        # Log the exception e
+        print(f"Unexpected error in set_borrow: {e}")  # Basic logging
+        return JsonResponse({"error": "An unexpected error occurred"}, status=500)
