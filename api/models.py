@@ -32,8 +32,8 @@ class Borrow(Model):
     book = ForeignKey(Book, on_delete=CASCADE)
     is_borrowed = BooleanField(default=True)
     borrower_name = CharField(max_length=255)
-    borrowed_date = DateField()
-    returned_date = DateField(null=True, blank=True)
+    borrowed_date = DateTimeField(auto_now_add=True)
+    returned_date = DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return (
