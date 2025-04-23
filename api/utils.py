@@ -91,7 +91,17 @@ def paginate_books(books: QuerySet, number: int, per_page: int) -> Page:
 
     Returns:
         Page: The specific page and its data.
+
+    Raises:
+        Exception: If an error occurs during pagination.
     """
-    paginator: Paginator = Paginator(books, per_page)
-    page: Page = paginator.get_page(number)
+    try:
+        # check if books is ordered
+        if not books.query.order_by:
+            books = books.order_by("id")
+        paginator: Paginator = Paginator(books, per_page)
+        page: Page = paginator.page(number)
+    except Exception as e:
+        raise e
+
     return page

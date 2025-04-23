@@ -1,4 +1,4 @@
-from django.core.paginator import Page
+from django.core.paginator import EmptyPage, Page, PageNotAnInteger
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, JsonResponse
 
@@ -86,17 +86,31 @@ def get_books(request: HttpRequest) -> JsonResponse:
             status=400,
         )
 
-    # Fetch all books
-    books: QuerySet = Book.objects.all()
+    # Fetch, filter, sort, paginate
+    books_qs: QuerySet = (
+        Book.objects.select_related("author")
+        .prefetch_related("genres", "borrow_set")
+        .all()
+    )
 
-    # Apply filters
-    books = filter_books(books, filters)
+    books_qs = filter_books(books_qs, filters)  # Apply filters
+    books_qs = sort_books(books_qs, sort_by, sort_desc)  # Apply sorting
 
-    # Apply sorting
-    books = sort_books(books, sort_by, sort_desc)
-
-    # Apply pagination
-    page: Page = paginate_books(books, pg_num, pg_size)
+    # Paginate
+    try:
+        page: Page = paginate_books(books_qs, pg_num, pg_size)
+    except PageNotAnInteger:
+        return JsonResponse({"error": "Page number must be an integer."}, status=400)
+    except EmptyPage:
+        # Return 404 if the requested page is out of range
+        return JsonResponse(
+            {"error": f"Invalid page number. Page {pg_num} does not exist."}, status=404
+        )
+    except Exception as e:
+        print(e)
+        return JsonResponse(
+            {"error": "An error occurred. Please try again."}, status=500
+        )
 
     # Format the result
     result: list[dict] = [
