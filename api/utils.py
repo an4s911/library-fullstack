@@ -62,8 +62,8 @@ def sort_books(books: QuerySet, sort_by: str, desc: bool = False) -> QuerySet:
         "author": "author__name",
         "date_added": "date_added",
         "borrower_name": "borrow__borrower_name",
-        "borrow_date": "borrow__borrow_date",
-        "return_date": "borrow__return_date",
+        "borrow_date": "borrow__borrowed_date",
+        "return_date": "borrow__returned_date",
     }
 
     # Get the field to sort by
