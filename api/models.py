@@ -21,7 +21,7 @@ class Book(Model):
     title = CharField(max_length=255)
     date_added = DateField(auto_now_add=True)
     allow_borrow = BooleanField(default=True)
-    author = ForeignKey(Author, on_delete=SET_NULL, null=True)
+    author = ForeignKey(Author, on_delete=SET_NULL, null=True, blank=True)
     genres = ManyToManyField(Genre)
 
     def __str__(self):
