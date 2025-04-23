@@ -4,6 +4,7 @@ from django.core.paginator import EmptyPage, Page, PageNotAnInteger
 from django.db.models import Count, QuerySet
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from .models import Author, Book, Borrow, Genre
 from .utils import filter_books, paginate_books, sort_books
@@ -410,4 +411,47 @@ def borrow_book(request: HttpRequest) -> JsonResponse:
     except Exception as e:
         # Log the exception e
         print(f"Unexpected error in set_borrow: {e}")  # Basic logging
+        return JsonResponse({"error": "An unexpected error occurred"}, status=500)
+
+
+def unborrow_book(request: HttpRequest, book_id: int) -> JsonResponse:
+    """
+    Marks a specific borrow record as returned.
+    Requires borrow_id in the URL path.
+    """
+    # Note: Typically PUT or PATCH. Using PUT here for simplicity.
+    if request.method != "PUT":
+        return JsonResponse({"error": "Invalid request method. Use PUT."}, status=405)
+
+    try:
+        # --- Find Borrow Record ---
+        borrow = Borrow.objects.filter(book=book_id, is_borrowed=True).first()
+
+        if not borrow:
+            # book currently not borrowed
+            return JsonResponse({"error": "Book is not currently borrowed"}, status=404)
+
+        returned_date = timezone.now()
+
+        # --- Update Borrow Record ---
+        if returned_date < borrow.borrowed_date:
+            return JsonResponse(
+                {"error": "Returned date cannot be earlier than borrowed date"},
+                status=400,
+            )
+
+        borrow.is_borrowed = False
+        borrow.returned_date = returned_date
+        borrow.save()
+
+        return JsonResponse(
+            {"message": "Book returned successfully!", "borrow_id": borrow.id},
+            status=200,
+        )
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
+    except Exception as e:
+        print(e)
+        # Log the exception e
         return JsonResponse({"error": "An unexpected error occurred"}, status=500)
