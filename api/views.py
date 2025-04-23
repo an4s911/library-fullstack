@@ -13,6 +13,38 @@ def index(request) -> HttpResponse:
 def get_books(request: HttpRequest) -> JsonResponse:
     """
     Handle GET requests to fetch books with filtering, sorting, and pagination.
+
+    Query Parameters:
+    - Search:
+        - `q` (str, optional): Search query term.
+        - `search_in` (str, optional): Scope of the search. Options: 'all' (default),
+          'title', 'author'.
+    - Filtering:
+        - `filter_author` (str, optional, repeatable): Filters books by author name(s).
+          Can be provided multiple times (
+              e.g., ?filter_author=Author One&filter_author=Author Two).
+        - `filter_genre` (str, optional, repeatable): Filters books by genre name(s).
+          Can be provided multiple times (
+              e.g., ?filter_genre=Fiction&filter_genre=Sci-Fi).
+        - `filter_borrowed` (str, optional): Filter books by whether they are borrowed.
+          Set to 'true' to include borrowed books, 'false' to exclude borrowed books.
+          Defaults to 'null'.
+    - Sorting:
+        - `sort_by` (str, optional): Field to sort books by. Defaults to 'id'.
+          Common options: 'title', 'author', 'date_added', 'borrower_name'.
+        - `sort_desc` (str, optional):
+                Set to 'true' for descending order, 'false' (or omit) for ascending.
+          Defaults to 'false'.
+    - Pagination:
+        - `pg_num` (int, optional): The page number to retrieve. Defaults to 1.
+        - `pg_size` (int, optional): The number of books per page. Defaults to 20.
+
+    Returns:
+        JsonResponse: A JSON object containing:
+            - `books`: A list of book objects for the requested page.
+            - `current_page`: The current page number.
+            - `total_pages`: The total number of pages available.
+            - `total_items`: The total number of books matching the filters.
     """
     if request.method != "GET":
         return JsonResponse({"error": "Invalid request method"}, status=405)
