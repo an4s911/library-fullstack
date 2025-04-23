@@ -17,7 +17,21 @@ def get_books(request: HttpRequest) -> JsonResponse:
     if request.method != "GET":
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
-    # Extract query parameters (filtering, sorting, pagination)
+    # Extract query parameters (search, filtering, sorting, pagination)
+    # Search parameters
+    search_query: str | None = request.GET.get("q", None)
+    search_scope: str = request.GET.get("search_in", "all").lower()
+
+    # Validate search_scope
+    allowed_search_scopes = ["all", "title", "author"]
+    if search_scope not in allowed_search_scopes:
+        return JsonResponse(
+            {
+                "error": f"Invalid value for search_in parameter. Allowed values: {
+                    ', '.join(allowed_search_scopes)}"
+            },
+            status=400,
+        )
 
     # Extract query parameters for filtering (prefixed with filter_)
     filter_authors: list[str] = request.GET.getlist("filter_author", [])
@@ -45,6 +59,8 @@ def get_books(request: HttpRequest) -> JsonResponse:
 
     # Create a dictionary to hold the filter criteria
     filters: dict = {
+        "query": search_query,
+        "search_scope": search_scope,
         "authors": filter_authors,
         "genres": filter_genres,
         "borrowed": filter_borrowed,

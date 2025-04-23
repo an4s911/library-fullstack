@@ -1,18 +1,41 @@
 from django.core.paginator import Page, Paginator
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 
 
 def filter_books(books: QuerySet, filters: dict) -> QuerySet:
     """
-    Apply filters to the queryset based on the provided filter criteria.
+    Apply search and filters to the queryset based on the provided criteria.
 
     Args:
         books (QuerySet): The queryset to filter.
-        filters (dict): A dictionary containing filter criteria.
+        filters (dict): A dictionary containing filter and search criteria.
+                        Expected keys: 'query', 'search_scope', 'authors',
+                        'genres', 'borrowed'.
 
     Returns:
         QuerySet: The filtered queryset.
     """
+    query = filters.get("query")
+    search_scope = filters.get("search_scope", "all")  # Default to 'all'
+
+    # --- Apply Search First (if query is provided) ---
+    if query and query.strip():
+        query = query.strip()
+        search_q = Q()  # Initialize an empty Q object
+
+        if search_scope == "title":
+            search_q = Q(title__icontains=query)
+        elif search_scope == "author":
+            # Ensure author is not null before searching name
+            search_q = Q(author__isnull=False, author__name__icontains=query)
+        else:  # Default 'all' scope
+            search_q = Q(title__icontains=query) | Q(
+                author__isnull=False, author__name__icontains=query
+            )
+
+        # Apply the search Q object to the queryset
+        books = books.filter(search_q)
+
     filter_conditions = {}
 
     # Extract authors and genres by removing empty strings and whitespace-only strings
