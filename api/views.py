@@ -112,16 +112,22 @@ def get_books(request: HttpRequest) -> JsonResponse:
             {"error": "An error occurred. Please try again."}, status=500
         )
 
-    # Format the result
-    result: list[dict] = [
-        {
-            "id": book.id,
-            "title": book.title,
-            "author": book.author.name if book.author else None,
-            "genres": [genre.name for genre in book.genres.all()],
-        }
-        for book in page.object_list
-    ]
+    # Prepare and return the response
+    result: list[dict] = []
+
+    for book in page.object_list:
+        borrow_info = book.borrow_set.filter(is_borrowed=True).first()
+
+        borrower_name: str | None = borrow_info.borrower_name if borrow_info else None
+        result.append(
+            {
+                "id": book.id,
+                "title": book.title,
+                "author": book.author.name if book.author else None,
+                "genres": [genre.name for genre in book.genres.all()],
+                "borrower_name": borrower_name,
+            }
+        )
 
     return JsonResponse(
         {
