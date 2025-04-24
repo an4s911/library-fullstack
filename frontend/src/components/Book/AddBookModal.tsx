@@ -82,6 +82,33 @@ function AddBookModal({ onClose }: AddBookModalProps) {
         });
     };
 
+    const handleAddNewAuthor = (newAuthorName: string) => {
+        // confirm choice from user with alert
+        const shouldAdd = window.confirm(`Add "${newAuthorName}" as a new author?`);
+
+        if (!shouldAdd) {
+            return newAuthorName;
+        }
+
+        fetch("/api/add-author/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCSRFToken(),
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ name: newAuthorName }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                const newAuthor: Author = data.author;
+
+                setAuthors((prev) => [...prev, newAuthor]);
+            });
+
+        return newAuthorName;
+    };
+
     const handleAddNewGenre = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
         const newGenre = genreInputValue.trim();
@@ -151,23 +178,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                             label="Author"
                             inputName="author"
                             options={authorOptions}
-                            onAddOption={(newAuthorName: string) => {
-                                fetch("/api/add-author/", {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify({ name: newAuthorName }),
-                                })
-                                    .then((res) => res.json())
-                                    .then((data) => {
-                                        const newAuthor: Author = data.author;
-
-                                        setAuthors((prev) => [...prev, newAuthor]);
-                                    });
-
-                                return newAuthorName;
-                            }}
+                            onAddOption={handleAddNewAuthor}
                             onSelect={(selectedOption) => {
                                 if (selectedOption) {
                                     setNewBook((prev) => {
