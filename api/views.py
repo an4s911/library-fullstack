@@ -281,8 +281,8 @@ def add_book(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"error": "Invalid JSON data"}, status=400)
 
     title = data.get("title")
-    author_id = data.get("author_id")
-    genre_ids = data.get("genre_ids", [])  # List of genre IDs
+    author_id = data.get("author")
+    genres = data.get("genres", [])
     allow_borrow = data.get("allow_borrow", True)
 
     if not title:
@@ -305,21 +305,22 @@ def add_book(request: HttpRequest) -> JsonResponse:
         print(f"Unexpected error in add_book: {e}")
         return JsonResponse({"error": "Something went wrong"}, status=500)
 
-        # --- Find and Set Genres (optional) ---
-    if genre_ids:
-        genres = []
-        for genre_id in genre_ids:
-            try:
-                genre = Genre.objects.get(pk=genre_id)
-                genres.append(genre)
-            except Genre.DoesNotExist:
-                # Rollback or handle error: Decide if adding book should fail if a
-                # genre is invalid
-                book.delete()  # Simple rollback: delete the created book
-                return JsonResponse(
-                    {"error": f"Genre with id {genre_id} not found"}, status=404
-                )
-        book.genres.set(genres)
+    # --- Find and Set Genres (optional) ---
+    if genres:
+        genre_objects = []
+        for genre in genres:
+            genre_obj = Genre.objects.filter(name__iexact=genre.strip()).first()
+
+            if not genre_obj:
+                genre_obj = Genre.objects.create(name=genre.strip().capitalize())
+                genre_obj.save()
+
+            genre_objects.append(genre_obj)
+
+        book.genres.set(genre_objects)
+        book.save()
+    else:
+        return JsonResponse({"error": "At least one genre is required"}, status=400)
 
     return JsonResponse(
         {"message": "Book added successfully!", "book_id": book.id}, status=201
