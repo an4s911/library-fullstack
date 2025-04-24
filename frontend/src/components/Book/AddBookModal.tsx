@@ -1,178 +1,190 @@
 import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
-import { DropdownOption, Modal, SimpleDropdown } from "../UI";
+import { Modal } from "../UI";
+import GenericSelect from "../UI/GenericSelect";
 import { useEffect, useRef, useState } from "react";
-import { Book } from "../../types";
-import { Author } from "../../types";
+import { Author, Genre } from "@/types";
 
 type AddBookModalProps = {
     onClose: () => void;
 };
 
 function AddBookModal({ onClose }: AddBookModalProps) {
-    const [genresList, setGenresList] = useState<string[]>([]);
     const [isValid, setIsValid] = useState(false);
-    const [genreInputValue, setGenreInputValue] = useState("");
-    const [newBook, setNewBook] = useState<Book>({
-        title: "",
-        author: null,
-        allowBorrow: false,
-        genres: [],
-    });
-    const [authorOptions, setAuthorOptions] = useState<DropdownOption[]>([]);
-    const [authors, setAuthors] = useState<Author[]>([]);
-    const formRef = useRef<HTMLFormElement>(null);
-    const allowBorrowCheckboxRef = useRef<HTMLInputElement>(null);
+    const [selectedAuthorId, setSelectedAuthorId] = useState<number>(-1);
+    const [authorsList, setAuthorsList] = useState<Author[]>([]);
+    const [genresList, setGenresList] = useState<Genre[]>([]);
+    const [selectedGenresList, setSelectedGenresList] = useState<Genre[]>([]);
+    const [selectedGenreIdsList, setSelectedGenreIdsList] = useState<number[]>([]);
+    const formElemRef = useRef<HTMLFormElement>(null);
 
     const handleOnClose = () => {
         // Check if there is any unsaved changes
         // If there are unsaved changes, prompt the user
-        if (
-            newBook.title !== "" ||
-            newBook.author !== null ||
-            genresList.length !== 0 ||
-            allowBorrowCheckboxRef.current?.checked !==
-                allowBorrowCheckboxRef.current?.defaultChecked
-        ) {
-            window.confirm("You will lose all unsaved changes if you close.") &&
-                window.confirm("Are you really sure?") &&
-                window.confirm("Are you a 100% sure?");
 
-            if (!window.confirm("Are you REALLY REALLY sure?")) {
-                return; // Thats so fun!!
-            } else {
-                onClose();
-            }
+        const title = (
+            formElemRef.current!.elements.namedItem("title") as HTMLInputElement
+        ).value;
+        if (
+            title !== "" ||
+            selectedAuthorId !== -1 ||
+            selectedGenreIdsList.length > 0
+        ) {
+            if (
+                window.confirm("You will lose all unsaved changes if you close.") &&
+                window.confirm("Are you really sure?") &&
+                window.confirm("Are you a 100% sure?")
+            )
+                if (!window.confirm("Are you REALLY REALLY sure?")) {
+                    return; // Thats so fun!!
+                } else {
+                    onClose();
+                }
+            else return;
+        } else {
+            onClose();
         }
     };
 
     const handleFormChange = () => {
-        setIsValid(formRef.current?.checkValidity() === true && genresList.length > 0);
+        const formElem = formElemRef.current!;
 
-        const formData = new FormData(formRef.current!);
-        setNewBook((prev) => {
-            return {
-                ...prev,
-                title: formData.get("title") as string,
-                allowBorrow: allowBorrowCheckboxRef.current?.checked || false,
-                genres: genresList,
-            };
-        });
+        setIsValid(formElem.checkValidity() && selectedGenreIdsList.length > 0);
     };
 
     const getCSRFToken = () => {
-        const cookie = document.cookie
-            .split(";")
-            .find((cookie) => cookie.startsWith("csrftoken="))!;
+        const cookie = document.cookie;
 
-        return cookie.split("=")[1];
+        if (!cookie) return "";
+
+        const csrftokenCookie = cookie
+            .split(";")
+            .find((cookie) => cookie.trim().startsWith("csrftoken="))!;
+
+        return csrftokenCookie.split("=")[1];
     };
 
     const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        const authorValue = (formRef.current?.elements[1] as HTMLInputElement).value;
-        const author = authors.find((author) => author.name === authorValue);
-        if (!author) {
-            handleAddNewAuthor(authorValue);
-        }
+        if (!isValid) return;
+
+        const formElem = formElemRef.current!;
+        const formData = new FormData(formElem);
+
+        formData.set("allowBorrow", formElem.allowBorrow.checked);
+
+        const newBook: any = Object.fromEntries(formData);
+        newBook["genres"] = selectedGenreIdsList;
 
         fetch("/api/add-book/", {
             method: "POST",
             headers: {
-                "X-CSRFToken": getCSRFToken(),
                 "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),
             },
             credentials: "include",
             body: JSON.stringify(newBook),
-        }).then((res) => {
-            if (res.ok) {
-                onClose();
-            }
-        });
+        })
+            .then((res) => res.json())
+            .then((data) => console.log(data));
     };
 
-    const handleAddNewAuthor = (newAuthorName: string) => {
-        // confirm choice from user with alert
-        const shouldAdd = window.confirm(`Add "${newAuthorName}" as a new author?`);
+    const handleAddNewAuthorGenre = (type: string) => {
+        const options: any = {
+            author: {
+                promptText: "author name",
+                url: "/api/add-author/",
+                transformData: (data: any) => {
+                    setAuthorsList((prev) => [...prev, data.author]);
+                    setSelectedAuthorId(data.author.id);
+                },
+            },
+            genre: {
+                promptText: "genre",
+                url: "/api/add-genre/",
+                transformData: (data: any) => {
+                    setGenresList((prev) => [...prev, data.genre]);
+                    setSelectedGenreIdsList((prev) => [...prev, data.genre.id]);
+                },
+            },
+        };
 
-        if (!shouldAdd) {
-            return newAuthorName;
-        }
+        const option = options[type];
 
-        fetch("/api/add-author/", {
+        const newItem = prompt(`Enter new ${option.promptText}`, "");
+
+        if (newItem === null || newItem === "") return;
+
+        fetch(option.url, {
             method: "POST",
             headers: {
-                "X-CSRFToken": getCSRFToken(),
                 "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),
             },
             credentials: "include",
-            body: JSON.stringify({ name: newAuthorName }),
+            body: JSON.stringify({ name: newItem }),
         })
             .then((res) => res.json())
             .then((data) => {
-                const newAuthor: Author = data.author;
-
-                setAuthors((prev) => [...prev, newAuthor]);
-            });
-
-        return newAuthorName;
+                option.transformData(data);
+            })
+            .catch((err) => console.log(err));
     };
 
-    const handleAddNewGenre = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
-        const newGenre = genreInputValue.trim();
+    const handleAddNewAuthor = () => {
+        handleAddNewAuthorGenre("author");
+    };
 
-        if (genresList.includes(newGenre)) {
-            return;
-        } else if (newGenre === "") {
-            setGenreInputValue("");
-            return;
-        } else {
-            setGenresList([...genresList, newGenre]);
-            setGenreInputValue("");
+    const handleAddNewGenre = () => {
+        handleAddNewAuthorGenre("genre");
+    };
+
+    useEffect(() => {
+        const options: any = {
+            author: {
+                url: "/api/get-authors/",
+                setList: setAuthorsList,
+                itemsKey: "authors",
+            },
+            genre: {
+                url: "/api/get-genres/",
+                setList: setGenresList,
+                itemsKey: "genres",
+            },
+        };
+
+        for (const option in options) {
+            fetch(options[option].url)
+                .then((res) => res.json())
+                .then((data) => options[option].setList(data[options[option].itemsKey]))
+                .catch((err) => console.log(err));
         }
-    };
-
-    useEffect(() => {
-        handleFormChange();
-    }, [genresList]);
-
-    useEffect(() => {
-        //  Fetch authors and set author options
-        fetch("/api/get-authors/")
-            .then((res) => res.json())
-            .then((data) => {
-                setAuthors(data.authors);
-                setAuthorOptions(
-                    data.authors.map((author: Author) => ({
-                        value: author.id,
-                        label: author.name,
-                    })),
-                );
-            });
     }, []);
 
     useEffect(() => {
-        setAuthorOptions(
-            authors.map((author: Author) => ({
-                value: author.id,
-                label: author.name,
-            })),
+        setSelectedGenresList(
+            genresList.filter((genre) => selectedGenreIdsList.includes(genre.id)),
         );
-    }, [authors]);
+    }, [selectedGenreIdsList]);
+
+    useEffect(() => {
+        handleFormChange();
+    }, [selectedGenreIdsList, selectedAuthorId]);
 
     return (
         <Modal onClose={handleOnClose}>
             <div className="add-book-modal p-5 bg-primary-50 dark:bg-gray-800 rounded-md flex flex-col gap-5 w-[448px]">
                 <div className="top w-full flex items-center justify-between">
                     <h2 className="text-2xl font-bold">Add New Book</h2>
-                    <button className="opacity-65 hover:opacity-100" onClick={onClose}>
+                    <button
+                        className="opacity-65 hover:opacity-100"
+                        onClick={handleOnClose}
+                    >
                         <XIcon />
                     </button>
                 </div>
                 <form
-                    ref={formRef}
-                    onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+                    ref={formElemRef}
                     action=""
                     className="flex flex-col gap-5"
                     onChange={handleFormChange}
@@ -183,55 +195,92 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                         <input type="text" required name="title" />
                     </div>
                     <div className="author">
-                        <SimpleDropdown
-                            label="Author"
-                            inputName="author"
-                            options={authorOptions}
-                            onAddOption={handleAddNewAuthor}
-                            onSelect={(selectedOption) => {
-                                if (selectedOption) {
-                                    setNewBook((prev) => {
-                                        return {
-                                            ...prev,
-                                            author: selectedOption.value as number,
-                                        };
-                                    });
+                        <label htmlFor="">Author</label>
+                        <div className="flex w-full gap-2 justify-stretch">
+                            <GenericSelect
+                                optionsList={[
+                                    {
+                                        value: -1,
+                                        label: "Select Author",
+                                    },
+                                ].concat(
+                                    authorsList.map((author) => ({
+                                        value: author.id,
+                                        label: author.name,
+                                    })),
+                                )}
+                                value={selectedAuthorId}
+                                onChange={(e) =>
+                                    setSelectedAuthorId(parseInt(e.target.value))
                                 }
-                            }}
-                        />
-                    </div>
-                    <div className="genres">
-                        <label htmlFor="">Genres</label>
-                        <div className="flex w-full gap-2">
-                            <input
-                                type="text"
-                                className="w-full"
-                                placeholder="Enter a genre"
-                                value={genreInputValue}
-                                onChange={(e) => setGenreInputValue(e.target.value)}
+                                name="author"
+                                required={true}
                             />
                             <button
-                                onClick={handleAddNewGenre}
+                                onClick={handleAddNewAuthor}
                                 className="flex items-center justify-center px-4 text-primary-50 bg-primary hover:bg-primary-500
-                                dark:bg-primary hover:dark:bg-primary-600 rounded-md h-auto transition-colors"
+                                dark:bg-primary hover:dark:bg-primary-600 rounded-md h-auto transition-colors flex-shrink"
                             >
                                 <PlusIcon className="w-5 h-5" />
                             </button>
                         </div>
                     </div>
-                    {genresList.length > 0 && (
+                    <div className="genres">
+                        <label htmlFor="">Genres</label>
+                        <div className="flex w-full gap-2 justify-stretch">
+                            <GenericSelect
+                                optionsList={[
+                                    {
+                                        value: -1,
+                                        label: "Select Genres to Add",
+                                    },
+                                ].concat(
+                                    genresList.map((genre) => ({
+                                        value: genre.id,
+                                        label: genre.name,
+                                    })),
+                                )}
+                                value={-1}
+                                onChange={(e) => {
+                                    setSelectedGenreIdsList((prev) => {
+                                        if (prev.includes(parseInt(e.target.value))) {
+                                            return prev.filter(
+                                                (id) => id !== parseInt(e.target.value),
+                                            );
+                                        }
+                                        return [...prev, parseInt(e.target.value)];
+                                    });
+                                }}
+                            />
+                            <button
+                                onClick={handleAddNewGenre}
+                                className="flex items-center justify-center px-4 text-primary-50 bg-primary hover:bg-primary-500
+                                dark:bg-primary hover:dark:bg-primary-600 rounded-md h-auto transition-colors flex-shrink"
+                            >
+                                <PlusIcon className="w-5 h-5" />
+                            </button>
+                        </div>
+                        {/* <input */}
+                        {/*     name="genres" */}
+                        {/*     required */}
+                        {/*     type="hidden" */}
+                        {/*     value={selectedGenreIdsList.map((id) => id.toString())} */}
+                        {/*     readOnly */}
+                        {/* /> */}
+                    </div>
+                    {selectedGenresList.length > 0 && (
                         <div className="added-genres-list flex !flex-row flex-wrap gap-2">
-                            {genresList.map((genre) => (
+                            {selectedGenresList.map((genre) => (
                                 <div
-                                    key={genre}
+                                    key={genre.id}
                                     className="flex items-center gap-2 rounded-full bg-primary-200 dark:bg-gray-700 px-3 py-1"
                                 >
-                                    <span>{genre}</span>
+                                    <span>{genre.name}</span>
                                     <button
                                         onClick={(e) => {
-                                            e.preventDefault();
-                                            setGenresList(
-                                                genresList.filter((g) => g !== genre),
+                                            e.stopPropagation();
+                                            setSelectedGenreIdsList((prev) =>
+                                                prev.filter((id) => id !== genre.id),
                                             );
                                         }}
                                     >
@@ -246,10 +295,10 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                         <div className="flex self-start">
                             <>
                                 <input
-                                    ref={allowBorrowCheckboxRef}
                                     type="checkbox"
                                     className="h-6 w-6"
                                     defaultChecked
+                                    name="allowBorrow"
                                 />
                             </>
                         </div>
