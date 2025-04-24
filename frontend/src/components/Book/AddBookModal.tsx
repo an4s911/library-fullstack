@@ -69,11 +69,20 @@ function AddBookModal({ onClose }: AddBookModalProps) {
 
     const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        const authorValue = (formRef.current?.elements[1] as HTMLInputElement).value;
+        const author = authors.find((author) => author.name === authorValue);
+        if (!author) {
+            handleAddNewAuthor(authorValue);
+        }
+
         fetch("/api/add-book/", {
             method: "POST",
             headers: {
+                "X-CSRFToken": getCSRFToken(),
                 "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify(newBook),
         }).then((res) => {
             if (res.ok) {
