@@ -277,47 +277,53 @@ def add_book(request: HttpRequest) -> JsonResponse:
 
     try:
         data = json.loads(request.body)
-        title = data.get("title")
-        author_id = data.get("author_id")
-        genre_ids = data.get("genre_ids", [])  # List of genre IDs
-        allow_borrow = data.get("allow_borrow", True)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
 
-        if not title:
-            return JsonResponse({"error": "Title is required"}, status=400)
+    title = data.get("title")
+    author_id = data.get("author_id")
+    genre_ids = data.get("genre_ids", [])  # List of genre IDs
+    allow_borrow = data.get("allow_borrow", True)
 
-        # --- Find Author (optional) ---
-        author = None
+    if not title:
+        return JsonResponse({"error": "Title is required"}, status=400)
+
+    author = None
+    try:
         if author_id:
-            try:
-                author = Author.objects.get(pk=author_id)
-            except Author.DoesNotExist:
-                return JsonResponse(
-                    {"error": f"Author with id {author_id} not found"}, status=404
-                )
+            author = Author.objects.get(pk=author_id)
+    except Author.DoesNotExist:
+        return JsonResponse(
+            {"error": f"Author with id {author_id} not found"}, status=404
+        )
 
+    try:
         # --- Create Book ---
         book = Book(title=title, author=author, allow_borrow=allow_borrow)
         book.save()  # Save first to get an ID for M2M relationships
+    except Exception as e:
+        print(f"Unexpected error in add_book: {e}")
+        return JsonResponse({"error": "Something went wrong"}, status=500)
 
         # --- Find and Set Genres (optional) ---
-        if genre_ids:
-            genres = []
-            for genre_id in genre_ids:
-                try:
-                    genre = Genre.objects.get(pk=genre_id)
-                    genres.append(genre)
-                except Genre.DoesNotExist:
-                    # Rollback or handle error: Decide if adding book should fail if a
-                    # genre is invalid
-                    book.delete()  # Simple rollback: delete the created book
-                    return JsonResponse(
-                        {"error": f"Genre with id {genre_id} not found"}, status=404
-                    )
-            book.genres.set(genres)
+    if genre_ids:
+        genres = []
+        for genre_id in genre_ids:
+            try:
+                genre = Genre.objects.get(pk=genre_id)
+                genres.append(genre)
+            except Genre.DoesNotExist:
+                # Rollback or handle error: Decide if adding book should fail if a
+                # genre is invalid
+                book.delete()  # Simple rollback: delete the created book
+                return JsonResponse(
+                    {"error": f"Genre with id {genre_id} not found"}, status=404
+                )
+        book.genres.set(genres)
 
-        return JsonResponse(
-            {"message": "Book added successfully!", "book_id": book.id}, status=201
-        )
+    return JsonResponse(
+        {"message": "Book added successfully!", "book_id": book.id}, status=201
+    )
 
 
 def add_author(request: HttpRequest) -> JsonResponse:
