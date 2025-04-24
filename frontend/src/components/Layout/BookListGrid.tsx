@@ -33,7 +33,7 @@ function BookListGrid({ isGrid }: BookListGridProps) {
     }, []);
 
     if (isLoading) {
-        return <BookListGridLoader />;
+        return <BookListGridLoader isGrid={isGrid} />;
     } else {
         return bookList.length > 0 ? (
             <div

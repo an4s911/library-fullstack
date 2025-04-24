@@ -12,7 +12,7 @@ function Header({ onModalOpen, onModalClose }: HeaderProps) {
     return (
         <header
             className="flex justify-between items-center bg-primary-50 dark:bg-primary-800
-            fixed top-0 w-full shadow px-20 h-20 py-4 z-10"
+            fixed top-0 w-full shadow px-20 h-20 py-4 z-20"
         >
             <a href="/" className="title-logo flex items-center gap-2">
                 <div className="logo text-primary">
@@ -32,10 +32,7 @@ function Header({ onModalOpen, onModalClose }: HeaderProps) {
                     <ThemeToggle />
                 </div>
                 <div className="add-book-btn">
-                    <AddBookBtn
-                        onModalOpen={onModalOpen}
-                        onModalClose={onModalClose}
-                    />
+                    <AddBookBtn onModalOpen={onModalOpen} onModalClose={onModalClose} />
                 </div>
                 <div className="logout">
                     <a href="/logout/">

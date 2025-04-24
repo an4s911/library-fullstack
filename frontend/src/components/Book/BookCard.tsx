@@ -54,8 +54,10 @@ function BookCard({ book, isGrid }: BookCardProps) {
 
     return (
         <button
-            className="rounded-md w-full flex flex-col p-4 bg-primary-50 dark:bg-primary-700
-            shadow-gray-500 dark:shadow-gray-800 gap-3 shadow-md transition-transform hover:scale-105"
+            className={`rounded-md w-full flex flex-col p-4 bg-primary-50 dark:bg-primary-700
+            shadow-gray-500 dark:shadow-gray-800 gap-3 shadow-md transition-transform ${
+                isGrid ? "hover:scale-105" : "hover:scale-[1.02]"
+            }`}
         >
             <div className="top flex items-center gap-2 max-w-max">
                 <BookOpenTextIcon
