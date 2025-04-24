@@ -59,6 +59,14 @@ function AddBookModal({ onClose }: AddBookModalProps) {
         });
     };
 
+    const getCSRFToken = () => {
+        const cookie = document.cookie
+            .split(";")
+            .find((cookie) => cookie.startsWith("csrftoken="))!;
+
+        return cookie.split("=")[1];
+    };
+
     const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         fetch("/api/add-book/", {
