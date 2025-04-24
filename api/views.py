@@ -319,12 +319,50 @@ def add_book(request: HttpRequest) -> JsonResponse:
             {"message": "Book added successfully!", "book_id": book.id}, status=201
         )
 
+
+def add_author(request: HttpRequest) -> JsonResponse:
+    """
+    Adds a new author.
+
+    Expects JSON data in the request body.
+
+    Request:
+    {
+        "name": "John Doe"
+    }
+
+    Response:
+    {
+        "message": "Author added successfully!",
+        "author_id": 1
+    }
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
+    try:
+        data = json.loads(request.body)
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON data"}, status=400)
+
+    name = data.get("name")
+
+    if not name:
+        return JsonResponse({"error": "Name is required"}, status=400)
+
+    try:
+        author = Author(name=name)
+        author.save()
+        return JsonResponse(
+            {
+                "message": "Author added successfully!",
+                "author": {"id": author.id, "name": author.name},
+            },
+            status=201,
+        )
     except Exception as e:
-        print(e)
-        # Log the exception e
-        return JsonResponse({"error": "An unexpected error occurred"}, status=500)
+        print(f"Unexpected error in add_author: {e}")
+        return JsonResponse({"error": "Something went wrong"}, status=500)
 
 
 def delete_book(request: HttpRequest, book_id: int) -> JsonResponse:
