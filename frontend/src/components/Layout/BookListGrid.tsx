@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BookCard } from "../Book";
 import { BookListGridLoader } from "../SkeletonLoaders";
-import { Book } from "../../types/book";
+import { Book } from "../../types";
 import { BookIcon } from "lucide-react";
 
 type BookListGridProps = {

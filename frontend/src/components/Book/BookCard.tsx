@@ -1,5 +1,5 @@
 import { BookOpenTextIcon, TagIcon, UserRoundIcon } from "lucide-react";
-import { Book } from "../../types/book";
+import { Book } from "../../types";
 import { useEffect, useRef, useState } from "react";
 
 type BookCardProps = {

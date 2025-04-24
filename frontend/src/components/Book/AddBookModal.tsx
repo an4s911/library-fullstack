@@ -1,8 +1,8 @@
 import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
 import { DropdownOption, Modal, SimpleDropdown } from "../UI";
 import { useEffect, useRef, useState } from "react";
-import { Book } from "../../types/book";
-import { Author } from "../../types/author";
+import { Book } from "../../types";
+import { Author } from "../../types";
 
 type AddBookModalProps = {
     onClose: () => void;
