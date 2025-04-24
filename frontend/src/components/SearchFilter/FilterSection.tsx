@@ -107,13 +107,14 @@ type FilterSectionProps = {};
 
 function FilterSection({}: FilterSectionProps) {
     return (
-        <section
+        <form
             style={{
                 maxHeight: "80vh",
                 height: "80vh",
             }}
             className="filter-section flex flex-col bg-primary-50 dark:bg-primary-800 px-5
             mt-8 py-3 rounded-md shadow sticky top-28 gap-3"
+            onSubmit={(e) => e.preventDefault()}
         >
             <div className="flex justify-between items-center">
                 <h2>Filter</h2>
@@ -126,7 +127,15 @@ function FilterSection({}: FilterSectionProps) {
                 <FilterCheckboxList name="authors" fetchUrl="/api/get-authors/" />
                 <FilterCheckboxList name="genres" fetchUrl="/api/get-genres/" />
             </div>
-        </section>
+            <div className="apply">
+                <button
+                    type="submit"
+                    className="text-xs bg-primary text-white px-4 py-1 rounded-md"
+                >
+                    Apply
+                </button>
+            </div>
+        </form>
     );
 }
 

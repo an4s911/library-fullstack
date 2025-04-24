@@ -154,14 +154,6 @@ function SimpleDropdown({
             }
 
             if (filteredOptions.length === 0 && onAddOption) {
-                // confirm choice from user with alert
-                const shouldAdd = window.confirm(
-                    `Add "${trimmedSearchTerm}" as a new ${label ? label.toLowerCase() : "option"}?`,
-                );
-                if (!shouldAdd) {
-                    return;
-                }
-
                 setNewOptionLabel(onAddOption(trimmedSearchTerm)); // Call parent function to handle adding
             } else if (filteredOptions.length > 0) {
                 // Select the first filtered option on Enter
