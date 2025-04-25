@@ -93,6 +93,10 @@ function BookCard({ book, isGrid }: BookCardProps) {
                 />
                 <span className="">{book.author?.name}</span>
             </div>
+            <div className="date-added flex items-center gap-2">
+                <CalendarIcon size={16} />
+                <span className="opacity-75 text-xs">{book.getDateAdded()}</span>
+            </div>
             <div className="genres">
                 <ul
                     ref={genreContainerRef}
