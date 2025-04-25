@@ -4,6 +4,7 @@ import { GenericSelect } from "@/components/UI";
 import { useEffect, useRef, useState } from "react";
 import { Author, Genre } from "@/types";
 import { useOptions } from "@/contexts";
+import { getCSRFToken } from "@/utils";
 
 type AddBookModalProps = {
     onClose: () => void;
@@ -51,18 +52,6 @@ function AddBookModal({ onClose }: AddBookModalProps) {
         const formElem = formElemRef.current!;
 
         setIsValid(formElem.checkValidity() && selectedGenreIdsList.length > 0);
-    };
-
-    const getCSRFToken = () => {
-        const cookie = document.cookie;
-
-        if (!cookie) return "";
-
-        const csrftokenCookie = cookie
-            .split(";")
-            .find((cookie) => cookie.trim().startsWith("csrftoken="))!;
-
-        return csrftokenCookie.split("=")[1];
     };
 
     const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
