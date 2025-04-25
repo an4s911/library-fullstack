@@ -1,20 +1,38 @@
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { GenericSelect } from "@/components/UI";
+import { useOptions } from "@/contexts";
 
 type SearchBarProps = {};
 
 function SearchBar({}: SearchBarProps) {
     const [value, setValue] = useState("");
     const [searchFilter, setSearchFilter] = useState("");
+    const { options, setOptions, toQueryParams } = useOptions();
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formElem = e.currentTarget;
+        const formData = new FormData(formElem);
+
+        setOptions((prev) => {
+            return {
+                ...prev,
+                pg_num: 1,
+                q: formData.get("query") as string,
+                search_in: formData.get("searchField") as string,
+            };
+        });
+    };
 
     return (
         <form
             className="flex gap-2 text-primary-900 dark:text-primary-100"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleSubmit}
         >
             <div className="search-field flex-1 relative">
                 <input
+                    name="query"
                     type="text"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
@@ -30,12 +48,13 @@ function SearchBar({}: SearchBarProps) {
                 <SearchIcon className="absolute left-3 top-2.5 w-5 h-5" />
             </div>
             <GenericSelect
+                name="searchField"
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 optionsList={[
                     {
                         value: "all",
-                        label: "All Fields",
+                        label: "All",
                     },
                     {
                         value: "title",

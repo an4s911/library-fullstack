@@ -34,7 +34,11 @@ function BookListGrid({ isGrid }: BookListGridProps) {
             },
         })
             .then((res) => {
-                return res.json();
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    throw new Error(res.statusText);
+                }
             })
             .then((data) => {
                 setBookList(data.books);

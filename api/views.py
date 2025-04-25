@@ -60,7 +60,7 @@ def get_books(request: HttpRequest) -> JsonResponse:
     search_scope: str = request.GET.get("search_in", "all").lower()
 
     # Validate search_scope
-    allowed_search_scopes = ["all", "title", "author"]
+    allowed_search_scopes = ["all", "title", "author", "borrower"]
     if search_scope not in allowed_search_scopes:
         return JsonResponse(
             {

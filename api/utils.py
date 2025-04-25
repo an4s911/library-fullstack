@@ -17,6 +17,7 @@ def filter_books(books: QuerySet, filters: dict) -> QuerySet:
     """
     query = filters.get("query")
     search_scope = filters.get("search_scope", "all")  # Default to 'all'
+    # one of 'all', 'title', 'author', 'borrower'
 
     # --- Apply Search First (if query is provided) ---
     if query and query.strip():
@@ -28,9 +29,13 @@ def filter_books(books: QuerySet, filters: dict) -> QuerySet:
         elif search_scope == "author":
             # Ensure author is not null before searching name
             search_q = Q(author__isnull=False, author__name__icontains=query)
+        elif search_scope == "borrower":
+            search_q = Q(borrow__isnull=False, borrow__borrower_name__icontains=query)
         else:  # Default 'all' scope
-            search_q = Q(title__icontains=query) | Q(
-                author__isnull=False, author__name__icontains=query
+            search_q = (
+                Q(title__icontains=query)
+                | Q(author__isnull=False, author__name__icontains=query)
+                | Q(borrow__isnull=False, borrow__borrower_name__icontains=query)
             )
 
         # Apply the search Q object to the queryset
@@ -100,7 +105,7 @@ def sort_books(books: QuerySet, sort_by: str, desc: bool = False) -> QuerySet:
         # Prefix for descending is '-'
         prefix = "-" if desc else ""
 
-        books = books.order_by(f"{prefix}{field}")
+        books = books.order_by(f"{prefix}{field}", f"{prefix}id")
 
     # Otherwise, return the original queryset
     return books.distinct()
