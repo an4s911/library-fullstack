@@ -1,5 +1,5 @@
-import { Header } from "./components/Layout";
-import MainContent from "./components/Layout/MainContent";
+import { Header } from "@/components/Layout";
+import MainContent from "@/components/Layout/MainContent";
 import { OptionsProvider, useModal } from "@/contexts";
 
 function App() {
