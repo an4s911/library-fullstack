@@ -176,7 +176,11 @@ def get_books(request: HttpRequest) -> JsonResponse:
             {
                 "id": book.id,
                 "title": book.title,
-                "author": book.author.name if book.author else None,
+                "author": (
+                    {"id": book.author.id, "name": book.author.name}
+                    if book.author
+                    else None
+                ),
                 "genres": [genre.name for genre in book.genres.all()],
                 "borrower_name": borrower_name,
             }

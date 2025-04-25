@@ -1,5 +1,5 @@
 import { BookOpenTextIcon, TagIcon, UserRoundIcon } from "lucide-react";
-import { Book } from "../../types";
+import { Book } from "@/types";
 import { useEffect, useRef, useState } from "react";
 
 type BookCardProps = {
@@ -73,7 +73,7 @@ function BookCard({ book, isGrid }: BookCardProps) {
                     size={18}
                     className="opacity-75 text-primary dark:text-primary-300"
                 />
-                <span className="">{book.author}</span>
+                <span className="">{book.author?.name}</span>
             </div>
             <div className="genres">
                 <ul
