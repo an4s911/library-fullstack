@@ -8,7 +8,7 @@ type SearchBarProps = {};
 function SearchBar({}: SearchBarProps) {
     const [value, setValue] = useState("");
     const [searchFilter, setSearchFilter] = useState("");
-    const { options, setOptions, toQueryParams } = useOptions();
+    const { setOptions } = useOptions();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
