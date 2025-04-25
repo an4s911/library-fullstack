@@ -20,7 +20,7 @@ class Genre(Model):
 
 class Book(Model):
     title = CharField(max_length=255)
-    date_added = DateField(auto_now_add=True)
+    date_added = DateTimeField(auto_now_add=True)
     allow_borrow = BooleanField(default=True)
     author = ForeignKey(Author, on_delete=SET_NULL, null=True, blank=True)
     genres = ManyToManyField(Genre)
