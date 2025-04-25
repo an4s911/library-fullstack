@@ -1,7 +1,7 @@
 import { ChevronDownIcon, ChevronUpIcon, FilterIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FilterCheckboxListLoader } from "../SkeletonLoaders";
-import { OptionsProps } from "../Layout/MainContent";
+import { useOptions } from "@/contexts/OptionsContext";
 
 type Author = {
     id: number;
@@ -97,12 +97,11 @@ function FilterCheckboxList({ name, fetchUrl }: FilterCheckboxListProps) {
     );
 }
 
-type FilterSectionProps = {
-    setOptions: React.Dispatch<React.SetStateAction<OptionsProps>>;
-};
+type FilterSectionProps = {};
 
-function FilterSection({ setOptions }: FilterSectionProps) {
+function FilterSection({}: FilterSectionProps) {
     const formRef = useRef<HTMLFormElement>(null);
+    const { setOptions } = useOptions();
 
     const handleSubmit = () => {
         const formElement = formRef.current!;

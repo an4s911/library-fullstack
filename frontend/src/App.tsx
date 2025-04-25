@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Header } from "./components/Layout";
 import MainContent from "./components/Layout/MainContent";
+import { OptionsProvider } from "@/contexts/OptionsContext";
 
 function App() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,11 +14,13 @@ function App() {
             }}
             className={`app ${isModalOpen ? "max-h-screen overflow-hidden" : ""}`}
         >
-            <Header
-                onModalOpen={() => setIsModalOpen(true)}
-                onModalClose={() => setIsModalOpen(false)}
-            />
-            <MainContent />
+            <OptionsProvider>
+                <Header
+                    onModalOpen={() => setIsModalOpen(true)}
+                    onModalClose={() => setIsModalOpen(false)}
+                />
+                <MainContent />
+            </OptionsProvider>
         </div>
     );
 }

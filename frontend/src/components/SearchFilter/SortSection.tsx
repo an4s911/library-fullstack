@@ -1,16 +1,15 @@
 import { ArrowDownUpIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import GenericSelect from "../UI/GenericSelect";
-import { OptionsProps } from "../Layout/MainContent";
+import { useOptions } from "@/contexts/OptionsContext";
 
-type SortSectionProps = {
-    setOptions: React.Dispatch<React.SetStateAction<OptionsProps>>;
-};
+type SortSectionProps = {};
 
-function SortSection({ setOptions }: SortSectionProps) {
+function SortSection({}: SortSectionProps) {
     const [sortBy, setSortBy] = useState("title");
     const [isDescending, setIsDescending] = useState(false);
     const formRef = useRef<HTMLFormElement>(null);
+    const { setOptions } = useOptions();
 
     const handleSubmit = () => {
         const formElem = formRef.current!;

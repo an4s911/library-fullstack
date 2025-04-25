@@ -4,7 +4,7 @@ import { BookListGridLoader } from "../SkeletonLoaders";
 import { Book } from "../../types";
 import { BookIcon } from "lucide-react";
 import PageNav from "./PageNav";
-import { OptionsProps } from "./MainContent";
+import { useOptions } from "@/contexts/OptionsContext";
 
 type PageInfoProps = {
     currentPage: number;
@@ -14,14 +14,13 @@ type PageInfoProps = {
 
 type BookListGridProps = {
     isGrid: boolean;
-    options: OptionsProps;
-    setOptions: (options: OptionsProps) => void;
 };
 
-function BookListGrid({ isGrid, options, setOptions }: BookListGridProps) {
+function BookListGrid({ isGrid }: BookListGridProps) {
     const [bookList, setBookList] = useState<Book[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [pageInfo, setPageInfo] = useState<PageInfoProps | any>({});
+    const { options, setOptions, toQueryParams } = useOptions();
 
     useEffect(() => {
         setIsLoading(true);
@@ -86,20 +85,6 @@ function BookListGrid({ isGrid, options, setOptions }: BookListGridProps) {
             </div>
         );
     }
-}
-
-function toQueryParams(options: OptionsProps): string {
-    const params = new URLSearchParams();
-
-    Object.entries(options).forEach(([key, value]) => {
-        // Ignore undefined and null (but allow false, 0, etc.)
-        if (value !== undefined && value !== null) {
-            params.append(key, String(value));
-        }
-    });
-
-    const queryString = params.toString();
-    return queryString;
 }
 
 export default BookListGrid;
