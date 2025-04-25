@@ -1,4 +1,4 @@
-import { BookOpenTextIcon, TagIcon, UserRoundIcon } from "lucide-react";
+import { BookCopyIcon, BookOpenTextIcon, TagIcon, UserRoundIcon } from "lucide-react";
 import { Book } from "@/types";
 import { useEffect, useRef, useState } from "react";
 
@@ -99,6 +99,15 @@ function BookCard({ book, isGrid }: BookCardProps) {
                     )}
                 </ul>
             </div>
+            {book.borrowerName && (
+                <div className="borrower w-max flex items-center gap-2 border-primary-800 bg-purple-900/40 border-[1px] rounded-full px-3 py-1">
+                    <BookCopyIcon
+                        size={16}
+                        className="opacity-75 text-primary dark:text-primary-300"
+                    />
+                    <span className="text-xs">{book.borrowerName}</span>
+                </div>
+            )}
         </button>
     );
 }
