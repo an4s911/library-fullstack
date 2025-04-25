@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BookCard } from "@/components/Book";
 import { BookListGridLoader } from "@/components/SkeletonLoaders";
-import { Book } from "@/types";
+import { Book, createBook } from "@/types";
 import { BookIcon } from "lucide-react";
 import { PageNav } from "@/components/Layout";
 import { useOptions } from "@/contexts";
@@ -41,7 +41,11 @@ function BookListGrid({ isGrid }: BookListGridProps) {
                 }
             })
             .then((data) => {
-                setBookList(data.books);
+                setBookList(
+                    data.books.map((book: Book) => {
+                        return createBook(book);
+                    }),
+                );
                 setPageInfo({
                     currentPage: data.currentPage,
                     totalPages: data.totalPages,
