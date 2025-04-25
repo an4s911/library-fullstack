@@ -172,6 +172,7 @@ def get_books(request: HttpRequest) -> JsonResponse:
         borrow_info = book.borrow_set.filter(is_borrowed=True).first()
 
         borrower_name: str | None = borrow_info.borrower_name if borrow_info else None
+
         result.append(
             {
                 "id": book.id,
