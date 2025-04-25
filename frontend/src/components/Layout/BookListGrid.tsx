@@ -3,7 +3,7 @@ import { BookCard } from "../Book";
 import { BookListGridLoader } from "../SkeletonLoaders";
 import { Book } from "../../types";
 import { BookIcon } from "lucide-react";
-import PageNav from "./PageNav";
+import { PageNav } from "@/components/Layout";
 import { useOptions } from "@/contexts/OptionsContext";
 
 type PageInfoProps = {
