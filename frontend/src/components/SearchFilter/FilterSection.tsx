@@ -18,9 +18,10 @@ type FliterCheckboxItem = Author | Genre;
 type FilterCheckboxListProps = {
     name: string;
     fetchUrl: string;
+    refresh: boolean;
 };
 
-function FilterCheckboxList({ name, fetchUrl }: FilterCheckboxListProps) {
+function FilterCheckboxList({ name, fetchUrl, refresh }: FilterCheckboxListProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [list, setList] = useState<FliterCheckboxItem[]>([]);
     const [shorterList, setShorterList] = useState<FliterCheckboxItem[]>([]);
@@ -52,7 +53,7 @@ function FilterCheckboxList({ name, fetchUrl }: FilterCheckboxListProps) {
             .catch((err) => {
                 console.log(err);
             });
-    }, []);
+    }, [refresh]);
 
     return isLoading ? (
         <FilterCheckboxListLoader />
@@ -101,7 +102,7 @@ type FilterSectionProps = {};
 
 function FilterSection({}: FilterSectionProps) {
     const formRef = useRef<HTMLFormElement>(null);
-    const { setOptions } = useOptions();
+    const { setOptions, refreshFilters } = useOptions();
 
     const handleSubmit = () => {
         const formElement = formRef.current!;
@@ -145,8 +146,16 @@ function FilterSection({}: FilterSectionProps) {
                 />
             </div>
             <div className="flex flex-col gap-5 overflow-y-scroll">
-                <FilterCheckboxList name="authors" fetchUrl="/api/get-authors/" />
-                <FilterCheckboxList name="genres" fetchUrl="/api/get-genres/" />
+                <FilterCheckboxList
+                    refresh={refreshFilters}
+                    name="authors"
+                    fetchUrl="/api/get-authors/"
+                />
+                <FilterCheckboxList
+                    refresh={refreshFilters}
+                    name="genres"
+                    fetchUrl="/api/get-genres/"
+                />
                 <div className="relative w-full">
                     <h3>Borrow Status</h3>
                     <ul className="flex gap-2 flex-col w-full">

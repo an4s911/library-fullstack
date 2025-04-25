@@ -20,7 +20,7 @@ function BookListGrid({ isGrid }: BookListGridProps) {
     const [bookList, setBookList] = useState<Book[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [pageInfo, setPageInfo] = useState<PageInfoProps | any>({});
-    const { options, setOptions, toQueryParams } = useOptions();
+    const { options, setOptions, toQueryParams, refreshBooks } = useOptions();
 
     useEffect(() => {
         setIsLoading(true);
@@ -52,7 +52,7 @@ function BookListGrid({ isGrid }: BookListGridProps) {
             .catch((err) => {
                 console.log(err);
             });
-    }, [options]);
+    }, [options, refreshBooks]);
 
     if (isLoading) {
         return <BookListGridLoader isGrid={isGrid} />;

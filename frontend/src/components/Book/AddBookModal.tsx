@@ -3,6 +3,7 @@ import { Modal } from "@/components/UI";
 import { GenericSelect } from "@/components/UI";
 import { useEffect, useRef, useState } from "react";
 import { Author, Genre } from "@/types";
+import { useOptions } from "@/contexts";
 
 type AddBookModalProps = {
     onClose: () => void;
@@ -16,6 +17,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
     const [selectedGenresList, setSelectedGenresList] = useState<Genre[]>([]);
     const [selectedGenreIdsList, setSelectedGenreIdsList] = useState<number[]>([]);
     const formElemRef = useRef<HTMLFormElement>(null);
+    const { triggerRefresh } = useOptions();
 
     const handleOnClose = () => {
         // Check if there is any unsaved changes
@@ -84,9 +86,14 @@ function AddBookModal({ onClose }: AddBookModalProps) {
             },
             credentials: "include",
             body: JSON.stringify(newBook),
-        })
-            .then((res) => res.json())
-            .then((data) => console.log(data));
+        }).then((res) => {
+            if (res.ok) {
+                formElem.reset();
+                onClose();
+            } else {
+                throw new Error(res.statusText);
+            }
+        });
     };
 
     const handleAddNewAuthorGenre = (type: string) => {
@@ -124,7 +131,12 @@ function AddBookModal({ onClose }: AddBookModalProps) {
             credentials: "include",
             body: JSON.stringify({ name: newItem }),
         })
-            .then((res) => res.json())
+            .then((res) => {
+                if (res.ok) {
+                    triggerRefresh("filters");
+                    return res.json();
+                }
+            })
             .then((data) => {
                 option.transformData(data);
             })

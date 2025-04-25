@@ -16,6 +16,9 @@ type OptionsContextType = {
     options: OptionsProps;
     setOptions: React.Dispatch<React.SetStateAction<OptionsProps>>;
     toQueryParams: (opts: OptionsProps) => string;
+    triggerRefresh: (type?: string) => void;
+    refreshBooks: boolean;
+    refreshFilters: boolean;
 };
 
 const OptionsContext = createContext<OptionsContextType | undefined>(undefined);
@@ -32,6 +35,9 @@ export const OptionsProvider = ({ children }: { children: ReactNode }) => {
         pg_num: 1,
     });
 
+    const [refreshBooks, setRefreshBooks] = useState(false);
+    const [refreshFilters, setRefreshFilters] = useState(false);
+
     const toQueryParams = (opts: OptionsProps = options) => {
         const params = new URLSearchParams();
         Object.entries(opts).forEach(([key, value]) => {
@@ -46,8 +52,26 @@ export const OptionsProvider = ({ children }: { children: ReactNode }) => {
         return params.toString();
     };
 
+    const triggerRefresh = (type?: string) => {
+        if (type === "books") setRefreshBooks((prev) => !prev);
+        else if (type === "filters") setRefreshFilters((prev) => !prev);
+        else {
+            setRefreshBooks((prev) => !prev);
+            setRefreshFilters((prev) => !prev);
+        }
+    };
+
     return (
-        <OptionsContext.Provider value={{ options, setOptions, toQueryParams }}>
+        <OptionsContext.Provider
+            value={{
+                options,
+                setOptions,
+                toQueryParams,
+                triggerRefresh,
+                refreshBooks,
+                refreshFilters,
+            }}
+        >
             {children}
         </OptionsContext.Provider>
     );
