@@ -1,6 +1,6 @@
 import { Header } from "./components/Layout";
 import MainContent from "./components/Layout/MainContent";
-import { ModalProvider, OptionsProvider, useModal } from "@/contexts";
+import { OptionsProvider, useModal } from "@/contexts";
 
 function App() {
     const { isModalOpen } = useModal();
@@ -14,10 +14,8 @@ function App() {
             className={`app ${isModalOpen ? "max-h-screen overflow-hidden" : ""}`}
         >
             <OptionsProvider>
-                <ModalProvider>
-                    <Header />
-                    <MainContent />
-                </ModalProvider>
+                <Header />
+                <MainContent />
             </OptionsProvider>
         </div>
     );
