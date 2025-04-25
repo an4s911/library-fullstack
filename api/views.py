@@ -282,7 +282,7 @@ def add_book(request: HttpRequest) -> JsonResponse:
 
     title = data.get("title")
     author_id = data.get("author")
-    genres = data.get("genres", [])
+    genre_ids = data.get("genres", [])
     allow_borrow = data.get("allow_borrow", True)
 
     if not title:
@@ -306,16 +306,14 @@ def add_book(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"error": "Something went wrong"}, status=500)
 
     # --- Find and Set Genres (optional) ---
-    if genres:
-        genre_objects = []
-        for genre in genres:
-            genre_obj = Genre.objects.filter(name__iexact=genre.strip()).first()
+    if genre_ids:
+        genre_objects = Genre.objects.filter(pk__in=genre_ids)
 
-            if not genre_obj:
-                genre_obj = Genre.objects.create(name=genre.strip().capitalize())
-                genre_obj.save()
-
-            genre_objects.append(genre_obj)
+        if len(genre_objects) != len(genre_ids):
+            return JsonResponse(
+                {"error": "Invalid genre_ids provided"},
+                status=404,
+            )
 
         book.genres.set(genre_objects)
         book.save()
@@ -327,9 +325,9 @@ def add_book(request: HttpRequest) -> JsonResponse:
     )
 
 
-def add_author(request: HttpRequest) -> JsonResponse:
+def add_author_genre(request: HttpRequest, type=None) -> JsonResponse:
     """
-    Adds a new author.
+    Adds a new author/genre.
 
     Expects JSON data in the request body.
 
@@ -337,12 +335,28 @@ def add_author(request: HttpRequest) -> JsonResponse:
     {
         "name": "John Doe"
     }
+    OR
+    {
+        "name": "Fiction"
+    }
 
     Response:
     {
         "message": "Author added successfully!",
-        "author_id": 1
+        "author": {
+            "id": 1,
+            "name": "John Doe"
+        }
     }
+    OR
+    {
+        "message": "Genre added successfully!",
+        "genre": {
+            "id": 1,
+            "name": "Fiction"
+        }
+    }
+
     """
     if request.method != "POST":
         return JsonResponse({"error": "Invalid request method"}, status=405)
@@ -357,18 +371,28 @@ def add_author(request: HttpRequest) -> JsonResponse:
     if not name:
         return JsonResponse({"error": "Name is required"}, status=400)
 
+    models_choise = {
+        "author": Author,
+        "genre": Genre,
+    }
+
+    model = models_choise.get(type)
+
+    if not model:
+        raise ValueError(f"Invalid type: {type}")
+
     try:
-        author = Author(name=name)
-        author.save()
+        new_object = model(name=name)
+        new_object.save()
         return JsonResponse(
             {
-                "message": "Author added successfully!",
-                "author": {"id": author.id, "name": author.name},
+                "message": f"{type.capitalize()} added successfully!",
+                type: {"id": new_object.id, "name": new_object.name},
             },
             status=201,
         )
     except Exception as e:
-        print(f"Unexpected error in add_author: {e}")
+        print(f"Unexpected error in add_author_genre: {e}")
         return JsonResponse({"error": "Something went wrong"}, status=500)
 
 
