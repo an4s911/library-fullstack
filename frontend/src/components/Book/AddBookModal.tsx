@@ -215,6 +215,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                 }
                                 name="author"
                                 required={true}
+                                fullWidth={true}
                             />
                             <button
                                 onClick={handleAddNewAuthor}
@@ -251,6 +252,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                         return [...prev, parseInt(e.target.value)];
                                     });
                                 }}
+                                fullWidth={true}
                             />
                             <button
                                 onClick={handleAddNewGenre}

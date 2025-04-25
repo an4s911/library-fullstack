@@ -9,6 +9,7 @@ type GenericSelectProps = {
     onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     name?: string;
     required?: boolean;
+    fullWidth?: boolean;
 };
 
 function GenericSelect({
@@ -17,17 +18,18 @@ function GenericSelect({
     onChange,
     name,
     required = false,
+    fullWidth = false,
 }: GenericSelectProps) {
     return (
         <select
             name={name}
             value={value === -1 ? "" : value}
             onChange={onChange}
-            className="px-3 py-2 rounded-lg w-full
-                    focus:outline-none focus:ring-2
+            className={`px-3 py-2 rounded-lg focus:outline-none focus:ring-2
                     focus:ring-primary-400 dark:focus:ring-primary-500
                     bg-primary-200 dark:bg-primary-700
-                    border border-primary-700 dark:border-primary-600"
+                    border border-primary-700 dark:border-primary-600
+                    ${fullWidth ? "w-full" : ""}`}
             required={required}
         >
             {optionsList.map((option) => {
