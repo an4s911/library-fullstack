@@ -182,16 +182,16 @@ def get_books(request: HttpRequest) -> JsonResponse:
                     else None
                 ),
                 "genres": [genre.name for genre in book.genres.all()],
-                "borrower_name": borrower_name,
+                "borrowerName": borrower_name,
             }
         )
 
     return JsonResponse(
         {
             "books": result,
-            "current_page": page.number,
-            "total_pages": page.paginator.num_pages,
-            "total_items": page.paginator.count,
+            "currentPage": page.number,
+            "totalPages": page.paginator.num_pages,
+            "totalItems": page.paginator.count,
         }
     )
 
@@ -214,16 +214,16 @@ def get_book(request: HttpRequest, book_id: int) -> JsonResponse:
         borrow_info_dict = (
             {
                 "id": borrow.id,
-                "borrower_name": borrow.borrower_name,
-                "borrowed_date": borrow.borrowed_date.isoformat(),
-                "is_currently_borrowed": borrow.is_borrowed,
+                "borrowerName": borrow.borrower_name,
+                "borrowedDate": borrow.borrowed_date.isoformat(),
+                "isCurrentlyBorrowed": borrow.is_borrowed,
             }
             if borrow
             else {
                 "id": None,
-                "borrower_name": None,
-                "borrowed_date": None,
-                "is_currently_borrowed": False,
+                "borrowerName": None,
+                "borrowedDate": None,
+                "isCurrentlyBorrowed": False,
             }
         )
 
@@ -239,8 +239,8 @@ def get_book(request: HttpRequest, book_id: int) -> JsonResponse:
             "genres": [
                 {"id": genre.id, "name": genre.name} for genre in book.genres.all()
             ],
-            "allow_borrow": book.allow_borrow,
-            "date_added": book.date_added.isoformat(),
+            "allowBorrow": book.allow_borrow,
+            "dateAdded": book.date_added.isoformat(),
             "borrow": borrow_info_dict,
         }
 
