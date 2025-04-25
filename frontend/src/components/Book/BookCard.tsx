@@ -7,6 +7,7 @@ import {
 import { Book } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import { useModal } from "@/contexts";
+import { BookModal } from "@/components/Book";
 import { Tag } from "@/components/UI";
 
 type BookCardProps = {
@@ -123,6 +124,14 @@ function BookCard({ book, isGrid }: BookCardProps) {
                     />
                     <span className="text-xs">{book.borrowerName}</span>
                 </div>
+            )}
+            {open && (
+                <BookModal
+                    onClose={() => {
+                        setOpen(false);
+                    }}
+                    book={book}
+                />
             )}
         </div>
     );
