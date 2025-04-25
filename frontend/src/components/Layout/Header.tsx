@@ -1,7 +1,7 @@
 import { LibraryIcon, LogOutIcon } from "lucide-react";
-import { AddBookBtn } from "../Book";
-import { SearchBar } from "../SearchFilter";
-import ThemeToggle from "./ThemeToggle";
+import { AddBookBtn } from "@/components/Book";
+import { SearchBar } from "@/components/SearchFilter";
+import { ThemeToggle } from "@/components/Layout";
 
 type HeaderProps = {
     onModalOpen: () => void;

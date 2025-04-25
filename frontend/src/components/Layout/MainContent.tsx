@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { FilterSection, SortSection } from "../SearchFilter";
-import BookListGrid from "./BookListGrid";
-import LayoutToggleBtn from "./LayoutToggleBtn";
+import { FilterSection, SortSection } from "@/components/SearchFilter";
+import { BookListGrid } from "@/components/Layout";
+import { LayoutToggleBtn } from "@/components/Layout";
 
 type MainContentProps = {};
 

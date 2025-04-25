@@ -1,6 +1,6 @@
 import { SearchIcon } from "lucide-react";
 import { useState } from "react";
-import { GenericSelect } from "../UI";
+import { GenericSelect } from "@/components/UI";
 
 type SearchBarProps = {};
 

@@ -1,6 +1,6 @@
 import { ChevronDownIcon, ChevronUpIcon, FilterIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { FilterCheckboxListLoader } from "../SkeletonLoaders";
+import { FilterCheckboxListLoader } from "@/components/SkeletonLoaders";
 import { useOptions } from "@/contexts/OptionsContext";
 
 type Author = {
