@@ -9,7 +9,7 @@ type PageNavProps = {
 
 function PageNav({ totalPages, currentPage, nextPage, prevPage }: PageNavProps) {
     return (
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center self-center">
             <button
                 className="flex justify-center items-center cursor-pointer
                 w-8 h-8 hover:border-primary hover:border-[1px]

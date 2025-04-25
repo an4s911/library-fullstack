@@ -4,6 +4,7 @@ import { BookListGridLoader } from "../SkeletonLoaders";
 import { Book } from "../../types";
 import { BookIcon } from "lucide-react";
 import PageNav from "./PageNav";
+import { OptionsProps } from "./MainContent";
 
 type PageInfoProps = {
     currentPage: number;
@@ -11,30 +12,16 @@ type PageInfoProps = {
     totalItems: number;
 };
 
-type OptionsProps = {
-    q?: string;
-    search_in?: string;
-
-    filter_author?: string;
-    filter_genre?: string;
-    filter_borrowed?: boolean | null;
-
-    sort_by?: string;
-    sort_desc?: boolean;
-
-    pg_num?: number;
-    pg_size?: number;
-};
-
 type BookListGridProps = {
     isGrid: boolean;
+    options: OptionsProps;
+    setOptions: (options: OptionsProps) => void;
 };
 
-function BookListGrid({ isGrid }: BookListGridProps) {
+function BookListGrid({ isGrid, options, setOptions }: BookListGridProps) {
     const [bookList, setBookList] = useState<Book[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [pageInfo, setPageInfo] = useState<PageInfoProps | any>({});
-    const [options, setOptions] = useState<OptionsProps>({ pg_size: 8, pg_num: 1 });
 
     useEffect(() => {
         setIsLoading(true);
@@ -68,7 +55,7 @@ function BookListGrid({ isGrid }: BookListGridProps) {
         return <BookListGridLoader isGrid={isGrid} />;
     } else {
         return bookList.length > 0 ? (
-            <div className="flex flex-col w-full gap-10 justify-between items-center h-full">
+            <div className="flex flex-col w-full gap-10 justify-between h-full">
                 <div
                     className={`book-list-grid gap-5 ${isGrid ? "grid grid-cols-2 lg:grid-cols-3" : "flex flex-col"}`}
                 >
