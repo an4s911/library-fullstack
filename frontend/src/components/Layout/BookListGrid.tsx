@@ -4,7 +4,7 @@ import { BookListGridLoader } from "@/components/SkeletonLoaders";
 import { Book } from "@/types";
 import { BookIcon } from "lucide-react";
 import { PageNav } from "@/components/Layout";
-import { useOptions } from "@/contexts/OptionsContext";
+import { useOptions } from "@/contexts";
 
 type PageInfoProps = {
     currentPage: number;

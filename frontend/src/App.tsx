@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Header } from "./components/Layout";
 import MainContent from "./components/Layout/MainContent";
-import { OptionsProvider } from "@/contexts/OptionsContext";
+import { OptionsProvider } from "@/contexts";
 
 function App() {
     const [isModalOpen, setIsModalOpen] = useState(false);

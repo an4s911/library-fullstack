@@ -1,7 +1,7 @@
 import { ChevronDownIcon, ChevronUpIcon, FilterIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FilterCheckboxListLoader } from "@/components/SkeletonLoaders";
-import { useOptions } from "@/contexts/OptionsContext";
+import { useOptions } from "@/contexts";
 
 type Author = {
     id: number;

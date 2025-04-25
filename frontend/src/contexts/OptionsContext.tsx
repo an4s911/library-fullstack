@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
-export type OptionsProps = {
+type OptionsProps = {
     q?: string;
     search_in?: string;
     filter_author?: string[];

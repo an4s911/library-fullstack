@@ -1,7 +1,7 @@
 import { ArrowDownUpIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { GenericSelect } from "@/components/UI";
-import { useOptions } from "@/contexts/OptionsContext";
+import { useOptions } from "@/contexts";
 
 type SortSectionProps = {};
 
