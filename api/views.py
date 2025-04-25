@@ -104,7 +104,7 @@ def get_books(request: HttpRequest) -> JsonResponse:
     }
 
     # Extract query parameters for sorting (prefixed with sort_)
-    sort_by: str = request.GET.get("sort_by", "id")
+    sort_by: str = request.GET.get("sort_by", "title")
     sort_desc: bool = request.GET.get("sort_desc", "false").lower() == "true"
 
     try:

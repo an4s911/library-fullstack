@@ -83,10 +83,10 @@ def sort_books(books: QuerySet, sort_by: str, desc: bool = False) -> QuerySet:
     sortable_fields = {
         "title": "title",
         "author": "author__name",
-        "date_added": "date_added",
-        "borrower_name": "borrow__borrower_name",
-        "borrow_date": "borrow__borrowed_date",
-        "return_date": "borrow__returned_date",
+        "dateAdded": "date_added",
+        "borrowerName": "borrow__borrower_name",
+        "borrowDate": "borrow__borrowed_date",
+        "returnDate": "borrow__returned_date",
     }
 
     # Get the field to sort by
@@ -94,13 +94,16 @@ def sort_books(books: QuerySet, sort_by: str, desc: bool = False) -> QuerySet:
 
     # If field is valid, sort by it
     if field:
+        if field.startswith("borrow"):
+            books = books.filter(Q(borrow__isnull=True) | Q(borrow__is_borrowed=True))
+
         # Prefix for descending is '-'
         prefix = "-" if desc else ""
 
         books = books.order_by(f"{prefix}{field}")
 
     # Otherwise, return the original queryset
-    return books
+    return books.distinct()
 
 
 def paginate_books(books: QuerySet, number: int, per_page: int) -> Page:

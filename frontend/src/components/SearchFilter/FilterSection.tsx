@@ -116,6 +116,7 @@ function FilterSection({ setOptions }: FilterSectionProps) {
         setOptions((prevOptions) => {
             return {
                 ...prevOptions,
+                pg_num: 1,
                 filter_author: authors,
                 filter_genre: genres,
                 filter_borrowed: borrowed,

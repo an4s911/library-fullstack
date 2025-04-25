@@ -48,7 +48,7 @@ function MainContent({}: MainContentProps) {
                     className="w-full pt-8 pb-2 flex items-center
                     justify-between sticky top-20 z-10"
                 >
-                    <SortSection />
+                    <SortSection setOptions={setOptions} />
                     <LayoutToggleBtn
                         isGrid={isGrid}
                         onClick={() => setIsGrid(!isGrid)}

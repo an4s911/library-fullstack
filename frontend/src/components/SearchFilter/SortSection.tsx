@@ -1,17 +1,45 @@
 import { ArrowDownUpIcon } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import GenericSelect from "../UI/GenericSelect";
+import { OptionsProps } from "../Layout/MainContent";
 
-type SortSectionProps = {};
+type SortSectionProps = {
+    setOptions: React.Dispatch<React.SetStateAction<OptionsProps>>;
+};
 
-function SortSection({}: SortSectionProps) {
+function SortSection({ setOptions }: SortSectionProps) {
     const [sortBy, setSortBy] = useState("title");
-    const [isAscending, setIsAscending] = useState(true);
+    const [isDescending, setIsDescending] = useState(false);
+    const formRef = useRef<HTMLFormElement>(null);
+
+    const handleSubmit = () => {
+        const formElem = formRef.current!;
+        const formData = new FormData(formElem);
+        const sortBy = formData.get("sortBy") as string;
+        const sortDesc = formData.get("sortDesc") as string;
+
+        setOptions((prevOptions) => {
+            return {
+                ...prevOptions,
+                pg_num: 1,
+                sort_by: sortBy,
+                sort_desc: sortDesc === "true",
+            };
+        });
+    };
 
     return (
-        <section className="sort-section flex items-center gap-2 bg-primary-100 dark:bg-primary-900 ml-1 pl-2 p-1 rounded-xl">
+        <form
+            ref={formRef}
+            onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit();
+            }}
+            className="sort-section flex items-center gap-2 bg-primary-100 dark:bg-primary-900 ml-1 pl-2 p-1 rounded-xl"
+        >
             <ArrowDownUpIcon className="text-primary-400 dark:text-primary-500" />
             <GenericSelect
+                name="sortBy"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 optionsList={[
@@ -24,26 +52,36 @@ function SortSection({}: SortSectionProps) {
                         label: "Author",
                     },
                     {
-                        value: "date-added",
+                        value: "dateAdded",
                         label: "Date Added",
+                    },
+                    {
+                        value: "borrowerName",
+                        label: "Borrower Name",
+                    },
+                    {
+                        value: "borrowDate",
+                        label: "Date Borrowed",
                     },
                 ]}
             />
             <GenericSelect
-                value={isAscending ? "asc" : "desc"}
-                onChange={(e) => setIsAscending(e.target.value === "asc")}
+                name="sortDesc"
+                value={isDescending ? "true" : "false"}
+                onChange={(e) => setIsDescending(e.target.value === "true")}
                 optionsList={[
                     {
-                        value: "asc",
+                        value: "false",
                         label: "Ascending",
                     },
                     {
-                        value: "desc",
+                        value: "true",
                         label: "Descending",
                     },
                 ]}
             />
-        </section>
+            <button>Sort</button>
+        </form>
     );
 }
 
