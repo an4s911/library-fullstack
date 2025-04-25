@@ -1,6 +1,6 @@
 from django.db.models import (CASCADE, SET_NULL, BooleanField, CharField,
-                              CheckConstraint, DateField, DateTimeField,
-                              ForeignKey, ManyToManyField, Model, Q, TextField,
+                              CheckConstraint, DateTimeField, ForeignKey,
+                              ManyToManyField, Model, Q, TextField,
                               UniqueConstraint)
 
 

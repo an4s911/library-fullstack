@@ -433,25 +433,24 @@ def delete_book(request: HttpRequest, book_id: int) -> JsonResponse:
         )
 
 
-def borrow_book(request: HttpRequest) -> JsonResponse:
+def borrow_book(request: HttpRequest, book_id: int) -> JsonResponse:
     """
     Marks a book as borrowed by creating a Borrow record.
-    Expects JSON: {"book_id": int, "borrower_name": str}
+    Expects JSON: {"borrowerName": str}
     """
-    if request.method != "POST":
+    if request.method != "PUT":
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
     try:
         data = json.loads(request.body)
-        book_id = data.get("book_id")
-        borrower_name = data.get("borrower_name")
+        borrower_name = data.get("borrowerName")
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON data"}, status=400)
 
     # --- Validate Input ---
-    if not all([book_id, borrower_name]):  # Check  for book_id and borrower_name
+    if not borrower_name:
         return JsonResponse(
-            {"error": "Missing required fields: book_id, borrower_name"}, status=400
+            {"error": "Missing required field borrowerName"}, status=400
         )
 
     book = get_object_or_404(Book, pk=book_id)
@@ -478,7 +477,10 @@ def borrow_book(request: HttpRequest) -> JsonResponse:
         borrow.save()
 
         return JsonResponse(
-            {"message": "Book borrowed successfully!", "borrow_id": borrow.id},
+            {
+                "message": "Book borrowed successfully!",
+                "borrowName": borrow.borrower_name,
+            },
             status=201,
         )
 
@@ -540,13 +542,26 @@ def _update_basic_book_fields(book: Book, data: dict) -> JsonResponse | None:
             return JsonResponse({"error": "Title cannot be empty"}, status=400)
         book.title = title
 
-    if "allow_borrow" in data:
+    if "allowBorrow" in data:
         # Ensure it's explicitly converted to bool
-        allow_borrow_value = data["allow_borrow"]
+        allow_borrow_value = data["allowBorrow"]
         if not isinstance(allow_borrow_value, bool):
             # You might want stricter type checking depending on input source
             allow_borrow_value = str(allow_borrow_value).lower() in ("true", "1", "yes")
-        book.allow_borrow = allow_borrow_value
+
+        # Check if the book is borrowed, and if it is borrwed, then cannot set
+        # allow_borrow to false
+        if not allow_borrow_value and book.borrow_set.filter(is_borrowed=True).exists():
+            return JsonResponse(
+                {
+                    "error": (
+                        "Cannot set allow_borrow to false while the book is borrowed"
+                    )
+                },
+                status=400,
+            )
+        else:
+            book.allow_borrow = allow_borrow_value
     return None  # Indicate success
 
 
@@ -627,7 +642,7 @@ def edit_book(request: HttpRequest, book_id: int) -> JsonResponse:
         - `genre_ids` (list[int], optional): A list of IDs for the genres to associate
           with the book. This will replace the existing set of genres. An empty list
           `[]` removes all genre associations.
-        - `allow_borrow` (bool, optional): Set to `true` or `false` to update the
+        - `allowBorrow` (bool, optional): Set to `true` or `false` to update the
           borrowing permission for the book. Accepts boolean `true`/`false` or
           string representations like "true", "false", "1", "0".
 
@@ -640,7 +655,7 @@ def edit_book(request: HttpRequest, book_id: int) -> JsonResponse:
             - `title` (str): The updated title.
             - `author` (str | None): The name of the updated author, or None.
             - `genres` (list[str]): A list of names of the updated associated genres.
-            - `allow_borrow` (bool): The updated borrow status.
+            - `allowBorrow` (bool): The updated borrow status.
 
     Error Responses:
         - 400 Bad Request:
@@ -702,9 +717,14 @@ def edit_book(request: HttpRequest, book_id: int) -> JsonResponse:
         updated_book_data = {
             "id": book.id,
             "title": book.title,
-            "author": book.author.name if book.author else None,
+            "author": (
+                {"id": book.author.id, "name": book.author.name}
+                if book.author
+                else None
+            ),
+            "dateAdded": book.date_added.isoformat(),
             "genres": [genre.name for genre in book.genres.all()],
-            "allow_borrow": book.allow_borrow,
+            "allowBorrow": book.allow_borrow,
         }
         return JsonResponse(
             {"message": "Book updated successfully!", "book": updated_book_data},
