@@ -1,6 +1,13 @@
-import { BookCopyIcon, BookOpenTextIcon, TagIcon, UserRoundIcon } from "lucide-react";
+import {
+    BookCopyIcon,
+    BookOpenTextIcon,
+    CalendarIcon,
+    TagIcon,
+    UserRoundIcon,
+} from "lucide-react";
 import { Book } from "@/types";
 import { useEffect, useRef, useState } from "react";
+import { useModal } from "@/contexts";
 
 type BookCardProps = {
     book: Book;
@@ -10,6 +17,12 @@ type BookCardProps = {
 function BookCard({ book, isGrid }: BookCardProps) {
     const [localGenres, setLocalGenres] = useState<string[]>([]);
     const genreContainerRef = useRef<HTMLUListElement>(null);
+    const { onModalOpen, onModalClose } = useModal();
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        open ? onModalOpen() : onModalClose();
+    }, [open]);
 
     useEffect(() => {
         const calculateVisibleGenres = () => {
@@ -58,6 +71,11 @@ function BookCard({ book, isGrid }: BookCardProps) {
             shadow-gray-500 dark:shadow-gray-800 gap-3 shadow-md transition-transform ${
                 isGrid ? "hover:scale-105" : "hover:scale-[1.02]"
             }`}
+            onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpen(true);
+            }}
         >
             <div className="top flex items-center gap-2 max-w-max">
                 <BookOpenTextIcon

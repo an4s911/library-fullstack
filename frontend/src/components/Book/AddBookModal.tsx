@@ -89,6 +89,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
         }).then((res) => {
             if (res.ok) {
                 formElem.reset();
+                triggerRefresh("books");
                 onClose();
             } else {
                 throw new Error(res.statusText);

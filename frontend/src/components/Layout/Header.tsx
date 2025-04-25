@@ -3,12 +3,9 @@ import { AddBookBtn } from "@/components/Book";
 import { SearchBar } from "@/components/SearchFilter";
 import { ThemeToggle } from "@/components/Layout";
 
-type HeaderProps = {
-    onModalOpen: () => void;
-    onModalClose: () => void;
-};
+type HeaderProps = {};
 
-function Header({ onModalOpen, onModalClose }: HeaderProps) {
+function Header({}: HeaderProps) {
     return (
         <header
             className="flex justify-between items-center bg-primary-50 dark:bg-primary-800
@@ -32,7 +29,7 @@ function Header({ onModalOpen, onModalClose }: HeaderProps) {
                     <ThemeToggle />
                 </div>
                 <div className="add-book-btn">
-                    <AddBookBtn onModalOpen={onModalOpen} onModalClose={onModalClose} />
+                    <AddBookBtn />
                 </div>
                 <div className="logout">
                     <a href="/logout/">

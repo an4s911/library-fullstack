@@ -2,7 +2,7 @@ import { createPortal } from "react-dom";
 
 type ModalProps = {
     children: React.ReactNode;
-    onClose: () => void;
+    onClose: (e?: React.MouseEvent) => void;
 };
 
 function Modal({ children, onClose }: ModalProps) {

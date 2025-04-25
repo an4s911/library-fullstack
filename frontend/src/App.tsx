@@ -1,10 +1,9 @@
-import { useState } from "react";
 import { Header } from "./components/Layout";
 import MainContent from "./components/Layout/MainContent";
-import { OptionsProvider } from "@/contexts";
+import { ModalProvider, OptionsProvider, useModal } from "@/contexts";
 
 function App() {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { isModalOpen } = useModal();
 
     return (
         <div
@@ -15,11 +14,10 @@ function App() {
             className={`app ${isModalOpen ? "max-h-screen overflow-hidden" : ""}`}
         >
             <OptionsProvider>
-                <Header
-                    onModalOpen={() => setIsModalOpen(true)}
-                    onModalClose={() => setIsModalOpen(false)}
-                />
-                <MainContent />
+                <ModalProvider>
+                    <Header />
+                    <MainContent />
+                </ModalProvider>
             </OptionsProvider>
         </div>
     );
