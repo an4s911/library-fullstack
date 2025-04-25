@@ -1,6 +1,6 @@
 import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
 import { Modal } from "../UI";
-import GenericSelect from "../UI/GenericSelect";
+import { GenericSelect } from "../UI";
 import { useEffect, useRef, useState } from "react";
 import { Author, Genre } from "@/types";
 
