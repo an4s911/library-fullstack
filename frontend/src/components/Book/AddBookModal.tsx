@@ -175,7 +175,10 @@ function AddBookModal({ onClose }: AddBookModalProps) {
 
     return (
         <Modal onClose={handleOnClose}>
-            <div className="add-book-modal p-5 bg-primary-50 dark:bg-gray-800 rounded-md flex flex-col gap-5 w-[448px]">
+            <div
+                className="add-book-modal p-5 bg-primary-50 dark:bg-gray-800 rounded-md flex flex-col
+                gap-5 w-[448px] mx-auto ring-1 ring-primary-400"
+            >
                 <div className="top w-full flex items-center justify-between">
                     <h2 className="text-2xl font-bold">Add New Book</h2>
                     <button
