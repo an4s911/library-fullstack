@@ -181,8 +181,10 @@ def get_books(request: HttpRequest) -> JsonResponse:
                     if book.author
                     else None
                 ),
+                "dateAdded": book.date_added.isoformat(),
                 "genres": [genre.name for genre in book.genres.all()],
                 "borrowerName": borrower_name,
+                "allowBorrow": book.allow_borrow,
             }
         )
 
@@ -287,7 +289,7 @@ def add_book(request: HttpRequest) -> JsonResponse:
     title = data.get("title")
     author_id = data.get("author")
     genre_ids = data.get("genres", [])
-    allow_borrow = data.get("allow_borrow", True)
+    allow_borrow = data.get("allowBorrow", "true") == "true"
 
     if not title:
         return JsonResponse({"error": "Title is required"}, status=400)
