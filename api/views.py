@@ -71,8 +71,8 @@ def get_books(request: HttpRequest) -> JsonResponse:
         )
 
     # Extract query parameters for filtering (prefixed with filter_)
-    filter_authors: list[str] = request.GET.getlist("filter_author", [])
-    filter_genres: list[str] = request.GET.getlist("filter_genre", [])
+    filter_authors: list[str] = request.GET.get("filter_author", "").split(",")
+    filter_genres: list[str] = request.GET.get("filter_genre", "").split(",")
     filter_borrowed_q: str = request.GET.get("filter_borrowed", "null").lower()
 
     # Validate filter_borrowed parameter

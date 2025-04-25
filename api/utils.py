@@ -43,10 +43,10 @@ def filter_books(books: QuerySet, filters: dict) -> QuerySet:
     genres = [genre for genre in filters.get("genres", []) if genre.strip()]
 
     if authors:
-        filter_conditions["author__name__in"] = authors
+        filter_conditions["author__id__in"] = authors
 
     if genres:
-        filter_conditions["genres__name__in"] = genres
+        filter_conditions["genres__id__in"] = genres
 
     # Apply all filter conditions other than 'borrowed' if present
     if filter_conditions:

@@ -1,6 +1,7 @@
 import { ChevronDownIcon, ChevronUpIcon, FilterIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FilterCheckboxListLoader } from "../SkeletonLoaders";
+import { OptionsProps } from "../Layout/MainContent";
 
 type Author = {
     id: number;
@@ -53,14 +54,6 @@ function FilterCheckboxList({ name, fetchUrl }: FilterCheckboxListProps) {
             });
     }, []);
 
-    const capitalizeWords = (str: string) => {
-        return str
-            .toLowerCase()
-            .split(" ")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ");
-    };
-
     return isLoading ? (
         <FilterCheckboxListLoader />
     ) : (
@@ -73,7 +66,8 @@ function FilterCheckboxList({ name, fetchUrl }: FilterCheckboxListProps) {
                             <input
                                 id={`${listItem.name}-${index}`}
                                 type="checkbox"
-                                name=""
+                                name={name}
+                                value={listItem.id}
                             />
                             <label htmlFor={`${listItem.name}-${index}`}>
                                 {listItem.name}
@@ -83,9 +77,9 @@ function FilterCheckboxList({ name, fetchUrl }: FilterCheckboxListProps) {
                 })}
                 <li className="sticky bottom-0 bg-primary-50 dark:bg-primary-800 pt-1">
                     {list.length > maxShownInList && (
-                        <button
+                        <span
                             onClick={() => setIsExpanded(!isExpanded)}
-                            className="text-primary hover:underline text-sm flex items-center"
+                            className="text-primary hover:underline text-sm flex items-center cursor-pointer"
                         >
                             <span>
                                 {isExpanded ? "Show Less" : `Show All (${list.length})`}
@@ -95,7 +89,7 @@ function FilterCheckboxList({ name, fetchUrl }: FilterCheckboxListProps) {
                             ) : (
                                 <ChevronDownIcon size={18} />
                             )}
-                        </button>
+                        </span>
                     )}
                 </li>
             </ul>
@@ -103,18 +97,45 @@ function FilterCheckboxList({ name, fetchUrl }: FilterCheckboxListProps) {
     );
 }
 
-type FilterSectionProps = {};
+type FilterSectionProps = {
+    setOptions: React.Dispatch<React.SetStateAction<OptionsProps>>;
+};
 
-function FilterSection({}: FilterSectionProps) {
+function FilterSection({ setOptions }: FilterSectionProps) {
+    const formRef = useRef<HTMLFormElement>(null);
+
+    const handleSubmit = () => {
+        const formElement = formRef.current!;
+        const formData = new FormData(formElement);
+
+        const authors = formData.getAll("authors").map(String);
+        const genres = formData.getAll("genres").map(String);
+
+        const borrowed = formData.get("borrowStatus") as string;
+
+        setOptions((prevOptions) => {
+            return {
+                ...prevOptions,
+                filter_author: authors,
+                filter_genre: genres,
+                filter_borrowed: borrowed,
+            };
+        });
+    };
+
     return (
         <form
+            ref={formRef}
             style={{
                 maxHeight: "80vh",
                 height: "80vh",
             }}
             className="filter-section flex flex-col bg-primary-50 dark:bg-primary-800 px-5
             mt-8 py-3 rounded-md shadow sticky top-28 gap-3"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit();
+            }}
         >
             <div className="flex justify-between items-center">
                 <h2>Filter</h2>
@@ -126,17 +147,61 @@ function FilterSection({}: FilterSectionProps) {
             <div className="flex flex-col gap-5 overflow-y-scroll">
                 <FilterCheckboxList name="authors" fetchUrl="/api/get-authors/" />
                 <FilterCheckboxList name="genres" fetchUrl="/api/get-genres/" />
+                <div className="relative w-full">
+                    <h3>Borrow Status</h3>
+                    <ul className="flex gap-2 flex-col w-full">
+                        {[
+                            { label: "Any", value: "null" },
+                            { label: "Borrowed", value: "true" },
+                            { label: "Not Borrowed", value: "false" },
+                        ].map((status, index) => {
+                            const id = `borrowStatus${capitalizeWords(status.label)}`;
+                            return (
+                                <li key={index} className="flex items-center gap-2">
+                                    <input
+                                        id={id}
+                                        type="radio"
+                                        name="borrowStatus"
+                                        value={status.value}
+                                        defaultChecked={status.value === "null"}
+                                    />
+                                    <label htmlFor={id} className="w-full">
+                                        {status.label}
+                                    </label>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
             </div>
-            <div className="apply">
+            <div className="actions flex gap-3 w-full">
                 <button
                     type="submit"
                     className="text-xs bg-primary text-white px-4 py-1 rounded-md"
                 >
                     Apply
                 </button>
+                <button
+                    type="reset"
+                    className="text-xs bg-gray-600 text-white px-4 py-1 rounded-md"
+                    onClick={() => {
+                        formRef.current!.reset();
+                        handleSubmit();
+                    }}
+                >
+                    Clear
+                </button>
             </div>
         </form>
     );
 }
+
+const capitalizeWords = (str: string) => {
+    return str
+        .toLowerCase()
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+};
 
 export default FilterSection;

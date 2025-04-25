@@ -7,21 +7,24 @@ type OptionsProps = {
     q?: string;
     search_in?: string;
 
-    filter_author?: string;
-    filter_genre?: string;
-    filter_borrowed?: boolean | null;
+    filter_author?: string[];
+    filter_genre?: string[];
+    filter_borrowed?: string;
 
     sort_by?: string;
     sort_desc?: boolean;
 
     pg_num?: number;
-    pg_size?: number;
+    pg_size: number;
 };
 
 type MainContentProps = {};
 
 function MainContent({}: MainContentProps) {
-    const [options, setOptions] = useState<OptionsProps>({ pg_size: 8, pg_num: 1 });
+    const [options, setOptions] = useState<OptionsProps>({
+        pg_size: 8,
+        pg_num: 1,
+    });
 
     const [isGrid, setIsGrid] = useState(
         JSON.parse(localStorage.getItem("isGrid") || "true"),
@@ -39,7 +42,7 @@ function MainContent({}: MainContentProps) {
             }}
             className="px-20 pb-8 w-full h-max gap-8 mt-20"
         >
-            <FilterSection />
+            <FilterSection setOptions={setOptions} />
             <div className="flex flex-col gap-5">
                 <div
                     className="w-full pt-8 pb-2 flex items-center
