@@ -1,5 +1,5 @@
 import { Header, MainContent } from "@/components/Layout";
-import { OptionsProvider, useModal } from "@/contexts";
+import { OptionsProvider, PageContextProvider, useModal } from "@/contexts";
 
 function App() {
     const { isModalOpen } = useModal();
@@ -14,7 +14,9 @@ function App() {
         >
             <OptionsProvider>
                 <Header />
-                <MainContent />
+                <PageContextProvider>
+                    <MainContent />
+                </PageContextProvider>
             </OptionsProvider>
         </div>
     );

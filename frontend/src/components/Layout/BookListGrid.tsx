@@ -3,13 +3,7 @@ import { BookCard } from "@/components/Book";
 import { BookListGridLoader } from "@/components/SkeletonLoaders";
 import { Book, createBook } from "@/types";
 import { BookIcon } from "lucide-react";
-import { PageNav } from "@/components/Layout";
-import { useOptions } from "@/contexts";
-
-type PageInfoProps = {
-    currentPage: number;
-    totalPages: number;
-};
+import { useOptions, usePageContext } from "@/contexts";
 
 type BookListGridProps = {
     isGrid: boolean;
@@ -18,8 +12,8 @@ type BookListGridProps = {
 function BookListGrid({ isGrid }: BookListGridProps) {
     const [bookList, setBookList] = useState<Book[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [pageInfo, setPageInfo] = useState<PageInfoProps | any>({});
-    const { options, setOptions, toQueryParams, refreshBooks } = useOptions();
+    const { options, toQueryParams, refreshBooks } = useOptions();
+    const { setTotalPages, setCurrentPage } = usePageContext();
 
     useEffect(() => {
         setIsLoading(true);
@@ -45,10 +39,8 @@ function BookListGrid({ isGrid }: BookListGridProps) {
                         return createBook(book);
                     }),
                 );
-                setPageInfo({
-                    currentPage: data.currentPage,
-                    totalPages: data.totalPages,
-                });
+                setTotalPages(data.totalPages);
+                setCurrentPage(data.currentPage);
                 setIsLoading(false);
             })
             .catch((err) => {
@@ -68,18 +60,6 @@ function BookListGrid({ isGrid }: BookListGridProps) {
                         return <BookCard isGrid={isGrid} book={book} key={book.id} />;
                     })}
                 </div>
-                <PageNav
-                    totalPages={pageInfo.totalPages}
-                    currentPage={pageInfo.currentPage}
-                    nextPage={() => {
-                        if (pageInfo.currentPage === pageInfo.totalPages) return;
-                        setOptions({ ...options, pg_num: pageInfo.currentPage + 1 });
-                    }}
-                    prevPage={() => {
-                        if (pageInfo.currentPage === 1) return;
-                        setOptions({ ...options, pg_num: pageInfo.currentPage - 1 });
-                    }}
-                />
             </div>
         ) : (
             <div
