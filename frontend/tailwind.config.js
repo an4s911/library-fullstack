@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require("tailwindcss/colors");
+
 export default {
     content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
     darkMode: "selector",
@@ -18,6 +20,11 @@ export default {
                     800: "#173337",
                     900: "#0c1a1c",
                 },
+                secondary: colors.lime,
+                success: colors.green,
+                error: colors.red,
+                warning: colors.amber,
+                info: colors.sky,
             },
         },
     },
