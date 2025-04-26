@@ -93,7 +93,7 @@ function BookCard({ book, isGrid }: BookCardProps) {
                     size={18}
                     className="opacity-75 text-primary dark:text-primary-300"
                 />
-                <span className="">{book.author?.name}</span>
+                <span className="max-w-full truncate">{book.author?.name}</span>
             </div>
             <div className="date-added flex items-center gap-2">
                 <CalendarIcon size={16} />
