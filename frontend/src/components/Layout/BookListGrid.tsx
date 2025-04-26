@@ -9,7 +9,6 @@ import { useOptions } from "@/contexts";
 type PageInfoProps = {
     currentPage: number;
     totalPages: number;
-    totalItems: number;
 };
 
 type BookListGridProps = {
@@ -49,7 +48,6 @@ function BookListGrid({ isGrid }: BookListGridProps) {
                 setPageInfo({
                     currentPage: data.currentPage,
                     totalPages: data.totalPages,
-                    totalItems: data.totalItems,
                 });
                 setIsLoading(false);
             })
