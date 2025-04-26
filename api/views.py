@@ -389,6 +389,17 @@ def add_author_genre(request: HttpRequest, type=None) -> JsonResponse:
         raise ValueError(f"Invalid type: {type}")
 
     try:
+        # Check if the object already exists
+        existing_object = model.objects.filter(name__iexact=name.strip()).first()
+        if existing_object:
+            return JsonResponse(
+                {
+                    "message": f"{type.capitalize()} already exists!",
+                    type: {"id": existing_object.id, "name": existing_object.name},
+                },
+                status=200,
+            )
+
         new_object = model(name=name)
         new_object.save()
         return JsonResponse(
