@@ -1,5 +1,6 @@
 from django.core.paginator import Page, Paginator
 from django.db.models import Q, QuerySet
+from django.db.models.functions import Lower
 
 
 def filter_books(books: QuerySet, filters: dict) -> QuerySet:
@@ -102,10 +103,15 @@ def sort_books(books: QuerySet, sort_by: str, desc: bool = False) -> QuerySet:
         if field.startswith("borrow"):
             books = books.filter(Q(borrow__isnull=True) | Q(borrow__is_borrowed=True))
 
-        # Prefix for descending is '-'
-        prefix = "-" if desc else ""
+        if sort_by in ["title", "author", "borrowerName"]:
+            query_field = Lower(field).desc() if desc else Lower(field)
+        else:
+            # Prefix for descending is '-'
+            prefix = "-" if desc else ""
 
-        books = books.order_by(f"{prefix}{field}", f"{prefix}id")
+            query_field = f"{prefix}{field}"
+
+        books = books.order_by(query_field, "id")
 
     # Otherwise, return the original queryset
     return books.distinct()
