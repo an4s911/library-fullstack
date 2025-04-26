@@ -100,7 +100,8 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                 promptText: "genre",
                 url: "/api/add-genre/",
                 transformData: (data: any) => {
-                    setGenresList((prev) => [...prev, data.genre]);
+                    genresList.map((g) => g.id).includes(data.genre.id) ||
+                        setGenresList((prev) => [...prev, data.genre]);
                     setSelectedGenreIdsList((prev) => [...prev, data.genre.id]);
                 },
             },
@@ -125,6 +126,8 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                 if (res.ok) {
                     triggerRefresh("filters");
                     return res.json();
+                } else {
+                    throw new Error(res.statusText);
                 }
             })
             .then((data) => {
@@ -139,6 +142,14 @@ function AddBookModal({ onClose }: AddBookModalProps) {
 
     const handleAddNewGenre = () => {
         handleAddNewAuthorGenre("genre");
+    };
+
+    const handleSelectGenere = (id: number) => {
+        if (selectedGenreIdsList.includes(id)) {
+            setSelectedGenreIdsList((prev) => prev.filter((genreId) => genreId !== id));
+        } else {
+            setSelectedGenreIdsList((prev) => [...prev, id]);
+        }
     };
 
     useEffect(() => {
@@ -249,14 +260,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                 )}
                                 value={-1}
                                 onChange={(e) => {
-                                    setSelectedGenreIdsList((prev) => {
-                                        if (prev.includes(parseInt(e.target.value))) {
-                                            return prev.filter(
-                                                (id) => id !== parseInt(e.target.value),
-                                            );
-                                        }
-                                        return [...prev, parseInt(e.target.value)];
-                                    });
+                                    handleSelectGenere(parseInt(e.target.value));
                                 }}
                                 fullWidth={true}
                             />
