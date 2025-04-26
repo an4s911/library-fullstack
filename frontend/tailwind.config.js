@@ -20,7 +20,7 @@ export default {
                     800: "#173337",
                     900: "#0c1a1c",
                 },
-                secondary: colors.lime,
+                secondary: colors.indigo,
                 success: colors.green,
                 error: colors.red,
                 warning: colors.amber,
