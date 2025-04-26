@@ -11,14 +11,14 @@ function App() {
             }}
             className="app h-screen overflow-hidden"
         >
-            <OptionsProvider>
-                <ModalProvider>
-                    <Header />
-                    <PageContextProvider>
+            <PageContextProvider>
+                <OptionsProvider>
+                    <ModalProvider>
+                        <Header />
                         <MainContent />
-                    </PageContextProvider>
-                </ModalProvider>
-            </OptionsProvider>
+                    </ModalProvider>
+                </OptionsProvider>
+            </PageContextProvider>
         </div>
     );
 }

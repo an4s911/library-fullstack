@@ -1,5 +1,4 @@
 import { createContext, useContext, useState } from "react";
-import { useOptions } from "@/contexts";
 
 interface PageContextType {
     totalPages: number;
@@ -15,22 +14,15 @@ export const PageContext = createContext<PageContextType>({} as PageContextType)
 export const PageContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
-    const { setOptions } = useOptions();
 
     const nextPage = () => {
         if (currentPage === totalPages) return;
         setCurrentPage((page) => page + 1);
-        setOptions((options) => {
-            return { ...options, pg_num: currentPage + 1 };
-        });
     };
 
     const prevPage = () => {
         if (currentPage === 1) return;
         setCurrentPage((prevPage) => prevPage - 1);
-        setOptions((options) => {
-            return { ...options, pg_num: currentPage - 1 };
-        });
     };
 
     return (

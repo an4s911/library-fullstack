@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { usePageContext } from "@/contexts";
 
 type OptionsProps = {
     q?: string;
@@ -34,6 +35,13 @@ export const OptionsProvider = ({ children }: { children: ReactNode }) => {
         pg_size: 9,
         pg_num: 1,
     });
+    const { currentPage } = usePageContext();
+
+    useEffect(() => {
+        setOptions((options) => {
+            return { ...options, pg_num: currentPage };
+        });
+    }, [currentPage]);
 
     const [refreshBooks, setRefreshBooks] = useState(false);
     const [refreshFilters, setRefreshFilters] = useState(false);
