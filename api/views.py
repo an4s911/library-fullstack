@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, Page, PageNotAnInteger
 from django.db.models import Count, QuerySet
@@ -15,6 +16,7 @@ def index(request) -> HttpResponse:
     return HttpResponse("Hello, world. You're at the api index.", status=200)
 
 
+@login_required
 def get_books(request: HttpRequest) -> JsonResponse:
     """
     Handle GET requests to fetch books with filtering, sorting, and pagination.
@@ -199,6 +201,7 @@ def get_books(request: HttpRequest) -> JsonResponse:
     )
 
 
+@login_required
 def get_book(request: HttpRequest, book_id: int) -> JsonResponse:
     """
     Handle GET requests to fetch details for a specific book, including borrow history.
@@ -257,6 +260,7 @@ def get_book(request: HttpRequest, book_id: int) -> JsonResponse:
         )
 
 
+@login_required
 def get_authors(request: HttpRequest) -> JsonResponse:
     # order by number of books
     authors = (
@@ -266,6 +270,7 @@ def get_authors(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"authors": result})
 
 
+@login_required
 def get_genres(request: HttpRequest) -> JsonResponse:
     # order by number of books
     genres = (
@@ -275,6 +280,7 @@ def get_genres(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"genres": result})
 
 
+@login_required
 def add_book(request: HttpRequest) -> JsonResponse:
     """
     Adds a new book. Expects JSON data in the request body.
@@ -331,6 +337,7 @@ def add_book(request: HttpRequest) -> JsonResponse:
     )
 
 
+@login_required
 def add_author_genre(request: HttpRequest, type=None) -> JsonResponse:
     """
     Adds a new author/genre.
@@ -413,6 +420,7 @@ def add_author_genre(request: HttpRequest, type=None) -> JsonResponse:
         return JsonResponse({"error": "Something went wrong"}, status=500)
 
 
+@login_required
 def delete_book(request: HttpRequest, book_id: int) -> JsonResponse:
     """
     Deletes a book and its associated borrow records (due to on_delete=CASCADE).
@@ -446,6 +454,7 @@ def delete_book(request: HttpRequest, book_id: int) -> JsonResponse:
         )
 
 
+@login_required
 def borrow_book(request: HttpRequest, book_id: int) -> JsonResponse:
     """
     Marks a book as borrowed by creating a Borrow record.
@@ -503,6 +512,7 @@ def borrow_book(request: HttpRequest, book_id: int) -> JsonResponse:
         return JsonResponse({"error": "An unexpected error occurred"}, status=500)
 
 
+@login_required
 def unborrow_book(request: HttpRequest, book_id: int) -> JsonResponse:
     """
     Marks a specific borrow record as returned.
@@ -635,6 +645,7 @@ def _update_book_genres(book: Book, data: dict) -> JsonResponse | None:
     return None  # Indicate success
 
 
+@login_required
 def edit_book(request: HttpRequest, book_id: int) -> JsonResponse:
     """
     Handles PUT requests to edit an existing book identified by `book_id`.
