@@ -37,8 +37,10 @@ function GenericButton({
         <button
             type={type}
             onClick={onClick}
-            className={`rounded-md flex gap-2 items-center
-            disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed
+            className={`rounded-md flex gap-2 items-center justify-center transition-colors
+            disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:bg-gray-300
+            dark:disabled:bg-gray-600 dark:disabled:text-gray-400 dark:disabled:hover:bg-gray-600
+            disabled:cursor-not-allowed
             ${colorClasses[color]} ${sizeClasses[size]}`}
             disabled={disabled}
         >
