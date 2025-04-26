@@ -304,14 +304,6 @@ def add_book(request: HttpRequest) -> JsonResponse:
             {"error": f"Author with id {author_id} not found"}, status=404
         )
 
-    try:
-        # --- Create Book ---
-        book = Book(title=title, author=author, allow_borrow=allow_borrow)
-        book.save()  # Save first to get an ID for M2M relationships
-    except Exception as e:
-        print(f"Unexpected error in add_book: {e}")
-        return JsonResponse({"error": "Something went wrong"}, status=500)
-
     # --- Find and Set Genres (optional) ---
     if genre_ids:
         genre_objects = Genre.objects.filter(pk__in=genre_ids)
@@ -322,10 +314,17 @@ def add_book(request: HttpRequest) -> JsonResponse:
                 status=404,
             )
 
-        book.genres.set(genre_objects)
-        book.save()
     else:
         return JsonResponse({"error": "At least one genre is required"}, status=400)
+
+    try:
+        # --- Create Book ---
+        book = Book(title=title, author=author, allow_borrow=allow_borrow)
+        book.save()
+        book.genres.set(genre_objects)
+    except Exception as e:
+        print(f"Unexpected error in add_book: {e}")
+        return JsonResponse({"error": "Something went wrong"}, status=500)
 
     return JsonResponse(
         {"message": "Book added successfully!", "book_id": book.id}, status=201
