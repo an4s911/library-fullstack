@@ -223,6 +223,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                 fullWidth={true}
                             />
                             <button
+                                type="button"
                                 onClick={handleAddNewAuthor}
                                 className="flex items-center justify-center px-4 text-primary-50 bg-primary hover:bg-primary-500
                                 dark:bg-primary hover:dark:bg-primary-600 rounded-md h-auto transition-colors flex-shrink"
@@ -260,6 +261,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                 fullWidth={true}
                             />
                             <button
+                                type="button"
                                 onClick={handleAddNewGenre}
                                 className="flex items-center justify-center px-4 text-primary-50 bg-primary hover:bg-primary-500
                                 dark:bg-primary hover:dark:bg-primary-600 rounded-md h-auto transition-colors flex-shrink"
@@ -277,6 +279,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                 >
                                     <span>{genre.name}</span>
                                     <button
+                                        type="button"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             setSelectedGenreIdsList((prev) =>
@@ -305,6 +308,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                     </div>
                     <div className="flex gap-2 self-end mt-2">
                         <button
+                            type="button"
                             className="hover:bg-gray-200 dark:hover:bg-gray-700"
                             onClick={handleOnClose}
                         >
