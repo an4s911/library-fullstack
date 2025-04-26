@@ -267,13 +267,6 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                 <PlusIcon className="w-5 h-5" />
                             </button>
                         </div>
-                        {/* <input */}
-                        {/*     name="genres" */}
-                        {/*     required */}
-                        {/*     type="hidden" */}
-                        {/*     value={selectedGenreIdsList.map((id) => id.toString())} */}
-                        {/*     readOnly */}
-                        {/* /> */}
                     </div>
                     {selectedGenresList.length > 0 && (
                         <div className="added-genres-list flex !flex-row flex-wrap gap-2">
