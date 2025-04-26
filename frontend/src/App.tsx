@@ -1,22 +1,23 @@
 import { Header, MainContent } from "@/components/Layout";
-import { OptionsProvider, PageContextProvider, useModal } from "@/contexts";
+import { OptionsProvider, PageContextProvider } from "@/contexts";
+import { ModalProvider } from "@/contexts";
 
 function App() {
-    const { isModalOpen } = useModal();
-
     return (
         <div
             style={{
                 display: "grid",
                 gridTemplateRows: "auto 1fr",
             }}
-            className={`app ${isModalOpen ? "max-h-screen overflow-hidden" : ""}`}
+            className="app h-screen overflow-hidden"
         >
             <OptionsProvider>
-                <Header />
-                <PageContextProvider>
-                    <MainContent />
-                </PageContextProvider>
+                <ModalProvider>
+                    <Header />
+                    <PageContextProvider>
+                        <MainContent />
+                    </PageContextProvider>
+                </ModalProvider>
             </OptionsProvider>
         </div>
     );

@@ -22,7 +22,7 @@ function MainContent({}: MainContentProps) {
                 display: "grid",
                 gridTemplateColumns: "250px 1fr",
             }}
-            className="px-20 pb-8 w-full h-max gap-8 mt-20"
+            className="px-20 pb-8 w-full h-screen overflow-y-scroll gap-8"
         >
             <FilterSection />
             <div className="flex flex-col gap-5">

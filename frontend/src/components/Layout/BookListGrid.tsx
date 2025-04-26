@@ -52,7 +52,7 @@ function BookListGrid({ isGrid }: BookListGridProps) {
         return <BookListGridLoader isGrid={isGrid} />;
     } else {
         return bookList.length > 0 ? (
-            <div className="flex flex-col w-full gap-10 justify-between h-full">
+            <div className="flex flex-col w-full gap-10 justify-between h-full mt-20 mb-10">
                 <div
                     className={`book-list-grid gap-5 ${isGrid ? "grid grid-cols-2 lg:grid-cols-3" : "flex flex-col"}`}
                 >
@@ -64,7 +64,7 @@ function BookListGrid({ isGrid }: BookListGridProps) {
         ) : (
             <div
                 className="w-full border border-primary-300 dark:border-primary-700
-                    rounded-md p-4 flex gap-3 justify-center items-center"
+                    rounded-md p-4 flex gap-3 justify-center items-center mt-20 mb-10"
             >
                 <BookIcon />
                 <h2 className="text-2xl">No books found</h2>
