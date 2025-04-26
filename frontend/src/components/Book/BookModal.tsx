@@ -171,7 +171,7 @@ function BookModal({ book, onClose }: BookModalProps) {
                                 onClick={handleDisableBorrow}
                             >
                                 {isBorrowed
-                                    ? "Cannot Enable While Borrowed"
+                                    ? "Cannot Disable While Borrowed"
                                     : "Disable Borrowing"}
                             </button>
                         ) : (
