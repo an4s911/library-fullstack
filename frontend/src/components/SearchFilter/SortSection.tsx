@@ -40,7 +40,10 @@ function SortSection({}: SortSectionProps) {
             <GenericSelect
                 name="sortBy"
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={(e) => {
+                    setSortBy(e.target.value);
+                    handleSubmit();
+                }}
                 optionsList={[
                     {
                         value: "title",
@@ -67,7 +70,10 @@ function SortSection({}: SortSectionProps) {
             <GenericSelect
                 name="sortDesc"
                 value={isDescending ? "true" : "false"}
-                onChange={(e) => setIsDescending(e.target.value === "true")}
+                onChange={(e) => {
+                    setIsDescending(e.target.value === "true");
+                    handleSubmit();
+                }}
                 optionsList={[
                     {
                         value: "false",
@@ -79,7 +85,6 @@ function SortSection({}: SortSectionProps) {
                     },
                 ]}
             />
-            <button>Sort</button>
         </form>
     );
 }
