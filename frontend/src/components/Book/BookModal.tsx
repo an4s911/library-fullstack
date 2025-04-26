@@ -110,8 +110,8 @@ function BookModal({ book, onClose }: BookModalProps) {
     };
 
     useEffect(() => {
-        if (!isBorrowed) {
-            borrowerInputRef.current!.focus();
+        if (!isBorrowed && borrowerInputRef.current) {
+            borrowerInputRef.current.focus();
         }
     }, [isBorrowed]);
 
