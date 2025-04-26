@@ -1,5 +1,5 @@
 import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
-import { Modal } from "@/components/UI";
+import { GenericButton, Modal } from "@/components/UI";
 import { GenericSelect } from "@/components/UI";
 import { useEffect, useRef, useState } from "react";
 import { Author, Genre } from "@/types";
@@ -234,14 +234,13 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                 required={true}
                                 fullWidth={true}
                             />
-                            <button
+                            <GenericButton
                                 type="button"
                                 onClick={handleAddNewAuthor}
-                                className="flex items-center justify-center px-4 text-primary-50 bg-primary hover:bg-primary-500
-                                dark:bg-primary hover:dark:bg-primary-600 rounded-md h-auto transition-colors flex-shrink"
+                                color="primary"
                             >
                                 <PlusIcon className="w-5 h-5" />
-                            </button>
+                            </GenericButton>
                         </div>
                     </div>
                     <div className="genres">
@@ -265,14 +264,9 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                 }}
                                 fullWidth={true}
                             />
-                            <button
-                                type="button"
-                                onClick={handleAddNewGenre}
-                                className="flex items-center justify-center px-4 text-primary-50 bg-primary hover:bg-primary-500
-                                dark:bg-primary hover:dark:bg-primary-600 rounded-md h-auto transition-colors flex-shrink"
-                            >
+                            <GenericButton type="button" onClick={handleAddNewGenre}>
                                 <PlusIcon className="w-5 h-5" />
-                            </button>
+                            </GenericButton>
                         </div>
                     </div>
                     {selectedGenresList.length > 0 && (
@@ -312,22 +306,16 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                         </div>
                     </div>
                     <div className="flex gap-2 self-end mt-2">
-                        <button
+                        <GenericButton
                             type="button"
-                            className="hover:bg-gray-200 dark:hover:bg-gray-700"
                             onClick={handleOnClose}
+                            color="dull"
                         >
                             Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            className="text-primary-50 disabled:opacity-65 transition-colors
-                            bg-primary hover:bg-primary-500 disabled:hover:bg-primary
-                            dark:bg-primary dark:hover:bg-primary-600 disabled:dark:hover:bg-primary"
-                            disabled={!isValid}
-                        >
+                        </GenericButton>
+                        <GenericButton type="submit" disabled={!isValid}>
                             Add Book
-                        </button>
+                        </GenericButton>
                     </div>
                 </form>
             </div>

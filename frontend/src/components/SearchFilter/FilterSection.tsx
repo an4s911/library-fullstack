@@ -2,6 +2,7 @@ import { ChevronDownIcon, ChevronUpIcon, FilterIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { FilterCheckboxListLoader } from "@/components/SkeletonLoaders";
 import { useOptions } from "@/contexts";
+import { GenericButton } from "@/components/UI";
 
 type Author = {
     id: number;
@@ -184,22 +185,20 @@ function FilterSection({}: FilterSectionProps) {
                 </div>
             </div>
             <div className="actions flex gap-3 w-full">
-                <button
-                    type="submit"
-                    className="text-xs bg-primary text-white px-4 py-1 rounded-md"
-                >
+                <GenericButton type="submit" color="primary" size="mini">
                     Apply
-                </button>
-                <button
+                </GenericButton>
+                <GenericButton
                     type="reset"
-                    className="text-xs bg-gray-600 text-white px-4 py-1 rounded-md"
                     onClick={() => {
                         formRef.current!.reset();
                         handleSubmit();
                     }}
+                    size="mini"
+                    color="dull"
                 >
                     Clear
-                </button>
+                </GenericButton>
             </div>
         </form>
     );

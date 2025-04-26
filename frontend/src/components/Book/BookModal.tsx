@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Modal } from "@/components/UI";
+import { GenericButton, Modal } from "@/components/UI";
 
 import { AlertCircleIcon, CalendarIcon, UserRoundIcon, XIcon } from "lucide-react";
 
@@ -161,26 +161,23 @@ function BookModal({ book, onClose }: BookModalProps) {
                     <div className="flex justify-between items-center w-full">
                         <h4 className="text-xl font-semibold">Borrowing Status</h4>
                         {borrowAllowed ? (
-                            <button
-                                className={`ml-auto w-max rounded-md px-4 py-2 ${
-                                    isBorrowed
-                                        ? "cursor-not-allowed bg-slate-500/40 text-slate-500 dark:text-slate-300"
-                                        : "bg-red-700 px-5 py-2 font-medium text-red-100 transition-colors hover:bg-red-600"
-                                }`}
+                            <GenericButton
                                 disabled={isBorrowed}
                                 onClick={handleDisableBorrow}
+                                color="error"
                             >
-                                {isBorrowed
-                                    ? "Cannot Disable While Borrowed"
-                                    : "Disable Borrowing"}
-                            </button>
+                                <span className="px-1 font-medium">
+                                    {isBorrowed
+                                        ? "Cannot Disable While Borrowed"
+                                        : "Disable Borrowing"}
+                                </span>
+                            </GenericButton>
                         ) : (
-                            <button
-                                className={`ml-auto w-max rounded-md px-4 py-2 bg-green-700 font-medium text-green-100 transition-colors hover:bg-green-600`}
-                                onClick={handleEnableBorrow}
-                            >
-                                Enable Borrowing
-                            </button>
+                            <GenericButton color="success" onClick={handleEnableBorrow}>
+                                <span className="font-medium px-1">
+                                    Enable Borrowing
+                                </span>
+                            </GenericButton>
                         )}
                     </div>
 
@@ -202,16 +199,22 @@ function BookModal({ book, onClose }: BookModalProps) {
                                                 </span>
                                             </p>
 
-                                            <button
+                                            <GenericButton
                                                 onClick={handleUnborrow}
-                                                className="shadow-md rounded-md bg-blue-600 dark:bg-indigo-500 px-6 py-2 font-medium text-amber-100 transition-colors hover:bg-amber-600"
+                                                color="success"
                                             >
                                                 Mark as Returned
-                                            </button>
+                                            </GenericButton>
                                         </div>
                                     </div>
                                 ) : (
-                                    <form className="flex flex-col justify-around h-full">
+                                    <form
+                                        onSubmit={(e) => {
+                                            e.preventDefault();
+                                            handleBorrow();
+                                        }}
+                                        className="flex flex-col justify-around h-full"
+                                    >
                                         {/* Lend-book form */}
                                         <input
                                             ref={borrowerInputRef}
@@ -226,18 +229,15 @@ function BookModal({ book, onClose }: BookModalProps) {
                                                 placeholder:text-slate-600/80 dark:placeholder-slate-400 focus:outline-none
                                                 focus:ring-2 focus:ring-primary-400 focus:dark:ring-primary-500"
                                         />
-                                        <button
+                                        <GenericButton
                                             disabled={!borrowerInput.trim()}
                                             onClick={handleBorrow}
-                                            className={`w-full rounded-md px-6 py-3 font-medium ${
-                                                borrowerInput.trim()
-                                                    ? "bg-primary-600 dark:bg-primary text-primary-100 hover:bg-primary-600"
-                                                    : `cursor-not-allowed bg-primary-400 dark:bg-primary-700/40
-                                                    dark:text-primary-200 text-primary-200`
-                                            }`}
+                                            size="medium"
                                         >
-                                            Lend Book
-                                        </button>
+                                            <span className="font-medium">
+                                                Lend Book
+                                            </span>
+                                        </GenericButton>
                                     </form>
                                 )}
                             </>
