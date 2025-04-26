@@ -755,9 +755,6 @@ def edit_book(request: HttpRequest, book_id: int) -> JsonResponse:
     except Exception as e:
         # Log the exception e for debugging
         print(f"Unexpected error in edit_book: {e}")  # Basic logging
-        # Consider using Python's logging module for production
-        # import logging
-        # logging.exception("An unexpected error occurred during book edit")
         return JsonResponse(
             {"error": "An unexpected server error occurred"}, status=500
         )
