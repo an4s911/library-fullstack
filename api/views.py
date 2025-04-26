@@ -1,8 +1,10 @@
+import csv
 import json
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, Page, PageNotAnInteger
+from django.db import transaction
 from django.db.models import Count, QuerySet
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -769,3 +771,88 @@ def edit_book(request: HttpRequest, book_id: int) -> JsonResponse:
         return JsonResponse(
             {"error": "An unexpected server error occurred"}, status=500
         )
+
+
+@login_required
+def add_books(request: HttpRequest) -> JsonResponse:
+    """
+    Adds multiple books from an uploaded CSV file.
+    Expected CSV headers: title, author, genres, allowBorrow
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request method"}, status=405)
+
+    if "file" in request.FILES:
+        file = request.FILES["file"]
+
+        # Check if uploaded file is a CSV
+        if file.content_type != "text/csv":
+            return JsonResponse({"error": "Uploaded file must be a CSV"}, status=400)
+
+        file = file.read()
+    elif request.body:
+        file = request.body
+    else:
+        return JsonResponse({"error": "No file provided"}, status=400)
+
+    try:
+        decoded_file = file.decode("utf-8").splitlines()
+        reader = csv.DictReader(decoded_file)
+    except Exception as e:
+        print(f"Error decoding file: {e}")
+        return JsonResponse({"error": "Invalid file format"}, status=400)
+
+    expected_headers = {"title", "author", "genres", "allowBorrow"}
+
+    if set(reader.fieldnames) != expected_headers:
+        return JsonResponse(
+            {"error": f"CSV must have headers: {', '.join(expected_headers)}"},
+            status=400,
+        )
+
+    try:
+        with transaction.atomic():
+            for row in reader:
+                title = row.get("title").strip()
+                author_name = row.get("author").strip()
+                genres_str_list = row.get("genres").strip().split(",")
+                allow_borrow_str: str = row.get("allowBorrow").strip().lower()
+
+                if not title:
+                    return JsonResponse(
+                        {"error": "Title is required for each book"}, status=400
+                    )
+
+                genres_str_list = [] if genres_str_list == [""] else genres_str_list
+
+                allow_borrow = allow_borrow_str == "true" if allow_borrow_str else True
+
+                author = (
+                    Author.objects.get_or_create(
+                        name=author_name, name__iexact=author_name
+                    )[0]
+                    if author_name
+                    else None
+                )
+
+                book = Book.objects.get_or_create(
+                    title=title, author=author, title__iexact=title
+                )[0]
+
+                book.allow_borrow = allow_borrow
+                book.save()
+
+                genres = [
+                    Genre.objects.get_or_create(
+                        name=g.strip(),
+                        name__iexact=g.strip(),
+                    )[0]
+                    for g in genres_str_list
+                ]
+
+                book.genres.set(genres)
+    except Exception as e:
+        print(f"Unexpected error in add_books: {e}")
+        return JsonResponse({"error": "Something went wrong"}, status=500)
+
+    return JsonResponse({"message": "All books added successfully!"}, status=201)

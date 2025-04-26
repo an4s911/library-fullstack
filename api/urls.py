@@ -15,5 +15,6 @@ urlpatterns = [
     path("unborrow-book/<int:book_id>/", views.unborrow_book, name="unborrow_book"),
     path("edit-book/<int:book_id>/", views.edit_book, name="edit_book"),
     path("delete-book/<int:book_id>/", views.delete_book, name="delete_book"),
+    path("add-books/", views.add_books, name="add_books"),
     path("", views.index, name="api_index"),
 ]
