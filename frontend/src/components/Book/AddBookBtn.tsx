@@ -1,7 +1,7 @@
 import { PlusIcon } from "lucide-react";
 import { GenericButton } from "@/components/UI";
 import { useEffect, useState } from "react";
-import AddBookModal from "@/components/Book/AddBookModal";
+import { AddBookModal } from "@/components/Book";
 import { useModal } from "@/contexts";
 
 type AddBookBtnProps = {};
