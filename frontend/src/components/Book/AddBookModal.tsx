@@ -102,7 +102,8 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                 transformData: (data: any) => {
                     genresList.map((g) => g.id).includes(data.genre.id) ||
                         setGenresList((prev) => [...prev, data.genre]);
-                    setSelectedGenreIdsList((prev) => [...prev, data.genre.id]);
+                    selectedGenreIdsList.includes(data.genre.id) ||
+                        setSelectedGenreIdsList((prev) => [...prev, data.genre.id]);
                 },
             },
         };
