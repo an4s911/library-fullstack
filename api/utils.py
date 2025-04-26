@@ -101,7 +101,7 @@ def sort_books(books: QuerySet, sort_by: str, desc: bool = False) -> QuerySet:
     # If field is valid, sort by it
     if field:
         if field.startswith("borrow"):
-            books = books.filter(Q(borrow__isnull=True) | Q(borrow__is_borrowed=True))
+            books = books.filter(Q(borrow__is_borrowed=True))
 
         if sort_by in ["title", "author", "borrowerName"]:
             query_field = Lower(field).desc() if desc else Lower(field)
