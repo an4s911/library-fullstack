@@ -4,9 +4,9 @@ import { BookListGrid, PageNav } from "@/components/Layout";
 import { LayoutToggleBtn } from "@/components/Layout";
 import { usePageContext } from "@/contexts";
 
-type HomeProps = {};
+type HomePageProps = {};
 
-function Home({}: HomeProps) {
+function HomePage({}: HomePageProps) {
     const [isGrid, setIsGrid] = useState(
         JSON.parse(localStorage.getItem("isGrid") || "true"),
     );
@@ -52,4 +52,4 @@ function Home({}: HomeProps) {
     );
 }
 
-export default Home;
+export default HomePage;
