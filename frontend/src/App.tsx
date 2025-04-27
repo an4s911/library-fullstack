@@ -1,5 +1,5 @@
 import { Header } from "@/components/Layout";
-import { HomePage } from "@/pages";
+import { Home } from "@/pages";
 import { OptionsProvider, PageContextProvider } from "@/contexts";
 import { ModalProvider } from "@/contexts";
 
@@ -16,7 +16,7 @@ function App() {
                 <OptionsProvider>
                     <ModalProvider>
                         <Header />
-                        <HomePage />
+                        <Home />
                     </ModalProvider>
                 </OptionsProvider>
             </PageContextProvider>

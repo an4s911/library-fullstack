@@ -1,1 +1,1 @@
-export { default as HomePage } from "./MainContent";
+export { default as Home } from "./Home";
