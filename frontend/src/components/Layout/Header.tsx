@@ -16,7 +16,7 @@ function Header({}: HeaderProps) {
                     <LibraryIcon size={32} />
                 </div>
                 <div className="title text-2xl font-bold">
-                    <h1>A-Library</h1>
+                    <h1>{import.meta.env.VITE_APP_NAME}</h1>
                 </div>
             </a>
 
