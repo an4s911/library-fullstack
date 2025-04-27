@@ -22,13 +22,15 @@ function Home({}: HomeProps) {
                 display: "grid",
                 gridTemplateColumns: "250px 1fr",
             }}
-            className="px-20 pb-8 w-full h-screen overflow-y-scroll gap-8"
+            className="px-20 w-full h-full overflow-y-scroll gap-8"
         >
-            <FilterSection />
-            <div className="flex flex-col gap-5">
+            <div className="h-max sticky top-0 pt-8">
+                <FilterSection />
+            </div>
+            <div className="flex flex-col gap-5 mt-8">
                 <div
-                    className="w-full pt-8 pb-2 flex items-center
-                    justify-between sticky top-20 z-10"
+                    className="w-full pb-2 flex items-center
+                    justify-between sticky top-8 z-10"
                 >
                     <SortSection />
                     <PageNav
@@ -42,7 +44,9 @@ function Home({}: HomeProps) {
                         onClick={() => setIsGrid(!isGrid)}
                     />
                 </div>
-                <BookListGrid isGrid={isGrid} />
+                <div className="pb-8">
+                    <BookListGrid isGrid={isGrid} />
+                </div>
             </div>
         </main>
     );

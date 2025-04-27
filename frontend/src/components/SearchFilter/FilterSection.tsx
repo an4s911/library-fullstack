@@ -133,7 +133,7 @@ function FilterSection({}: FilterSectionProps) {
                 height: "80vh",
             }}
             className="filter-section flex flex-col bg-primary-50 dark:bg-primary-800 px-5
-            mt-8 py-3 rounded-md shadow sticky top-28 gap-3"
+            py-3 rounded-md shadow gap-3"
             onSubmit={(e) => {
                 e.preventDefault();
                 handleSubmit();
