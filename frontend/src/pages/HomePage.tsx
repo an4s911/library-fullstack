@@ -3,6 +3,7 @@ import { FilterSection, SortSection } from "@/components/SearchFilter";
 import { BookListGrid, PageNav } from "@/components/Layout";
 import { LayoutToggleBtn } from "@/components/Layout";
 import { usePageContext } from "@/contexts";
+import { FloatingInfo } from "@/components/Widgets";
 
 type HomePageProps = {};
 
@@ -48,6 +49,7 @@ function HomePage({}: HomePageProps) {
                     <BookListGrid isGrid={isGrid} />
                 </div>
             </div>
+            <FloatingInfo />
         </main>
     );
 }
