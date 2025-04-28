@@ -148,7 +148,12 @@ function BookModal({ book, onClose }: BookModalProps) {
                     <ul className="flex gap-2 flex-wrap text-xs">
                         {bookInfo.genres.map((genre, index) => {
                             return (
-                                <Tag key={index} as={"li"} label={genre} size={14} />
+                                <Tag
+                                    key={index}
+                                    as={"li"}
+                                    label={genre.name}
+                                    size={14}
+                                />
                             );
                         })}
                     </ul>

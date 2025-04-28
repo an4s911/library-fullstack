@@ -4,7 +4,7 @@ export type Book = {
     author: Author | null;
     dateAdded: Date;
     allowBorrow: boolean;
-    genres: string[];
+    genres: Genre[];
     borrowerName?: string;
     getDateAdded: (withTime?: boolean) => string;
 };
@@ -19,9 +19,8 @@ export type Genre = {
     name: string;
 };
 
-export function createBook(book: any): Book {
+export function createBook(book: Book): Book {
     const dateAdded = new Date(book.dateAdded);
-    const genres = book.genres.map((genre: Genre) => genre.name);
     const getDateAdded = (withTime: boolean = false) => {
         return dateAdded.toLocaleDateString("en-US", {
             month: "short",
@@ -33,7 +32,6 @@ export function createBook(book: any): Book {
 
     return {
         ...book,
-        genres,
         dateAdded,
         getDateAdded,
     };

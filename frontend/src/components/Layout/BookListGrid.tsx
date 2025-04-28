@@ -35,7 +35,7 @@ function BookListGrid({ isGrid }: BookListGridProps) {
             })
             .then((data) => {
                 setBookList(
-                    data.books.map((book: any) => {
+                    data.books.map((book: Book) => {
                         return createBook(book);
                     }),
                 );
