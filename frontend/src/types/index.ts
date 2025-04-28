@@ -4,7 +4,7 @@ export type Book = {
     author: Author | null;
     dateAdded: Date;
     allowBorrow: boolean;
-    genres: string[];
+    genres: Genre[];
     borrowerName?: string;
     getDateAdded: (withTime?: boolean) => string;
 };

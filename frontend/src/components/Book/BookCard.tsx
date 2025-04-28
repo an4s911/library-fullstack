@@ -4,7 +4,7 @@ import {
     CalendarIcon,
     UserRoundIcon,
 } from "lucide-react";
-import { Book } from "@/types";
+import { Book, Genre } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import { useModal } from "@/contexts";
 import { BookModal } from "@/components/Book";
@@ -16,7 +16,7 @@ type BookCardProps = {
 };
 
 function BookCard({ book, isGrid }: BookCardProps) {
-    const [localGenres, setLocalGenres] = useState<string[]>([]);
+    const [localGenres, setLocalGenres] = useState<Genre[]>([]);
     const genreContainerRef = useRef<HTMLUListElement>(null);
     const { onModalOpen, onModalClose } = useModal();
     const [open, setOpen] = useState(false);
@@ -43,7 +43,7 @@ function BookCard({ book, isGrid }: BookCardProps) {
 
             // Measure each genre
             for (let i = 0; i < book.genres.length; i++) {
-                tempSpan.textContent = book.genres[i];
+                tempSpan.textContent = book.genres[i].name;
 
                 //                 span width  + icon width + gap + ul (parent padding) + some additional
                 const genreWidth =
@@ -105,7 +105,7 @@ function BookCard({ book, isGrid }: BookCardProps) {
                     className="flex gap-2 flex-wrap text-xs text-primary-50"
                 >
                     {localGenres.map((genre, index) => {
-                        return <Tag key={index} label={genre} size={12} as="li" />;
+                        return <Tag key={index} label={genre.name} size={12} as="li" />;
                     })}
                     {book.genres.length > localGenres.length && (
                         <Tag
