@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, Page, PageNotAnInteger
 from django.db import transaction
 from django.db.models import Count, QuerySet
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -75,8 +75,8 @@ def get_books(request: HttpRequest) -> JsonResponse:
         )
 
     # Extract query parameters for filtering (prefixed with filter_)
-    filter_authors: list[str] = request.GET.get("filter_author", "").split(",")
-    filter_genres: list[str] = request.GET.get("filter_genre", "").split(",")
+    filter_authors: list[str] = request.GET.getlist("filter_author", "")
+    filter_genres: list[str] = request.GET.getlist("filter_genre", "")
     filter_borrowed_q: str = request.GET.get("filter_borrowed", "null").lower()
 
     # Validate filter_borrowed parameter
@@ -211,8 +211,10 @@ def get_book(request: HttpRequest, book_id: int) -> JsonResponse:
     if request.method != "GET":
         return JsonResponse({"error": "Invalid request method"}, status=405)
 
-    # Use get_object_or_404 for cleaner handling of Not Found
-    book = get_object_or_404(Book, pk=book_id)
+    try:
+        book = get_object_or_404(Book, pk=book_id)
+    except Http404:
+        return JsonResponse({"error": f"Book with id {book_id} not found"}, status=404)
 
     try:
         # Fetch borrow for book with is_borrowed=True
@@ -477,7 +479,10 @@ def borrow_book(request: HttpRequest, book_id: int) -> JsonResponse:
             {"error": "Missing required field borrowerName"}, status=400
         )
 
-    book = get_object_or_404(Book, pk=book_id)
+    try:
+        book = get_object_or_404(Book, pk=book_id)
+    except Http404:
+        return JsonResponse({"error": f"Book with id {book_id} not found"}, status=404)
 
     if not book.allow_borrow:
         # 409 Conflict
