@@ -187,7 +187,7 @@ def get_books(request: HttpRequest) -> JsonResponse:
                     else None
                 ),
                 "dateAdded": book.date_added.isoformat(),
-                "genres": [genre.name for genre in book.genres.all()],
+                "genres": [genre for genre in book.genres.all().values("id", "name")],
                 "borrowerName": borrower_name,
                 "allowBorrow": book.allow_borrow,
             }

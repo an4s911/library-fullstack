@@ -103,7 +103,8 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                 promptText: "author name",
                 url: "/api/add-author/",
                 transformData: (data: any) => {
-                    setAuthorsList((prev) => [...prev, data.author]);
+                    authorsList.map((a) => a.id).includes(data.author.id) ||
+                        setAuthorsList((prev) => [...prev, data.author]);
                     setSelectedAuthorId(data.author.id);
                 },
             },

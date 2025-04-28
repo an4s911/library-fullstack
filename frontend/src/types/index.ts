@@ -19,8 +19,9 @@ export type Genre = {
     name: string;
 };
 
-export function createBook(book: Book): Book {
+export function createBook(book: any): Book {
     const dateAdded = new Date(book.dateAdded);
+    const genres = book.genres.map((genre: Genre) => genre.name);
     const getDateAdded = (withTime: boolean = false) => {
         return dateAdded.toLocaleDateString("en-US", {
             month: "short",
@@ -32,6 +33,7 @@ export function createBook(book: Book): Book {
 
     return {
         ...book,
+        genres,
         dateAdded,
         getDateAdded,
     };
