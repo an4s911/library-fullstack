@@ -9,8 +9,6 @@ function SearchBar({}: SearchBarProps) {
     const { options, setOptions, triggerRefresh } = useOptions();
 
     const value = options.q;
-    console.log(options);
-    console.log(value);
     const setValue = (value: string) => {
         setOptions((prev) => {
             return {
