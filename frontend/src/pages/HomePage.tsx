@@ -23,7 +23,7 @@ function HomePage({}: HomePageProps) {
                 display: "grid",
                 gridTemplateColumns: "250px 1fr",
             }}
-            className="px-20 w-full h-full overflow-y-scroll gap-8"
+            className="px-20 w-full h-full overflow-y-auto gap-8"
         >
             <div className="h-max sticky top-0 pt-8">
                 <FilterSection />
