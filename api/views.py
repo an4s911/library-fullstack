@@ -788,7 +788,9 @@ def add_books(request: HttpRequest) -> JsonResponse:
     elif request.body:
         file = request.body
     else:
-        return JsonResponse({"error": "No file provided"}, status=400)
+        return JsonResponse(
+            {"error": "No file provided (or file is empty)"}, status=400
+        )
 
     try:
         decoded_file = file.decode("utf-8").splitlines()
@@ -797,9 +799,12 @@ def add_books(request: HttpRequest) -> JsonResponse:
         print(f"Error decoding file: {e}")
         return JsonResponse({"error": "Invalid file format"}, status=400)
 
-    expected_headers = {"title", "author", "genres", "allowBorrow"}
+    expected_headers = ["title", "author", "genres", "allowborrow"]
 
-    if set(reader.fieldnames) != expected_headers:
+    # Convert CSV headers to lowercase
+    header_map = {header.lower(): header for header in reader.fieldnames}
+
+    if not all([header.lower() in header_map.keys() for header in expected_headers]):
         return JsonResponse(
             {"error": f"CSV must have headers: {', '.join(expected_headers)}"},
             status=400,
@@ -808,10 +813,12 @@ def add_books(request: HttpRequest) -> JsonResponse:
     try:
         with transaction.atomic():
             for row in reader:
-                title = row.get("title").strip()
-                author_name = row.get("author").strip()
-                genres_str_list = row.get("genres").strip().split(",")
-                allow_borrow_str: str = row.get("allowBorrow").strip().lower()
+                title = row.get(header_map["title"]).strip()
+                author_name = row.get(header_map["author"]).strip()
+                genres_str_list = row.get(header_map["genres"]).strip().split(",")
+                allow_borrow_str: str = (
+                    row.get(header_map["allowborrow"]).strip().lower()
+                )
 
                 if not title:
                     return JsonResponse(
@@ -820,7 +827,20 @@ def add_books(request: HttpRequest) -> JsonResponse:
 
                 genres_str_list = [] if genres_str_list == [""] else genres_str_list
 
-                allow_borrow = allow_borrow_str == "true" if allow_borrow_str else True
+                if allow_borrow_str in ["true", "1", "yes", ""]:
+                    allow_borrow = True
+                elif allow_borrow_str in ["false", "0", "no"]:
+                    allow_borrow = False
+                else:
+                    return JsonResponse(
+                        {
+                            "error": (
+                                f"Invalid value for allowBorrow: {
+                                    allow_borrow_str} for book: {title}"
+                            )
+                        },
+                        status=400,
+                    )
 
                 author = (
                     Author.objects.get_or_create(
