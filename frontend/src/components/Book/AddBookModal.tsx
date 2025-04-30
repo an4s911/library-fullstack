@@ -43,17 +43,11 @@ function AddBookModal({ onClose }: AddBookModalProps) {
             selectedGenreIdsList.length > 0 ||
             file
         ) {
-            if (
-                window.confirm("You will lose all unsaved changes if you close.") &&
-                window.confirm("Are you really sure?") &&
-                window.confirm("Are you a 100% sure?")
-            )
-                if (!window.confirm("Are you REALLY REALLY sure?")) {
-                    return; // Thats so fun!!
-                } else {
-                    onClose();
-                }
-            else return;
+            if (!window.confirm("You will lose all unsaved changes if you close.")) {
+                return;
+            }
+
+            onClose();
         } else {
             onClose();
         }
