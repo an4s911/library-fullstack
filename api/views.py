@@ -254,7 +254,7 @@ def get_book(request: HttpRequest, book_id: int) -> JsonResponse:
             "borrow": borrow_info_dict,
         }
 
-        return JsonResponse(result)
+        return JsonResponse({"book": result})
 
     except Exception as e:
         # Log the exception e for debugging
