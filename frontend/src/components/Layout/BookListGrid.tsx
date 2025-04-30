@@ -46,7 +46,7 @@ function BookListGrid({ isGrid }: BookListGridProps) {
             .catch((err) => {
                 console.log(err);
             });
-    }, [options, refreshBooks]);
+    }, [refreshBooks]);
 
     if (isLoading) {
         return <BookListGridLoader isGrid={isGrid} />;

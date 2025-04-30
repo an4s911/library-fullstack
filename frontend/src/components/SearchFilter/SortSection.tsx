@@ -9,7 +9,7 @@ function SortSection({}: SortSectionProps) {
     const [sortBy, setSortBy] = useState("title");
     const [isDescending, setIsDescending] = useState(false);
     const formRef = useRef<HTMLFormElement>(null);
-    const { setOptions } = useOptions();
+    const { setOptions, triggerRefresh } = useOptions();
 
     const handleSubmit = () => {
         const formElem = formRef.current!;
@@ -43,6 +43,7 @@ function SortSection({}: SortSectionProps) {
                 onChange={(e) => {
                     setSortBy(e.target.value);
                     handleSubmit();
+                    triggerRefresh("books");
                 }}
                 optionsList={[
                     {
@@ -73,6 +74,7 @@ function SortSection({}: SortSectionProps) {
                 onChange={(e) => {
                     setIsDescending(e.target.value === "true");
                     handleSubmit();
+                    triggerRefresh("books");
                 }}
                 optionsList={[
                     {
