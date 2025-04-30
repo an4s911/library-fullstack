@@ -12,24 +12,33 @@ const getCSRFToken = () => {
     return csrftokenCookie.split("=")[1];
 };
 
+type FetchWithToastOptions = {
+    okCallback?: () => void;
+    dataCallback?: (data: any) => void;
+    showToast?: boolean;
+};
+
 const fetchWithToast = async (
     input: RequestInfo | URL,
     init?: RequestInit,
-    successCallback?: () => void,
+    { okCallback, dataCallback, showToast = true }: FetchWithToastOptions = {},
 ) => {
     fetch(input, init)
         .then((res) => {
             if (res.ok) {
-                successCallback && successCallback();
+                okCallback && okCallback();
             }
             return res.json();
         })
         .then((data) => {
-            if (data.error) {
-                toast.error(data.error);
-            } else if (data.message) {
-                toast.success(data.message);
+            if (showToast) {
+                if (data.error) {
+                    toast.error(data.error);
+                } else if (data.message) {
+                    toast.success(data.message);
+                }
             }
+            dataCallback && dataCallback(data);
         });
 };
 
