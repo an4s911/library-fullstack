@@ -37,6 +37,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
         const title = (
             formElemRef.current!.elements.namedItem("title") as HTMLInputElement
         ).value;
+
         if (
             title !== "" ||
             selectedAuthorId !== -1 ||
@@ -46,11 +47,8 @@ function AddBookModal({ onClose }: AddBookModalProps) {
             if (!window.confirm("You will lose all unsaved changes if you close.")) {
                 return;
             }
-
-            onClose();
-        } else {
-            onClose();
         }
+        onClose();
     };
 
     const handleFormChange = () => {
