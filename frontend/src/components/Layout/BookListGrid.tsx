@@ -4,6 +4,7 @@ import { BookListGridLoader } from "@/components/SkeletonLoaders";
 import { Book, createBook } from "@/types";
 import { BookXIcon } from "lucide-react";
 import { useOptions, usePageContext } from "@/contexts";
+import { fetchApi } from "@/utils";
 
 type BookListGridProps = {
     isGrid: boolean;
@@ -20,32 +21,27 @@ function BookListGrid({ isGrid }: BookListGridProps) {
 
         const searchParamString = toQueryParams(options);
 
-        fetch(`/api/get-books/?${searchParamString}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
+        fetchApi(
+            `/api/get-books/?${searchParamString}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
             },
-        })
-            .then((res) => {
-                if (res.ok) {
-                    return res.json();
-                } else {
-                    throw new Error(res.statusText);
-                }
-            })
-            .then((data) => {
-                setBookList(
-                    data.books.map((book: Book) => {
-                        return createBook(book);
-                    }),
-                );
-                setTotalPages(data.totalPages);
-                setCurrentPage(data.currentPage);
-                setIsLoading(false);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+            {
+                dataCallback: (data) => {
+                    setBookList(
+                        data.books.map((book: Book) => {
+                            return createBook(book);
+                        }),
+                    );
+                    setTotalPages(data.totalPages);
+                    setCurrentPage(data.currentPage);
+                    setIsLoading(false);
+                },
+            },
+        );
     }, [refreshBooks]);
 
     if (isLoading) {

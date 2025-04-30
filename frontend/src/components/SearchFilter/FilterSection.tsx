@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { FilterCheckboxListLoader } from "@/components/SkeletonLoaders";
 import { useOptions } from "@/contexts";
 import { GenericButton } from "@/components/UI";
+import { fetchApi } from "@/utils";
 
 type Author = {
     id: number;
@@ -38,22 +39,21 @@ function FilterCheckboxList({ name, fetchUrl, refresh }: FilterCheckboxListProps
     useEffect(() => {
         setIsLoading(true);
 
-        fetch(fetchUrl, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
+        fetchApi(
+            fetchUrl,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
             },
-        })
-            .then((res) => {
-                return res.json();
-            })
-            .then((data) => {
-                setList(data[name]);
-                setIsLoading(false);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+            {
+                dataCallback: (data) => {
+                    setList(data[name]);
+                    setIsLoading(false);
+                },
+            },
+        );
     }, [refresh]);
 
     return isLoading ? (

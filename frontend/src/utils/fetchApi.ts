@@ -9,7 +9,7 @@ type FetchApiOptions = {
 const fetchApi = async (
     input: RequestInfo | URL,
     init?: RequestInit,
-    { okCallback, dataCallback, showToast = true }: FetchApiOptions = {},
+    { okCallback, dataCallback, showToast = false }: FetchApiOptions = {},
 ) => {
     fetch(input, init)
         .then((res) => {

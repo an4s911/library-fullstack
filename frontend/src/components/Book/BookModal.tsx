@@ -11,7 +11,7 @@ import {
 
 import { Book } from "@/types";
 import { Tag } from "@/components/UI";
-import { getCSRFToken } from "@/utils";
+import { fetchApi, getCSRFToken } from "@/utils";
 import { useOptions } from "@/contexts";
 
 type BookModalProps = {
@@ -38,75 +38,85 @@ function BookModal({ book, onClose }: BookModalProps) {
     };
 
     const handleBorrow = () => {
-        fetch(`/api/borrow-book/${bookInfo.id}/`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRFToken(),
+        fetchApi(
+            `/api/borrow-book/${bookInfo.id}/`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    borrowerName: borrowerInput,
+                }),
             },
-            credentials: "include",
-            body: JSON.stringify({
-                borrowerName: borrowerInput,
-            }),
-        }).then((res) => {
-            if (res.ok) {
-                setIsModified(true);
-                setBookInfo((prev) => {
-                    return {
-                        ...prev,
-                        borrowerName: borrowerInput,
-                    };
-                });
-                setBorrowerInput("");
-            }
-        });
+            {
+                okCallback: () => {
+                    setIsModified(true);
+                    setBookInfo((prev) => {
+                        return {
+                            ...prev,
+                            borrowerName: borrowerInput,
+                        };
+                    });
+                    setBorrowerInput("");
+                },
+            },
+        );
     };
 
     const handleUnborrow = () => {
-        fetch(`/api/unborrow-book/${bookInfo.id}/`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRFToken(),
+        fetchApi(
+            `/api/unborrow-book/${bookInfo.id}/`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+                credentials: "include",
             },
-            credentials: "include",
-        }).then((res) => {
-            if (res.ok) {
-                setIsModified(true);
-                setBookInfo((prev) => {
-                    return {
-                        ...prev,
-                        borrowerName: "",
-                    };
-                });
-            } else {
-                throw new Error(res.statusText);
-            }
-        });
+            {
+                okCallback: () => {
+                    setIsModified(true);
+                    setBookInfo((prev) => {
+                        return {
+                            ...prev,
+                            borrowerName: "",
+                        };
+                    });
+                },
+            },
+        );
     };
 
     const handleChangeAllowBorrow = (newValue: boolean) => {
-        fetch(`/api/edit-book/${bookInfo.id}/`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRFToken(),
+        fetchApi(
+            `/api/edit-book/${bookInfo.id}/`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    allowBorrow: newValue,
+                }),
             },
-            credentials: "include",
-            body: JSON.stringify({
-                allowBorrow: newValue,
-            }),
-        }).then((res) => {
-            if (res.ok) {
-                setIsModified(true);
-                setBookInfo((prev) => {
-                    return {
-                        ...prev,
-                        allowBorrow: newValue,
-                    };
-                });
-            }
-        });
+            {
+                okCallback: () => {
+                    setIsModified(true);
+                    setBookInfo((prev) => {
+                        return {
+                            ...prev,
+                            allowBorrow: newValue,
+                        };
+                    });
+                },
+            },
+        );
     };
 
     const handleDisableBorrow = () => {
@@ -130,19 +140,25 @@ function BookModal({ book, onClose }: BookModalProps) {
         )
             return;
 
-        fetch(`/api/delete-book/${bookInfo.id}/`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRFToken(),
+        fetchApi(
+            `/api/delete-book/${bookInfo.id}/`,
+            {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+                credentials: "include",
             },
-            credentials: "include",
-        }).then((res) => {
-            if (res.ok) {
-                triggerRefresh("books");
-                onClose();
-            }
-        });
+            {
+                okCallback: () => {
+                    console.log("helo");
+                    triggerRefresh("books");
+                    onClose();
+                },
+                showToast: true,
+            },
+        );
     };
 
     return (

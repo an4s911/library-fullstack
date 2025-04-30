@@ -11,8 +11,7 @@ import { GenericSelect } from "@/components/UI";
 import { useEffect, useRef, useState } from "react";
 import { Author, Genre } from "@/types";
 import { useOptions } from "@/contexts";
-import { getCSRFToken } from "@/utils";
-import { toast } from "react-toastify";
+import { fetchApi, getCSRFToken } from "@/utils";
 
 type AddBookModalProps = {
     onClose: () => void;
@@ -79,23 +78,26 @@ function AddBookModal({ onClose }: AddBookModalProps) {
         const newBook: any = Object.fromEntries(formData);
         newBook["genres"] = selectedGenreIdsList;
 
-        fetch("/api/add-book/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRFToken(),
+        fetchApi(
+            "/api/add-book/",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+                credentials: "include",
+                body: JSON.stringify(newBook),
             },
-            credentials: "include",
-            body: JSON.stringify(newBook),
-        }).then((res) => {
-            if (res.ok) {
-                formElem.reset();
-                triggerRefresh("books");
-                onClose();
-            } else {
-                throw new Error(res.statusText);
-            }
-        });
+            {
+                okCallback: () => {
+                    formElem.reset();
+                    triggerRefresh("books");
+                    onClose();
+                },
+                showToast: true,
+            },
+        );
     };
 
     const handleAddNewAuthorGenre = (type: string) => {
@@ -127,27 +129,25 @@ function AddBookModal({ onClose }: AddBookModalProps) {
 
         if (newItem === null || newItem === "") return;
 
-        fetch(option.url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRFToken(),
+        fetchApi(
+            option.url,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+                credentials: "include",
+                body: JSON.stringify({ name: newItem }),
             },
-            credentials: "include",
-            body: JSON.stringify({ name: newItem }),
-        })
-            .then((res) => {
-                if (res.ok) {
+            {
+                okCallback: () => {
                     triggerRefresh("filters");
-                    return res.json();
-                } else {
-                    throw new Error(res.statusText);
-                }
-            })
-            .then((data) => {
-                option.transformData(data);
-            })
-            .catch((err) => console.log(err));
+                },
+                dataCallback: option.transformData,
+                showToast: true,
+            },
+        );
     };
 
     const handleAddNewAuthor = () => {
@@ -181,10 +181,17 @@ function AddBookModal({ onClose }: AddBookModalProps) {
         };
 
         for (const option in options) {
-            fetch(options[option].url)
-                .then((res) => res.json())
-                .then((data) => options[option].setList(data[options[option].itemsKey]))
-                .catch((err) => console.log(err));
+            fetchApi(
+                options[option].url,
+                {},
+                {
+                    dataCallback: (data) => {
+                        if (data[options[option].itemsKey]) {
+                            options[option].setList(data[options[option].itemsKey]);
+                        }
+                    },
+                },
+            );
         }
     }, []);
 
@@ -262,29 +269,25 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                 const formData = new FormData();
                                 formData.append("file", file!);
 
-                                fetch("/api/add-books/", {
-                                    method: "POST",
-                                    headers: {
-                                        "X-CSRFToken": getCSRFToken(),
+                                fetchApi(
+                                    "/api/add-books/",
+                                    {
+                                        method: "POST",
+                                        headers: {
+                                            "X-CSRFToken": getCSRFToken(),
+                                        },
+                                        credentials: "include",
+                                        body: formData,
                                     },
-                                    credentials: "include",
-                                    body: formData,
-                                })
-                                    .then((res) => {
-                                        if (res.ok) {
+                                    {
+                                        okCallback: () => {
                                             triggerRefresh();
                                             setFile(null);
                                             onClose();
-                                        }
-                                        return res.json();
-                                    })
-                                    .then((data) => {
-                                        if (data.error) {
-                                            toast.error(data.error);
-                                        } else {
-                                            toast.success(data.message);
-                                        }
-                                    });
+                                        },
+                                        showToast: true,
+                                    },
+                                );
                             }}
                             onChange={(e) => {
                                 e.preventDefault();
