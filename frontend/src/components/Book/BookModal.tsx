@@ -13,6 +13,7 @@ import { Book } from "@/types";
 import { Tag } from "@/components/UI";
 import { fetchApi, getCSRFToken } from "@/utils";
 import { useOptions } from "@/contexts";
+import { handleDeleteBook } from "@/utils/book";
 
 type BookModalProps = {
     book: Book;
@@ -132,35 +133,6 @@ function BookModal({ book, onClose }: BookModalProps) {
         }
     }, [isBorrowed]);
 
-    const handleDeleteBook = () => {
-        if (
-            !window.confirm(
-                `The book "${bookInfo.title}" will be permanently deleted. This action is irreversible.\n\nContinue?`,
-            )
-        )
-            return;
-
-        fetchApi(
-            `/api/delete-book/${bookInfo.id}/`,
-            {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken(),
-                },
-                credentials: "include",
-            },
-            {
-                okCallback: () => {
-                    console.log("helo");
-                    triggerRefresh("books");
-                    onClose();
-                },
-                showToast: true,
-            },
-        );
-    };
-
     return (
         <Modal onClose={handleOnClose}>
             <div className="relative flex flex-col gap-5 mx-auto w-[40rem] rounded-lg bg-primary-50 dark:bg-gray-800  p-8 shadow-xl ring-1 ring-primary-400">
@@ -207,7 +179,13 @@ function BookModal({ book, onClose }: BookModalProps) {
                         <button
                             className="min-w-6 h-6 px-2"
                             onClick={() => {
-                                handleDeleteBook();
+                                handleDeleteBook({
+                                    book: bookInfo,
+                                    callback: () => {
+                                        triggerRefresh("books");
+                                        onClose();
+                                    },
+                                });
                             }}
                         >
                             <Trash2Icon className="text-error-600 hover:text-error-500 hover:cursor-pointer hover:scale-110 dt" />
