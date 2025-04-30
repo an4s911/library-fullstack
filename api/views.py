@@ -445,7 +445,7 @@ def delete_book(request: HttpRequest, book_id: int) -> JsonResponse:
         # Log the exception e
         return JsonResponse({"error": "Something went wrong"}, status=500)
 
-    return HttpResponse(status=204)  # No Content is common for DELETE
+    return JsonResponse({"message": "Book deleted successfully!"}, status=200)
 
 
 @login_required
