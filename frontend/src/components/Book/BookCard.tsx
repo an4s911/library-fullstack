@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import { Book, Genre } from "@/types";
 import { useEffect, useRef, useState } from "react";
-import { useModal } from "@/contexts";
 import { BookModal } from "@/components/Book";
 import { Tag } from "@/components/UI";
 
@@ -18,12 +17,7 @@ type BookCardProps = {
 function BookCard({ book, isGrid }: BookCardProps) {
     const [localGenres, setLocalGenres] = useState<Genre[]>([]);
     const genreContainerRef = useRef<HTMLUListElement>(null);
-    const { onModalOpen, onModalClose } = useModal();
     const [open, setOpen] = useState(false);
-
-    useEffect(() => {
-        open ? onModalOpen() : onModalClose();
-    }, [open]);
 
     useEffect(() => {
         const calculateVisibleGenres = () => {
