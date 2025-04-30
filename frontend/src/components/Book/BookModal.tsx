@@ -9,7 +9,7 @@ import {
     XIcon,
 } from "lucide-react";
 
-import { Book, createBook } from "@/types";
+import { Book } from "@/types";
 import { Tag } from "@/components/UI";
 import { getCSRFToken } from "@/utils";
 import { useOptions } from "@/contexts";
@@ -96,16 +96,17 @@ function BookModal({ book, onClose }: BookModalProps) {
             body: JSON.stringify({
                 allowBorrow: newValue,
             }),
-        })
-            .then((res) => {
-                if (res.ok) {
-                    setIsModified(true);
-                    return res.json();
-                }
-            })
-            .then((data) => {
-                setBookInfo(createBook(data.book));
-            });
+        }).then((res) => {
+            if (res.ok) {
+                setIsModified(true);
+                setBookInfo((prev) => {
+                    return {
+                        ...prev,
+                        allowBorrow: newValue,
+                    };
+                });
+            }
+        });
     };
 
     const handleDisableBorrow = () => {
