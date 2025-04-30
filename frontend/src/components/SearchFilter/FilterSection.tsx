@@ -163,7 +163,7 @@ function FilterSection({}: FilterSectionProps) {
                     className="text-primary fill-primary-300 dark:fill-primary-600"
                 />
             </div>
-            <div className="flex flex-col gap-5 overflow-y-scroll">
+            <div className="flex flex-col gap-5 overflow-y-auto">
                 <FilterCheckboxList
                     refresh={refreshFilters}
                     name="authors"
