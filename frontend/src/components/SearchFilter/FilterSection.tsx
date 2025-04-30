@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { FilterCheckboxListLoader } from "@/components/SkeletonLoaders";
 import { useOptions } from "@/contexts";
 import { GenericButton } from "@/components/UI";
+import { fetchApi } from "@/utils";
 
 type Author = {
     id: number;
@@ -38,22 +39,21 @@ function FilterCheckboxList({ name, fetchUrl, refresh }: FilterCheckboxListProps
     useEffect(() => {
         setIsLoading(true);
 
-        fetch(fetchUrl, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
+        fetchApi(
+            fetchUrl,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
             },
-        })
-            .then((res) => {
-                return res.json();
-            })
-            .then((data) => {
-                setList(data[name]);
-                setIsLoading(false);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+            {
+                dataCallback: (data) => {
+                    setList(data[name]);
+                    setIsLoading(false);
+                },
+            },
+        );
     }, [refresh]);
 
     return isLoading ? (
@@ -103,7 +103,7 @@ type FilterSectionProps = {};
 
 function FilterSection({}: FilterSectionProps) {
     const formRef = useRef<HTMLFormElement>(null);
-    const { setOptions, refreshFilters } = useOptions();
+    const { setOptions, triggerRefresh, refreshFilters } = useOptions();
 
     const handleSubmit = () => {
         const formElement = formRef.current!;
@@ -123,6 +123,23 @@ function FilterSection({}: FilterSectionProps) {
                 filter_borrowed: borrowed,
             };
         });
+
+        triggerRefresh("books");
+    };
+
+    const handleClear = () => {
+        setOptions((prevOptions) => {
+            return {
+                ...prevOptions,
+                filter_author: [],
+                filter_genre: [],
+                filter_borrowed: "null",
+                q: "",
+                search_in: "all",
+            };
+        });
+
+        triggerRefresh("books");
     };
 
     return (
@@ -146,7 +163,7 @@ function FilterSection({}: FilterSectionProps) {
                     className="text-primary fill-primary-300 dark:fill-primary-600"
                 />
             </div>
-            <div className="flex flex-col gap-5 overflow-y-scroll">
+            <div className="flex flex-col gap-5 overflow-y-auto">
                 <FilterCheckboxList
                     refresh={refreshFilters}
                     name="authors"
@@ -192,7 +209,7 @@ function FilterSection({}: FilterSectionProps) {
                     type="reset"
                     onClick={() => {
                         formRef.current!.reset();
-                        handleSubmit();
+                        handleClear();
                     }}
                     size="mini"
                     color="dull"

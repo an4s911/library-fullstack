@@ -6,6 +6,7 @@ export type Book = {
     allowBorrow: boolean;
     genres: Genre[];
     borrowerName?: string;
+    coverImageUrl?: string;
     getDateAdded: (withTime?: boolean) => string;
 };
 

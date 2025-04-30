@@ -436,26 +436,16 @@ def delete_book(request: HttpRequest, book_id: int) -> JsonResponse:
         )
 
     try:
-        book = Book.objects.get(pk=book_id)
-        book_title = book.title  # Get title for the message before deleting
+        book = get_object_or_404(Book, pk=book_id)  # Use get_object_or_404(pk=book_id)
         book.delete()
-        # Note: Associated Borrow records are automatically deleted due to
-        # on_delete=CASCADE
-
-        return JsonResponse(
-            {"message": f"Book '{book_title}' (ID: {book_id}) deleted successfully."},
-            status=200,
-        )
-        # Alternative: return HttpResponse(status=204) # No Content is common for DELETE
-
-    except Book.DoesNotExist:
+    except Http404:
         return JsonResponse({"error": f"Book with id {book_id} not found"}, status=404)
     except Exception as e:
         print(e)
         # Log the exception e
-        return JsonResponse(
-            {"error": "An unexpected error occurred during deletion"}, status=500
-        )
+        return JsonResponse({"error": "Something went wrong"}, status=500)
+
+    return JsonResponse({"message": "Book deleted successfully!"}, status=200)
 
 
 @login_required
@@ -754,7 +744,7 @@ def edit_book(request: HttpRequest, book_id: int) -> JsonResponse:
                 else None
             ),
             "dateAdded": book.date_added.isoformat(),
-            "genres": [genre.name for genre in book.genres.all()],
+            "genres": [genre for genre in book.genres.all().values("id", "name")],
             "allowBorrow": book.allow_borrow,
         }
         return JsonResponse(
@@ -798,7 +788,9 @@ def add_books(request: HttpRequest) -> JsonResponse:
     elif request.body:
         file = request.body
     else:
-        return JsonResponse({"error": "No file provided"}, status=400)
+        return JsonResponse(
+            {"error": "No file provided (or file is empty)"}, status=400
+        )
 
     try:
         decoded_file = file.decode("utf-8").splitlines()
@@ -807,9 +799,12 @@ def add_books(request: HttpRequest) -> JsonResponse:
         print(f"Error decoding file: {e}")
         return JsonResponse({"error": "Invalid file format"}, status=400)
 
-    expected_headers = {"title", "author", "genres", "allowBorrow"}
+    expected_headers = ["title", "author", "genres", "allowBorrow"]
 
-    if set(reader.fieldnames) != expected_headers:
+    # Convert CSV headers to lowercase
+    header_map = {header.lower(): header for header in reader.fieldnames}
+
+    if not all([header.lower() in header_map.keys() for header in expected_headers]):
         return JsonResponse(
             {"error": f"CSV must have headers: {', '.join(expected_headers)}"},
             status=400,
@@ -818,10 +813,12 @@ def add_books(request: HttpRequest) -> JsonResponse:
     try:
         with transaction.atomic():
             for row in reader:
-                title = row.get("title").strip()
-                author_name = row.get("author").strip()
-                genres_str_list = row.get("genres").strip().split(",")
-                allow_borrow_str: str = row.get("allowBorrow").strip().lower()
+                title = row.get(header_map["title"]).strip()
+                author_name = row.get(header_map["author"]).strip()
+                genres_str_list = row.get(header_map["genres"]).strip().split(",")
+                allow_borrow_str: str = (
+                    row.get(header_map["allowborrow"]).strip().lower()
+                )
 
                 if not title:
                     return JsonResponse(
@@ -830,7 +827,20 @@ def add_books(request: HttpRequest) -> JsonResponse:
 
                 genres_str_list = [] if genres_str_list == [""] else genres_str_list
 
-                allow_borrow = allow_borrow_str == "true" if allow_borrow_str else True
+                if allow_borrow_str in ["true", "1", "yes", ""]:
+                    allow_borrow = True
+                elif allow_borrow_str in ["false", "0", "no"]:
+                    allow_borrow = False
+                else:
+                    return JsonResponse(
+                        {
+                            "error": (
+                                f"Invalid value for allowBorrow: {
+                                    allow_borrow_str} for book: {title}"
+                            )
+                        },
+                        status=400,
+                    )
 
                 author = (
                     Author.objects.get_or_create(

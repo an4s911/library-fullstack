@@ -41,6 +41,7 @@ export const OptionsProvider = ({ children }: { children: ReactNode }) => {
         setOptions((options) => {
             return { ...options, pg_num: currentPage };
         });
+        triggerRefresh("books");
     }, [currentPage]);
 
     const [refreshBooks, setRefreshBooks] = useState(false);
