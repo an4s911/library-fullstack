@@ -436,26 +436,16 @@ def delete_book(request: HttpRequest, book_id: int) -> JsonResponse:
         )
 
     try:
-        book = Book.objects.get(pk=book_id)
-        book_title = book.title  # Get title for the message before deleting
+        book = get_object_or_404(Book, pk=book_id)  # Use get_object_or_404(pk=book_id)
         book.delete()
-        # Note: Associated Borrow records are automatically deleted due to
-        # on_delete=CASCADE
-
-        return JsonResponse(
-            {"message": f"Book '{book_title}' (ID: {book_id}) deleted successfully."},
-            status=200,
-        )
-        # Alternative: return HttpResponse(status=204) # No Content is common for DELETE
-
-    except Book.DoesNotExist:
+    except Http404:
         return JsonResponse({"error": f"Book with id {book_id} not found"}, status=404)
     except Exception as e:
         print(e)
         # Log the exception e
-        return JsonResponse(
-            {"error": "An unexpected error occurred during deletion"}, status=500
-        )
+        return JsonResponse({"error": "Something went wrong"}, status=500)
+
+    return HttpResponse(status=204)  # No Content is common for DELETE
 
 
 @login_required
