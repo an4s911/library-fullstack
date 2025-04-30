@@ -259,13 +259,16 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                             className="flex flex-col gap-4"
                             onSubmit={(e) => {
                                 e.preventDefault();
+                                const formData = new FormData();
+                                formData.append("file", file!);
+
                                 fetch("/api/add-books/", {
                                     method: "POST",
                                     headers: {
                                         "X-CSRFToken": getCSRFToken(),
                                     },
                                     credentials: "include",
-                                    body: file,
+                                    body: formData,
                                 })
                                     .then((res) => {
                                         if (res.ok) {
