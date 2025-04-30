@@ -36,7 +36,11 @@ def filter_books(books: QuerySet, filters: dict) -> QuerySet:
             search_q = (
                 Q(title__icontains=query)
                 | Q(author__isnull=False, author__name__icontains=query)
-                | Q(borrow__isnull=False, borrow__borrower_name__icontains=query)
+                | Q(
+                    borrow__isnull=False,
+                    borrow__is_borrowed=True,
+                    borrow__borrower_name__icontains=query,
+                )
             )
 
         # Apply the search Q object to the queryset
