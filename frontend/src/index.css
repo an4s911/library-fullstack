@@ -39,3 +39,12 @@ body {
         }
     }
 }
+
+*::-webkit-scrollbar {
+    width: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: darkgrey;
+}
