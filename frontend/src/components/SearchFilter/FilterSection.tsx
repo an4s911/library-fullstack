@@ -103,7 +103,7 @@ type FilterSectionProps = {};
 
 function FilterSection({}: FilterSectionProps) {
     const formRef = useRef<HTMLFormElement>(null);
-    const { setOptions, refreshFilters } = useOptions();
+    const { setOptions, triggerRefresh, refreshFilters } = useOptions();
 
     const handleSubmit = () => {
         const formElement = formRef.current!;
@@ -123,6 +123,23 @@ function FilterSection({}: FilterSectionProps) {
                 filter_borrowed: borrowed,
             };
         });
+
+        triggerRefresh("books");
+    };
+
+    const handleClear = () => {
+        setOptions((prevOptions) => {
+            return {
+                ...prevOptions,
+                filter_author: [],
+                filter_genre: [],
+                filter_borrowed: "null",
+                q: "",
+                search_in: "all",
+            };
+        });
+
+        triggerRefresh("books");
     };
 
     return (
@@ -192,7 +209,7 @@ function FilterSection({}: FilterSectionProps) {
                     type="reset"
                     onClick={() => {
                         formRef.current!.reset();
-                        handleSubmit();
+                        handleClear();
                     }}
                     size="mini"
                     color="dull"

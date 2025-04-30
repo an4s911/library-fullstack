@@ -1,28 +1,40 @@
 import { SearchIcon } from "lucide-react";
-import { useState } from "react";
+// import { useState } from "react";
 import { GenericSelect } from "@/components/UI";
 import { useOptions } from "@/contexts";
 
 type SearchBarProps = {};
 
 function SearchBar({}: SearchBarProps) {
-    const [value, setValue] = useState("");
-    const [searchFilter, setSearchFilter] = useState("");
-    const { setOptions } = useOptions();
+    const { options, setOptions, triggerRefresh } = useOptions();
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formElem = e.currentTarget;
-        const formData = new FormData(formElem);
-
+    const value = options.q;
+    console.log(options);
+    console.log(value);
+    const setValue = (value: string) => {
         setOptions((prev) => {
             return {
                 ...prev,
                 pg_num: 1,
-                q: formData.get("query") as string,
-                search_in: formData.get("searchField") as string,
+                q: value,
             };
         });
+    };
+
+    const searchFilter = options.search_in;
+    const setSearchFilter = (value: string) => {
+        setOptions((prev) => {
+            return {
+                ...prev,
+                pg_num: 1,
+                search_in: value,
+            };
+        });
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        triggerRefresh("books");
     };
 
     return (
