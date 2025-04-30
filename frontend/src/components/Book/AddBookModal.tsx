@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { Author, Genre } from "@/types";
 import { useOptions } from "@/contexts";
 import { getCSRFToken } from "@/utils";
+import { toast } from "react-toastify";
 
 type AddBookModalProps = {
     onClose: () => void;
@@ -271,11 +272,16 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                             triggerRefresh();
                                             setFile(null);
                                             onClose();
-                                        } else {
-                                            throw new Error(res.statusText);
                                         }
+                                        return res.json();
                                     })
-                                    .catch((err) => console.log(err));
+                                    .then((data) => {
+                                        if (data.error) {
+                                            toast.error(data.error);
+                                        } else {
+                                            toast.success(data.message);
+                                        }
+                                    });
                             }}
                             onChange={(e) => {
                                 e.preventDefault();

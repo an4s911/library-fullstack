@@ -3,6 +3,7 @@ import { HomePage } from "@/pages";
 import { OptionsProvider, PageContextProvider } from "@/contexts";
 import { ModalProvider } from "@/contexts";
 import { useEffect } from "react";
+import { ToastContainer } from "react-toastify";
 
 function App() {
     useEffect(() => {
@@ -22,6 +23,7 @@ function App() {
                     <ModalProvider>
                         <Header />
                         <HomePage />
+                        <ToastContainer />
                     </ModalProvider>
                 </OptionsProvider>
             </PageContextProvider>
