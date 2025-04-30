@@ -799,7 +799,7 @@ def add_books(request: HttpRequest) -> JsonResponse:
         print(f"Error decoding file: {e}")
         return JsonResponse({"error": "Invalid file format"}, status=400)
 
-    expected_headers = ["title", "author", "genres", "allowborrow"]
+    expected_headers = ["title", "author", "genres", "allowBorrow"]
 
     # Convert CSV headers to lowercase
     header_map = {header.lower(): header for header in reader.fieldnames}
