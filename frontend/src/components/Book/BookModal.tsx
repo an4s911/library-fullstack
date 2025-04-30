@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { GenericButton, Modal } from "@/components/UI";
 
-import { AlertCircleIcon, CalendarIcon, UserRoundIcon, XIcon } from "lucide-react";
+import {
+    AlertCircleIcon,
+    CalendarIcon,
+    Trash2Icon,
+    UserRoundIcon,
+    XIcon,
+} from "lucide-react";
 
 import { Book, createBook } from "@/types";
 import { Tag } from "@/components/UI";
@@ -115,6 +121,29 @@ function BookModal({ book, onClose }: BookModalProps) {
         }
     }, [isBorrowed]);
 
+    const handleDeleteBook = () => {
+        if (
+            !window.confirm(
+                `The book "${bookInfo.title}" will be permanently deleted. This action is irreversible.\n\nContinue?`,
+            )
+        )
+            return;
+
+        fetch(`/api/delete-book/${bookInfo.id}/`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRFToken(),
+            },
+            credentials: "include",
+        }).then((res) => {
+            if (res.ok) {
+                triggerRefresh("books");
+                onClose();
+            }
+        });
+    };
+
     return (
         <Modal onClose={handleOnClose}>
             <div className="relative flex flex-col gap-5 mx-auto w-[40rem] rounded-lg bg-primary-50 dark:bg-gray-800  p-8 shadow-xl ring-1 ring-primary-400">
@@ -145,18 +174,28 @@ function BookModal({ book, onClose }: BookModalProps) {
                         </span>
                     </div>
 
-                    <ul className="flex gap-2 flex-wrap text-xs">
-                        {bookInfo.genres.map((genre, index) => {
-                            return (
-                                <Tag
-                                    key={index}
-                                    as={"li"}
-                                    label={genre.name}
-                                    size={14}
-                                />
-                            );
-                        })}
-                    </ul>
+                    <div className="flex">
+                        <ul className="flex gap-2 flex-wrap text-xs flex-grow">
+                            {bookInfo.genres.map((genre, index) => {
+                                return (
+                                    <Tag
+                                        key={index}
+                                        as={"li"}
+                                        label={genre.name}
+                                        size={14}
+                                    />
+                                );
+                            })}
+                        </ul>
+                        <button
+                            className="min-w-6 h-6 px-2"
+                            onClick={() => {
+                                handleDeleteBook();
+                            }}
+                        >
+                            <Trash2Icon className="text-error-600 hover:text-error-500 hover:cursor-pointer hover:scale-110 dt" />
+                        </button>
+                    </div>
                 </div>
 
                 <hr className="border-slate-400/40 dark:border-slate-600/40" />
