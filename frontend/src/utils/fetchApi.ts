@@ -1,15 +1,15 @@
 import { toast } from "react-toastify";
 
-type FetchWithToastOptions = {
+type FetchApiOptions = {
     okCallback?: () => void;
     dataCallback?: (data: any) => void;
     showToast?: boolean;
 };
 
-const fetchWithToast = async (
+const fetchApi = async (
     input: RequestInfo | URL,
     init?: RequestInit,
-    { okCallback, dataCallback, showToast = true }: FetchWithToastOptions = {},
+    { okCallback, dataCallback, showToast = true }: FetchApiOptions = {},
 ) => {
     fetch(input, init)
         .then((res) => {
@@ -30,4 +30,4 @@ const fetchWithToast = async (
         });
 };
 
-export default fetchWithToast;
+export default fetchApi;
