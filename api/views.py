@@ -744,7 +744,7 @@ def edit_book(request: HttpRequest, book_id: int) -> JsonResponse:
                 else None
             ),
             "dateAdded": book.date_added.isoformat(),
-            "genres": [genre.name for genre in book.genres.all()],
+            "genres": [genre for genre in book.genres.all().values("id", "name")],
             "allowBorrow": book.allow_borrow,
         }
         return JsonResponse(
