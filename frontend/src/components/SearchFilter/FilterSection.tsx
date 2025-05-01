@@ -113,6 +113,7 @@ function FilterSection({}: FilterSectionProps) {
         const genres = formData.getAll("genres").map(String);
 
         const borrowed = formData.get("borrowStatus") as string;
+        const allowBorrow = formData.get("allowBorrow") as string;
 
         setOptions((prevOptions) => {
             return {
@@ -121,6 +122,7 @@ function FilterSection({}: FilterSectionProps) {
                 filter_author: authors,
                 filter_genre: genres,
                 filter_borrowed: borrowed,
+                filter_allow_borrow: allowBorrow,
             };
         });
 
@@ -181,19 +183,45 @@ function FilterSection({}: FilterSectionProps) {
                             { label: "Any", value: "null" },
                             { label: "Borrowed", value: "true" },
                             { label: "Not Borrowed", value: "false" },
-                        ].map((status, index) => {
-                            const id = `borrowStatus${capitalizeWords(status.label)}`;
+                        ].map(({ label, value }, index) => {
+                            const id = `borrowStatus${capitalizeWords(label)}`;
                             return (
                                 <li key={index} className="flex items-center gap-2">
                                     <input
                                         id={id}
                                         type="radio"
                                         name="borrowStatus"
-                                        value={status.value}
-                                        defaultChecked={status.value === "null"}
+                                        value={value}
+                                        defaultChecked={value === "null"}
                                     />
                                     <label htmlFor={id} className="w-full">
-                                        {status.label}
+                                        {label}
+                                    </label>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+                <div className="relative w-full">
+                    <h3>Borrow Allowed Status</h3>
+                    <ul className="flex gap-2 flex-col w-full">
+                        {[
+                            { label: "Any", value: "null" },
+                            { label: "Allowed", value: "true" },
+                            { label: "Not Allowed", value: "false" },
+                        ].map(({ label, value }, index) => {
+                            const id = `allowBorrowStatus${capitalizeWords(label)}`;
+                            return (
+                                <li key={index} className="flex items-center gap-2">
+                                    <input
+                                        id={id}
+                                        type="radio"
+                                        name="allowBorrow"
+                                        value={value}
+                                        defaultChecked={value === "null"}
+                                    />
+                                    <label htmlFor={id} className="w-full">
+                                        {label}
                                     </label>
                                 </li>
                             );
