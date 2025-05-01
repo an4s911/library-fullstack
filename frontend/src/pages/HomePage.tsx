@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { FilterSection, SortSection } from "@/components/SearchFilter";
 import { BookListGrid, PageNav } from "@/components/Layout";
 import { LayoutToggleBtn } from "@/components/Layout";
-import { usePageContext } from "@/contexts";
 import { FloatingInfo } from "@/components/Widgets";
 
 type HomePageProps = {};
@@ -11,7 +10,6 @@ function HomePage({}: HomePageProps) {
     const [isGrid, setIsGrid] = useState(
         JSON.parse(localStorage.getItem("isGrid") || "true"),
     );
-    const { totalPages, currentPage, nextPage, prevPage } = usePageContext();
 
     useEffect(() => {
         localStorage.setItem("isGrid", JSON.stringify(isGrid));
@@ -34,12 +32,7 @@ function HomePage({}: HomePageProps) {
                     justify-between sticky top-8 z-10"
                 >
                     <SortSection />
-                    <PageNav
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        nextPage={nextPage}
-                        prevPage={prevPage}
-                    />
+                    <PageNav />
                     <LayoutToggleBtn
                         isGrid={isGrid}
                         onClick={() => setIsGrid(!isGrid)}
