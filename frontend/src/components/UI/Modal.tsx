@@ -1,3 +1,4 @@
+import { XIcon } from "lucide-react";
 import { createPortal } from "react-dom";
 
 type ModalProps = {
@@ -13,6 +14,13 @@ function Modal({ children, onClose }: ModalProps) {
                 onClick={onClose}
             />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <button
+                    onClick={onClose}
+                    className="absolute z-10 right-4 top-4 text-slate-800 dark:text-slate-400
+                    transition-colors dark:hover:text-slate-100 hover:text-slate-500"
+                >
+                    <XIcon size={24} />
+                </button>
                 {children}
             </div>
         </div>,

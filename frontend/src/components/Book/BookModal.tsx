@@ -1,13 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { GenericButton, Modal } from "@/components/UI";
 
-import {
-    AlertCircleIcon,
-    CalendarIcon,
-    Trash2Icon,
-    UserRoundIcon,
-    XIcon,
-} from "lucide-react";
+import { AlertCircleIcon, CalendarIcon, Trash2Icon, UserRoundIcon } from "lucide-react";
 
 import { Book } from "@/types";
 import { Tag } from "@/components/UI";
@@ -52,14 +46,6 @@ function BookModal({ book, onClose }: BookModalProps) {
     return (
         <Modal onClose={handleOnClose}>
             <div className="relative flex flex-col gap-5 mx-auto w-[40rem] rounded-lg bg-primary-50 dark:bg-gray-800  p-8 shadow-xl ring-1 ring-primary-400">
-                <button
-                    onClick={handleOnClose}
-                    className="absolute right-4 top-4 text-slate-800 dark:text-slate-400
-                    transition-colors dark:hover:text-slate-100 hover:text-slate-500"
-                >
-                    <XIcon size={24} />
-                </button>
-
                 <div className="flex flex-col gap-3">
                     <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-50 mb-2">
                         {bookInfo.title}

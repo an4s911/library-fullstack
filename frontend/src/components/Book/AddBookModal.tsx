@@ -4,7 +4,6 @@ import {
     InfoIcon,
     MinusIcon,
     PlusIcon,
-    XIcon,
 } from "lucide-react";
 import { GenericButton, Modal } from "@/components/UI";
 import { GenericSelect } from "@/components/UI";
@@ -351,12 +350,6 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                 <div className="flex flex-col gap-5 w-[448px]">
                     <div className="top w-full flex items-center justify-between">
                         <h2 className="text-2xl font-bold">Add New Book</h2>
-                        <button
-                            className="opacity-65 hover:opacity-100"
-                            onClick={handleOnClose}
-                        >
-                            <XIcon />
-                        </button>
                     </div>
                     <form
                         ref={formElemRef}
