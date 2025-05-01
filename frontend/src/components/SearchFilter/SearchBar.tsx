@@ -1,5 +1,4 @@
 import { SearchIcon } from "lucide-react";
-// import { useState } from "react";
 import { GenericSelect } from "@/components/UI";
 import { useOptions } from "@/contexts";
 
@@ -8,7 +7,7 @@ type SearchBarProps = {};
 function SearchBar({}: SearchBarProps) {
     const { options, setOptions, triggerRefresh } = useOptions();
 
-    const value = options.q;
+    const value = options.q ?? "";
     const setValue = (value: string) => {
         setOptions((prev) => {
             return {
@@ -19,7 +18,7 @@ function SearchBar({}: SearchBarProps) {
         });
     };
 
-    const searchFilter = options.search_in;
+    const searchFilter = options.search_in ?? "all";
     const setSearchFilter = (value: string) => {
         setOptions((prev) => {
             return {
