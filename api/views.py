@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, Page, PageNotAnInteger
 from django.db import transaction
-from django.db.models import Count, QuerySet
+from django.db.models import QuerySet
+from django.db.models.functions import Lower
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -38,6 +39,8 @@ def get_books(request: HttpRequest) -> JsonResponse:
         - `filter_borrowed` (str, optional): Filter books by whether they are borrowed.
           Set to 'true' to include borrowed books, 'false' to exclude borrowed books.
           Defaults to 'null'.
+        - `filter_allow_borrow` (str, optional): Filters books by whether it is allowed to
+           be borrowed or not.
     - Sorting:
         - `sort_by` (str, optional): Field to sort books by. Defaults to 'id'.
           Common options: 'title', 'author', 'date_added', 'borrower_name'.
@@ -78,6 +81,7 @@ def get_books(request: HttpRequest) -> JsonResponse:
     filter_authors: list[str] = request.GET.getlist("filter_author", "")
     filter_genres: list[str] = request.GET.getlist("filter_genre", "")
     filter_borrowed_q: str = request.GET.get("filter_borrowed", "null").lower()
+    filter_allow_borrow_q: str = request.GET.get("filter_allow_borrow", "null").lower()
 
     # Validate filter_borrowed parameter
     allowed_filter_borrowed_values = ["true", "false", "null"]
@@ -98,6 +102,27 @@ def get_books(request: HttpRequest) -> JsonResponse:
         filter_borrowed_q == "true" if filter_borrowed_q in ["true", "false"] else None
     )
 
+    # Validate filter_allowborrow parameter
+    allowed_filter_allowborrow_values = ["true", "false", "null"]
+    if filter_allow_borrow_q not in allowed_filter_allowborrow_values:
+        return JsonResponse(
+            {
+                "error": (
+                    f"Invalid value for filter_allowborrow parameter. Allowed values: {
+                        ', '.join(allowed_filter_allowborrow_values)}"
+                )
+            },
+            status=400,
+        )
+
+    # Convert filter_allowborrow parameter to boolean if provided
+    # If filter_allowborrow_q is not "true" or "false", set it to None
+    filter_allowborrow = (
+        filter_allow_borrow_q == "true"
+        if filter_allow_borrow_q in ["true", "false"]
+        else None
+    )
+
     # Create a dictionary to hold the filter criteria
     filters: dict = {
         "query": search_query,
@@ -105,6 +130,7 @@ def get_books(request: HttpRequest) -> JsonResponse:
         "authors": filter_authors,
         "genres": filter_genres,
         "borrowed": filter_borrowed,
+        "allowborrow": filter_allowborrow,
     }
 
     # Extract query parameters for sorting (prefixed with sort_)
@@ -254,7 +280,7 @@ def get_book(request: HttpRequest, book_id: int) -> JsonResponse:
             "borrow": borrow_info_dict,
         }
 
-        return JsonResponse(result)
+        return JsonResponse({"book": result})
 
     except Exception as e:
         # Log the exception e for debugging
@@ -267,9 +293,7 @@ def get_book(request: HttpRequest, book_id: int) -> JsonResponse:
 @login_required
 def get_authors(request: HttpRequest) -> JsonResponse:
     # order by number of books
-    authors = (
-        Author.objects.annotate(book_count=Count("book")).order_by("-book_count").all()
-    )
+    authors = Author.objects.all().order_by(Lower("name"))
     result: list[dict] = [{"id": author.id, "name": author.name} for author in authors]
     return JsonResponse({"authors": result})
 
@@ -277,9 +301,7 @@ def get_authors(request: HttpRequest) -> JsonResponse:
 @login_required
 def get_genres(request: HttpRequest) -> JsonResponse:
     # order by number of books
-    genres = (
-        Genre.objects.annotate(book_count=Count("book")).order_by("-book_count").all()
-    )
+    genres = Genre.objects.all().order_by(Lower("name"))
     result: list[dict] = [{"id": genre.id, "name": genre.name} for genre in genres]
     return JsonResponse({"genres": result})
 

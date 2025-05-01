@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { GenericButton, Modal } from "@/components/UI";
 
-import {
-    AlertCircleIcon,
-    CalendarIcon,
-    Trash2Icon,
-    UserRoundIcon,
-    XIcon,
-} from "lucide-react";
+import { AlertCircleIcon, CalendarIcon, Trash2Icon, UserRoundIcon } from "lucide-react";
 
 import { Book } from "@/types";
 import { Tag } from "@/components/UI";
-import { fetchApi, getCSRFToken } from "@/utils";
 import { useOptions } from "@/contexts";
+import {
+    handleBorrowBook,
+    handleDeleteBook,
+    handleDisableBorrow,
+    handleEnableBorrow,
+    handleUnborrowBook,
+} from "@/utils/book";
 
 type BookModalProps = {
     book: Book;
@@ -37,141 +37,15 @@ function BookModal({ book, onClose }: BookModalProps) {
         onClose();
     };
 
-    const handleBorrow = () => {
-        fetchApi(
-            `/api/borrow-book/${bookInfo.id}/`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken(),
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    borrowerName: borrowerInput,
-                }),
-            },
-            {
-                okCallback: () => {
-                    setIsModified(true);
-                    setBookInfo((prev) => {
-                        return {
-                            ...prev,
-                            borrowerName: borrowerInput,
-                        };
-                    });
-                    setBorrowerInput("");
-                },
-            },
-        );
-    };
-
-    const handleUnborrow = () => {
-        fetchApi(
-            `/api/unborrow-book/${bookInfo.id}/`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken(),
-                },
-                credentials: "include",
-            },
-            {
-                okCallback: () => {
-                    setIsModified(true);
-                    setBookInfo((prev) => {
-                        return {
-                            ...prev,
-                            borrowerName: "",
-                        };
-                    });
-                },
-            },
-        );
-    };
-
-    const handleChangeAllowBorrow = (newValue: boolean) => {
-        fetchApi(
-            `/api/edit-book/${bookInfo.id}/`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken(),
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    allowBorrow: newValue,
-                }),
-            },
-            {
-                okCallback: () => {
-                    setIsModified(true);
-                    setBookInfo((prev) => {
-                        return {
-                            ...prev,
-                            allowBorrow: newValue,
-                        };
-                    });
-                },
-            },
-        );
-    };
-
-    const handleDisableBorrow = () => {
-        handleChangeAllowBorrow(false);
-    };
-    const handleEnableBorrow = () => {
-        handleChangeAllowBorrow(true);
-    };
-
     useEffect(() => {
         if (!isBorrowed && borrowerInputRef.current) {
             borrowerInputRef.current.focus();
         }
     }, [isBorrowed]);
 
-    const handleDeleteBook = () => {
-        if (
-            !window.confirm(
-                `The book "${bookInfo.title}" will be permanently deleted. This action is irreversible.\n\nContinue?`,
-            )
-        )
-            return;
-
-        fetchApi(
-            `/api/delete-book/${bookInfo.id}/`,
-            {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken(),
-                },
-                credentials: "include",
-            },
-            {
-                okCallback: () => {
-                    console.log("helo");
-                    triggerRefresh("books");
-                    onClose();
-                },
-                showToast: true,
-            },
-        );
-    };
-
     return (
         <Modal onClose={handleOnClose}>
             <div className="relative flex flex-col gap-5 mx-auto w-[40rem] rounded-lg bg-primary-50 dark:bg-gray-800  p-8 shadow-xl ring-1 ring-primary-400">
-                <button
-                    onClick={handleOnClose}
-                    className="absolute right-4 top-4 text-slate-800 dark:text-slate-400
-                    transition-colors dark:hover:text-slate-100 hover:text-slate-500"
-                >
-                    <XIcon size={24} />
-                </button>
-
                 <div className="flex flex-col gap-3">
                     <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-50 mb-2">
                         {bookInfo.title}
@@ -207,7 +81,13 @@ function BookModal({ book, onClose }: BookModalProps) {
                         <button
                             className="min-w-6 h-6 px-2"
                             onClick={() => {
-                                handleDeleteBook();
+                                handleDeleteBook({
+                                    book: bookInfo,
+                                    callback: () => {
+                                        triggerRefresh("books");
+                                        onClose();
+                                    },
+                                });
                             }}
                         >
                             <Trash2Icon className="text-error-600 hover:text-error-500 hover:cursor-pointer hover:scale-110 dt" />
@@ -221,25 +101,33 @@ function BookModal({ book, onClose }: BookModalProps) {
                 <section className="flex flex-col w-full gap-3">
                     <div className="flex justify-between items-center w-full">
                         <h4 className="text-xl font-semibold">Borrowing Status</h4>
-                        {borrowAllowed ? (
-                            <GenericButton
-                                disabled={isBorrowed}
-                                onClick={handleDisableBorrow}
-                                color="error"
-                            >
-                                <span className="px-1 font-medium">
-                                    {isBorrowed
+                        <GenericButton
+                            color={borrowAllowed ? "error" : "success"}
+                            disabled={borrowAllowed && isBorrowed}
+                            onClick={() => {
+                                const borrowToggleHandler = borrowAllowed
+                                    ? handleDisableBorrow
+                                    : handleEnableBorrow;
+
+                                borrowToggleHandler(bookInfo.id, () => {
+                                    setIsModified(true);
+                                    setBookInfo((prev) => {
+                                        return {
+                                            ...prev,
+                                            allowBorrow: !borrowAllowed,
+                                        };
+                                    });
+                                });
+                            }}
+                        >
+                            <span className="font-medium px-1">
+                                {borrowAllowed
+                                    ? isBorrowed
                                         ? "Cannot Disable While Borrowed"
-                                        : "Disable Borrowing"}
-                                </span>
-                            </GenericButton>
-                        ) : (
-                            <GenericButton color="success" onClick={handleEnableBorrow}>
-                                <span className="font-medium px-1">
-                                    Enable Borrowing
-                                </span>
-                            </GenericButton>
-                        )}
+                                        : "Disable Borrowing"
+                                    : "Enable Borrowing"}
+                            </span>
+                        </GenericButton>
                     </div>
 
                     <div className="h-32">
@@ -261,7 +149,20 @@ function BookModal({ book, onClose }: BookModalProps) {
                                             </p>
 
                                             <GenericButton
-                                                onClick={handleUnborrow}
+                                                onClick={() => {
+                                                    handleUnborrowBook({
+                                                        bookId: bookInfo.id,
+                                                        callback: () => {
+                                                            setIsModified(true);
+                                                            setBookInfo((prev) => {
+                                                                return {
+                                                                    ...prev,
+                                                                    borrowerName: "",
+                                                                };
+                                                            });
+                                                        },
+                                                    });
+                                                }}
                                                 color="success"
                                             >
                                                 Mark as Returned
@@ -272,7 +173,6 @@ function BookModal({ book, onClose }: BookModalProps) {
                                     <form
                                         onSubmit={(e) => {
                                             e.preventDefault();
-                                            handleBorrow();
                                         }}
                                         className="flex flex-col justify-around h-full"
                                     >
@@ -291,9 +191,26 @@ function BookModal({ book, onClose }: BookModalProps) {
                                                 focus:ring-2 focus:ring-primary-400 focus:dark:ring-primary-500"
                                         />
                                         <GenericButton
+                                            type="submit"
                                             disabled={!borrowerInput.trim()}
-                                            onClick={handleBorrow}
                                             size="medium"
+                                            onClick={() => {
+                                                handleBorrowBook({
+                                                    bookId: bookInfo.id,
+                                                    borrowerName: borrowerInput,
+                                                    callback: () => {
+                                                        setIsModified(true);
+                                                        setBookInfo((prev) => {
+                                                            return {
+                                                                ...prev,
+                                                                borrowerName:
+                                                                    borrowerInput,
+                                                            };
+                                                        });
+                                                        setBorrowerInput("");
+                                                    },
+                                                });
+                                            }}
                                         >
                                             <span className="font-medium">
                                                 Lend Book

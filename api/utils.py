@@ -11,7 +11,7 @@ def filter_books(books: QuerySet, filters: dict) -> QuerySet:
         books (QuerySet): The queryset to filter.
         filters (dict): A dictionary containing filter and search criteria.
                         Expected keys: 'query', 'search_scope', 'authors',
-                        'genres', 'borrowed'.
+                        'genres', 'borrowed', 'allowborrow'.
 
     Returns:
         QuerySet: The filtered queryset.
@@ -72,6 +72,16 @@ def filter_books(books: QuerySet, filters: dict) -> QuerySet:
         # Exclude books that are borrowed
         # Basically, books that are not borrowed or once borrowed and returned
         books = books.exclude(borrow__is_borrowed=True)
+
+    allow_borrow = filters.get("allowborrow")  # could be 'true' or 'false' or None
+
+    # Filter by allow_borrow status
+    if allow_borrow is True:
+        # Only include books that are allowed to be borrowed
+        books = books.filter(allow_borrow=True)
+    elif allow_borrow is False:
+        # Exclude books that are not allowed to be borrowed
+        books = books.exclude(allow_borrow=True)
 
     return books.distinct()  # Ensure no duplicate results
 

@@ -1,7 +1,6 @@
 import { Header } from "@/components/Layout";
 import { HomePage } from "@/pages";
 import { OptionsProvider, PageContextProvider } from "@/contexts";
-import { ModalProvider } from "@/contexts";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
@@ -20,11 +19,9 @@ function App() {
         >
             <PageContextProvider>
                 <OptionsProvider>
-                    <ModalProvider>
-                        <Header />
-                        <HomePage />
-                        <ToastContainer />
-                    </ModalProvider>
+                    <Header />
+                    <HomePage />
+                    <ToastContainer />
                 </OptionsProvider>
             </PageContextProvider>
         </div>
