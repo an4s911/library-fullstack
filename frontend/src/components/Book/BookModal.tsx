@@ -11,12 +11,13 @@ import {
 
 import { Book } from "@/types";
 import { Tag } from "@/components/UI";
-import { fetchApi, getCSRFToken } from "@/utils";
 import { useOptions } from "@/contexts";
 import {
+    handleBorrowBook,
     handleDeleteBook,
     handleDisableBorrow,
     handleEnableBorrow,
+    handleUnborrowBook,
 } from "@/utils/book";
 
 type BookModalProps = {
@@ -40,60 +41,6 @@ function BookModal({ book, onClose }: BookModalProps) {
             triggerRefresh("books");
         }
         onClose();
-    };
-
-    const handleBorrow = () => {
-        fetchApi(
-            `/api/borrow-book/${bookInfo.id}/`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken(),
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    borrowerName: borrowerInput,
-                }),
-            },
-            {
-                okCallback: () => {
-                    setIsModified(true);
-                    setBookInfo((prev) => {
-                        return {
-                            ...prev,
-                            borrowerName: borrowerInput,
-                        };
-                    });
-                    setBorrowerInput("");
-                },
-            },
-        );
-    };
-
-    const handleUnborrow = () => {
-        fetchApi(
-            `/api/unborrow-book/${bookInfo.id}/`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken(),
-                },
-                credentials: "include",
-            },
-            {
-                okCallback: () => {
-                    setIsModified(true);
-                    setBookInfo((prev) => {
-                        return {
-                            ...prev,
-                            borrowerName: "",
-                        };
-                    });
-                },
-            },
-        );
     };
 
     useEffect(() => {
@@ -216,7 +163,20 @@ function BookModal({ book, onClose }: BookModalProps) {
                                             </p>
 
                                             <GenericButton
-                                                onClick={handleUnborrow}
+                                                onClick={() => {
+                                                    handleUnborrowBook({
+                                                        bookId: bookInfo.id,
+                                                        callback: () => {
+                                                            setIsModified(true);
+                                                            setBookInfo((prev) => {
+                                                                return {
+                                                                    ...prev,
+                                                                    borrowerName: "",
+                                                                };
+                                                            });
+                                                        },
+                                                    });
+                                                }}
                                                 color="success"
                                             >
                                                 Mark as Returned
@@ -227,7 +187,6 @@ function BookModal({ book, onClose }: BookModalProps) {
                                     <form
                                         onSubmit={(e) => {
                                             e.preventDefault();
-                                            handleBorrow();
                                         }}
                                         className="flex flex-col justify-around h-full"
                                     >
@@ -246,9 +205,26 @@ function BookModal({ book, onClose }: BookModalProps) {
                                                 focus:ring-2 focus:ring-primary-400 focus:dark:ring-primary-500"
                                         />
                                         <GenericButton
+                                            type="submit"
                                             disabled={!borrowerInput.trim()}
-                                            onClick={handleBorrow}
                                             size="medium"
+                                            onClick={() => {
+                                                handleBorrowBook({
+                                                    bookId: bookInfo.id,
+                                                    borrowerName: borrowerInput,
+                                                    callback: () => {
+                                                        setIsModified(true);
+                                                        setBookInfo((prev) => {
+                                                            return {
+                                                                ...prev,
+                                                                borrowerName:
+                                                                    borrowerInput,
+                                                            };
+                                                        });
+                                                        setBorrowerInput("");
+                                                    },
+                                                });
+                                            }}
                                         >
                                             <span className="font-medium">
                                                 Lend Book
