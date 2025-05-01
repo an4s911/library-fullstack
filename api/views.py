@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, Page, PageNotAnInteger
 from django.db import transaction
-from django.db.models import Count, QuerySet
+from django.db.models import QuerySet
+from django.db.models.functions import Lower
 from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -267,9 +268,7 @@ def get_book(request: HttpRequest, book_id: int) -> JsonResponse:
 @login_required
 def get_authors(request: HttpRequest) -> JsonResponse:
     # order by number of books
-    authors = (
-        Author.objects.annotate(book_count=Count("book")).order_by("-book_count").all()
-    )
+    authors = Author.objects.all().order_by(Lower("name"))
     result: list[dict] = [{"id": author.id, "name": author.name} for author in authors]
     return JsonResponse({"authors": result})
 
@@ -277,9 +276,7 @@ def get_authors(request: HttpRequest) -> JsonResponse:
 @login_required
 def get_genres(request: HttpRequest) -> JsonResponse:
     # order by number of books
-    genres = (
-        Genre.objects.annotate(book_count=Count("book")).order_by("-book_count").all()
-    )
+    genres = Genre.objects.all().order_by(Lower("name"))
     result: list[dict] = [{"id": genre.id, "name": genre.name} for genre in genres]
     return JsonResponse({"genres": result})
 
