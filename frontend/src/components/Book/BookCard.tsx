@@ -111,10 +111,14 @@ function BookCard({ book, isGrid }: BookCardProps) {
                 </ul>
             </div>
             {book.borrowerName && (
-                <div className="borrower w-max flex items-center gap-2 border-primary-800 bg-purple-900/40 border-[1px] rounded-full px-3 py-1">
+                <div
+                    className="borrower w-max flex items-center gap-2 border-secondary-800
+                    dark:border-secondary-300 bg-secondary-200/80 dark:bg-secondary-700/80
+                    border-[1px] rounded-full px-3 py-1"
+                >
                     <BookCopyIcon
                         size={16}
-                        className="opacity-75 text-primary dark:text-primary-300"
+                        className="opacity-75 text-secondary-900 dark:text-secondary-200"
                     />
                     <span className="text-xs">{book.borrowerName}</span>
                 </div>
