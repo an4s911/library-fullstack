@@ -136,6 +136,7 @@ function FilterSection({}: FilterSectionProps) {
                 filter_author: [],
                 filter_genre: [],
                 filter_borrowed: "null",
+                filter_allow_borrow: "null",
                 q: "",
                 search_in: "all",
             };
