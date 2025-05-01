@@ -13,7 +13,11 @@ import { Book } from "@/types";
 import { Tag } from "@/components/UI";
 import { fetchApi, getCSRFToken } from "@/utils";
 import { useOptions } from "@/contexts";
-import { handleDeleteBook } from "@/utils/book";
+import {
+    handleDeleteBook,
+    handleDisableBorrow,
+    handleEnableBorrow,
+} from "@/utils/book";
 
 type BookModalProps = {
     book: Book;
@@ -92,41 +96,6 @@ function BookModal({ book, onClose }: BookModalProps) {
         );
     };
 
-    const handleChangeAllowBorrow = (newValue: boolean) => {
-        fetchApi(
-            `/api/edit-book/${bookInfo.id}/`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCSRFToken(),
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    allowBorrow: newValue,
-                }),
-            },
-            {
-                okCallback: () => {
-                    setIsModified(true);
-                    setBookInfo((prev) => {
-                        return {
-                            ...prev,
-                            allowBorrow: newValue,
-                        };
-                    });
-                },
-            },
-        );
-    };
-
-    const handleDisableBorrow = () => {
-        handleChangeAllowBorrow(false);
-    };
-    const handleEnableBorrow = () => {
-        handleChangeAllowBorrow(true);
-    };
-
     useEffect(() => {
         if (!isBorrowed && borrowerInputRef.current) {
             borrowerInputRef.current.focus();
@@ -199,25 +168,33 @@ function BookModal({ book, onClose }: BookModalProps) {
                 <section className="flex flex-col w-full gap-3">
                     <div className="flex justify-between items-center w-full">
                         <h4 className="text-xl font-semibold">Borrowing Status</h4>
-                        {borrowAllowed ? (
-                            <GenericButton
-                                disabled={isBorrowed}
-                                onClick={handleDisableBorrow}
-                                color="error"
-                            >
-                                <span className="px-1 font-medium">
-                                    {isBorrowed
+                        <GenericButton
+                            color={borrowAllowed ? "error" : "success"}
+                            disabled={borrowAllowed && isBorrowed}
+                            onClick={() => {
+                                const borrowToggleHandler = borrowAllowed
+                                    ? handleDisableBorrow
+                                    : handleEnableBorrow;
+
+                                borrowToggleHandler(bookInfo.id, () => {
+                                    setIsModified(true);
+                                    setBookInfo((prev) => {
+                                        return {
+                                            ...prev,
+                                            allowBorrow: !borrowAllowed,
+                                        };
+                                    });
+                                });
+                            }}
+                        >
+                            <span className="font-medium px-1">
+                                {borrowAllowed
+                                    ? isBorrowed
                                         ? "Cannot Disable While Borrowed"
-                                        : "Disable Borrowing"}
-                                </span>
-                            </GenericButton>
-                        ) : (
-                            <GenericButton color="success" onClick={handleEnableBorrow}>
-                                <span className="font-medium px-1">
-                                    Enable Borrowing
-                                </span>
-                            </GenericButton>
-                        )}
+                                        : "Disable Borrowing"
+                                    : "Enable Borrowing"}
+                            </span>
+                        </GenericButton>
                     </div>
 
                     <div className="h-32">
