@@ -35,7 +35,8 @@ function PageNav({}: PageNavProps) {
                         type="number"
                         min={1}
                         max={totalPages}
-                        className="no-spinner text-center w-min outline-none bg-transparent p-1 m-0 border-[1px] rounded-md"
+                        className="no-spinner text-center w-min outline-none bg-transparent p-1 m-0
+                        border-primary border-[1px] rounded-md"
                         value={currentPageValue}
                         onChange={(e) => {
                             setCurrentPageValue(() => {
