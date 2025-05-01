@@ -22,7 +22,6 @@ function App() {
                     <Header />
                     <HomePage />
                     <ToastContainer />
-                    <Header />
                 </OptionsProvider>
             </PageContextProvider>
         </div>
