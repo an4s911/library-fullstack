@@ -11,6 +11,11 @@ const fetchApi = async (
     init?: RequestInit,
     { okCallback, dataCallback, showToast = false }: FetchApiOptions = {},
 ) => {
+    if (typeof input === "string" && input.startsWith("/api")) {
+        const baseUrl = import.meta.env.VITE_API_URL;
+        input = baseUrl + input;
+    }
+
     fetch(input, init)
         .then((res) => {
             if (res.ok) {
