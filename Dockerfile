@@ -54,7 +54,7 @@ COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 EXPOSE 8000
 
 # Set the script as the entrypoint
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Run Gunicorn 
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "library.wsgi:application"] 
