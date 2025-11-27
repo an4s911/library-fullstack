@@ -57,4 +57,4 @@ EXPOSE 8000
 ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Run Gunicorn 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "library.wsgi:application"] 
+CMD ["gunicorn", "--bind", "0.0.0.0:${PORT:-8000}", "library.wsgi:application"] 
