@@ -36,10 +36,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app 
 
+# Install Gunicorn
+RUN pip install gunicorn 
+
 # Copy requirements and install Python packages 
 COPY requirements.txt . 
 RUN pip install --no-cache-dir -r requirements.txt 
-RUN pip install gunicorn 
 
 # Copy the Django project code 
 COPY . . 
@@ -57,4 +59,4 @@ EXPOSE 8000
 ENTRYPOINT ["/app/entrypoint.sh"]
 
 # Run Gunicorn 
-CMD ["gunicorn", "--bind", "0.0.0.0:${PORT:-8000}", "library.wsgi:application"] 
+CMD gunicorn --bind 0.0.0.0:${PORT:-8000} library.wsgi:application
