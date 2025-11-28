@@ -14,7 +14,7 @@ function PageNav({}: PageNavProps) {
     }, [currentPage]);
 
     return (
-        <div className="flex gap-2 items-center self-center bg-primary-100 dark:bg-primary-900 ml-1 p-1 rounded-xl">
+        <div className="flex gap-2 items-center self-center bg-transparent md:bg-primary-100 md:dark:bg-primary-900 ml-1 p-1 rounded-xl">
             <button
                 className="flex justify-center items-center cursor-pointer
                 w-8 h-8 hover:border-primary hover:border-[1px]

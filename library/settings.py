@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -88,10 +89,20 @@ WSGI_APPLICATION = "library.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# Define the data directory path
+DATA_DIR = BASE_DIR / "data"
+
+# Check if the 'data' directory exists
+if DATA_DIR.exists():
+    DB_FILE = DATA_DIR / "db.sqlite3"
+else:
+    # Fallback for local dev (keeps db.sqlite3 in root, no extra folder needed)
+    DB_FILE = BASE_DIR / "db.sqlite3"
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": DB_FILE,
     }
 }
 
@@ -137,6 +148,9 @@ STATIC_ROOT = BASE_DIR / "static/"
 STATICFILES_DIRS = [
     BASE_DIR / "frontend/dist",
 ]
+
+# Enable WhiteNoise compression and caching
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

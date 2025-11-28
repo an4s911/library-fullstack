@@ -1,13 +1,18 @@
+from os import getenv
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
+app_name = getenv("APP_NAME")
+
 
 @login_required(login_url="/login/")
 def index(request):
-    return render(request, "frontend/index.html")
+
+    return render(request, "frontend/index.html", {"app_name": app_name})
 
 
 @csrf_exempt
@@ -37,7 +42,7 @@ def login_view(request: HttpRequest):
                 {"message": "Invalid username or password."}, status=401
             )
 
-    return render(request, "frontend/login.html")
+    return render(request, "frontend/login.html", {"app_name": app_name})
 
 
 @csrf_exempt

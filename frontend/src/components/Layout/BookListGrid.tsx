@@ -50,7 +50,7 @@ function BookListGrid({ isGrid }: BookListGridProps) {
         return bookList.length > 0 ? (
             <div className="flex flex-col w-full gap-10 justify-between">
                 <div
-                    className={`book-list-grid gap-5 ${isGrid ? "grid grid-cols-2 lg:grid-cols-3" : "flex flex-col"}`}
+                    className={`book-list-grid gap-5 ${isGrid ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "flex flex-col"}`}
                 >
                     {bookList.map((book) => {
                         return <BookCard isGrid={isGrid} book={book} key={book.id} />;

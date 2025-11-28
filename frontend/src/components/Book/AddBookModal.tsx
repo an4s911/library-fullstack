@@ -235,13 +235,13 @@ function AddBookModal({ onClose }: AddBookModalProps) {
     return (
         <Modal onClose={handleOnClose}>
             <div
-                className="add-book-modal p-5 bg-primary-50 dark:bg-gray-800 rounded-md w-max ring-1
-                ring-primary-400 flex gap-5"
+                className="add-book-modal p-4 md:p-5 bg-primary-50 dark:bg-gray-800 md:rounded-md w-full md:w-max h-full md:h-auto overflow-y-auto ring-1
+                md:ring-primary-400 flex flex-col md:flex-row gap-5"
             >
-                <div className="flex items-center gap-16 px-10">
-                    <div className="flex flex-col gap-5 items-start">
+                <div className="flex flex-col md:flex-row items-center gap-5 md:gap-16 px-0 md:px-10 order-2 md:order-1">
+                    <div className="flex flex-col gap-5 items-start w-full md:w-auto">
                         <div
-                            className="w-max max-w-full flex border-[1px] border-info-500
+                            className="w-full md:w-max max-w-full flex border-[1px] border-info-500
                             rounded-md p-3 bg-info-100 dark:bg-info-900 gap-2 items-center"
                         >
                             <InfoIcon size={22} className="text-info-500" />
@@ -254,7 +254,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                         </div>
 
                         <form
-                            className="flex flex-col gap-4"
+                            className="flex flex-col gap-4 self-center w-full md:w-auto md:self-auto"
                             onSubmit={(e) => {
                                 e.preventDefault();
                                 const formData = new FormData();
@@ -289,12 +289,12 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                 }
                             }}
                         >
-                            <div>
+                            <div className="w-full">
                                 <label
                                     htmlFor="upload-books-file-csv-input"
-                                    className={`flex flex-col items-center cursor-pointer rounded-md justify-between
+                                    className={`flex flex-col items-center cursor-pointer rounded-md justify-center md:justify-between
                                     border-dashed py-10 border-2 border-primary-300 dark:border-primary-600 px-5
-                                    hover:border-primary-600 dark:hover:border-primary-400 transition-colors h-56 w-64
+                                    hover:border-primary-600 dark:hover:border-primary-400 transition-colors h-56 w-full md:w-64
                                     ${isDragging ? "bg-gray-400 border-primary-600 dark:bg-gray-700" : ""}
                                     `}
                                     onDrop={handleDrop}
@@ -326,10 +326,10 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                                             <span className="text-base font-normal">
                                                 Click to browse files
                                             </span>
-                                            <span className="text-base font-normal">
+                                            <span className="text-base font-normal hidden md:block">
                                                 OR
                                             </span>
-                                            <span className="text-base font-normal">
+                                            <span className="text-base font-normal hidden md:block">
                                                 Drag & drop
                                             </span>
                                         </div>
@@ -345,9 +345,9 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                             <GenericButton type="submit">Upload</GenericButton>
                         </form>
                     </div>
-                    <div className="w-[0.5px] h-full bg-slate-400/40"></div>
+                    <div className="hidden md:block w-[0.5px] h-full bg-slate-400/40"></div>
                 </div>
-                <div className="flex flex-col gap-5 w-[448px]">
+                <div className="flex flex-col gap-5 w-full md:w-[448px] order-1 md:order-2">
                     <div className="top w-full flex items-center justify-between">
                         <h2 className="text-2xl font-bold">Add New Book</h2>
                     </div>
@@ -474,6 +474,7 @@ function AddBookModal({ onClose }: AddBookModalProps) {
                             </GenericButton>
                         </div>
                     </form>
+                    <div className="block md:hidden h-[0.5px] w-full bg-slate-400/40"></div>
                 </div>
             </div>
         </Modal>
