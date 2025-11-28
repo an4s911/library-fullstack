@@ -10,13 +10,7 @@ function App() {
     }, []);
 
     return (
-        <div
-            style={{
-                display: "grid",
-                gridTemplateRows: "auto 1fr",
-            }}
-            className="app h-screen overflow-hidden"
-        >
+        <div className="app h-screen overflow-hidden flex flex-col md:grid md:grid-rows-[auto_1fr]">
             <PageContextProvider>
                 <OptionsProvider>
                     <Header />

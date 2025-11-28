@@ -148,12 +148,8 @@ function FilterSection({}: FilterSectionProps) {
     return (
         <form
             ref={formRef}
-            style={{
-                maxHeight: "80vh",
-                height: "80vh",
-            }}
             className="filter-section flex flex-col bg-primary-50 dark:bg-primary-800 px-5
-            py-3 rounded-md shadow gap-3"
+            py-3 rounded-md shadow gap-3 md:h-[80vh] md:max-h-[80vh] h-auto"
             onSubmit={(e) => {
                 e.preventDefault();
                 handleSubmit();

@@ -38,16 +38,21 @@ function BookModal({ book, onClose }: BookModalProps) {
     };
 
     useEffect(() => {
-        if (!isBorrowed && borrowerInputRef.current) {
+        // 1. Define the media query for Tailwind's 'md' (min-width: 768px)
+        const isMdScreen = window.matchMedia("(min-width: 768px)").matches;
+
+        // 2. Add the check to your condition
+        if (!isBorrowed && borrowerInputRef.current && isMdScreen) {
             borrowerInputRef.current.focus();
         }
     }, [isBorrowed]);
 
     return (
         <Modal onClose={handleOnClose}>
-            <div className="relative flex flex-col gap-5 mx-auto w-[40rem] rounded-lg bg-primary-50 dark:bg-gray-800  p-8 shadow-xl ring-1 ring-primary-400">
+            <div className="relative flex flex-col justify-start md:justify-start gap-10 md:gap-5 mx-auto w-full md:w-[40rem] h-full md:h-auto overflow-y-auto md:rounded-lg bg-primary-50 dark:bg-gray-800 p-4 md:p-8 shadow-xl ring-1 md:ring-primary-400">
+                {" "}
                 <div className="flex flex-col gap-3">
-                    <h2 className="text-3xl font-extrabold text-slate-800 dark:text-slate-50 mb-2">
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-50 mb-2">
                         {bookInfo.title}
                     </h2>
 
@@ -94,12 +99,10 @@ function BookModal({ book, onClose }: BookModalProps) {
                         </button>
                     </div>
                 </div>
-
                 <hr className="border-slate-400/40 dark:border-slate-600/40" />
-
                 {/* Borrowing area ----------------------------------------------------- */}
                 <section className="flex flex-col w-full gap-3">
-                    <div className="flex justify-between items-center w-full">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-2 sm:gap-0">
                         <h4 className="text-xl font-semibold">Borrowing Status</h4>
                         <GenericButton
                             color={borrowAllowed ? "error" : "success"}

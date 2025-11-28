@@ -12,7 +12,7 @@ function LayoutToggleBtn({ isGrid, onClick }: LayoutToggleBtnProps) {
     return (
         <button
             onClick={onClick}
-            className="layout-toggle-btn relative flex gap-1 rounded-xl bg-primary-300 dark:bg-primary-800
+            className="layout-toggle-btn relative hidden md:flex gap-1 rounded-xl bg-primary-300 dark:bg-primary-800
             items-center p-1.5 cursor-pointer text-primary-700 dark:text-primary-600 h-max mr-2"
         >
             <div
