@@ -1,13 +1,17 @@
 import csv
 import json
+from os import path
 
+from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, Page, PageNotAnInteger
 from django.db import transaction
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
-from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
+from django.http import (FileResponse, Http404, HttpRequest, HttpResponse,
+                         JsonResponse)
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -893,3 +897,13 @@ def add_books(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"error": "Something went wrong"}, status=500)
 
     return JsonResponse({"message": "All books added successfully!"}, status=201)
+
+
+@staff_member_required
+def backup_sqlite(request):
+    db_path = path.join(settings.BASE_DIR, "db.sqlite3")
+
+    if not path.exists(db_path):
+        raise Http404("Database file not found.")
+
+    return FileResponse(open(db_path, "rb"), as_attachment=True, filename="db.sqlite3")

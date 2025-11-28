@@ -18,7 +18,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+from api import views as api_views
+
 urlpatterns = [
+    path("admin/backup-sqlite/", api_views.backup_sqlite, name="backup_sqlite"),
     path("admin/", admin.site.urls),
     path("api/", include("api.urls")),
     path("", include("frontend.urls")),
