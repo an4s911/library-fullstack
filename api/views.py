@@ -819,7 +819,7 @@ def add_books(request: HttpRequest) -> JsonResponse:
         )
 
     try:
-        decoded_file = file.decode("utf-8").splitlines()
+        decoded_file = file.decode("utf-8-sig").splitlines()
         reader = csv.DictReader(decoded_file)
     except Exception as e:
         print(f"Error decoding file: {e}")
@@ -828,7 +828,7 @@ def add_books(request: HttpRequest) -> JsonResponse:
     expected_headers = ["title", "author", "genres", "allowBorrow"]
 
     # Convert CSV headers to lowercase
-    header_map = {header.lower(): header for header in reader.fieldnames}
+    header_map = {header.lower(): header for header in reader.fieldnames or []}
 
     if not all([header.lower() in header_map.keys() for header in expected_headers]):
         return JsonResponse(
