@@ -6,6 +6,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ app_name|default:"Library" }}</title>
+    <meta name="theme-color" content="#3a808a" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#080c14" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="{% static 'frontend/favicon.svg' %}" type="image/svg+xml" />
+    <link rel="icon" href="{% static 'frontend/favicon-32x32.png' %}" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="{% static 'frontend/apple-touch-icon.png' %}" />
+    <link rel="manifest" href="{% static 'frontend/site.webmanifest' %}" />
     <link href="{% static 'frontend/main.css' %}" rel="stylesheet" />
 </head>
 

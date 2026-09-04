@@ -1,13 +1,15 @@
-import { LibraryIcon, LogOutIcon, SearchIcon, XIcon } from "lucide-react";
+import { LogOutIcon, SearchIcon, XIcon } from "lucide-react";
 import { AddBookBtn } from "@/components/Book";
 import { SearchBar } from "@/components/SearchFilter";
 import { ThemeToggle } from "@/components/Layout";
+import logoPrimary from "@/assets/logo-primary.svg";
 import { useState } from "react";
 
 type HeaderProps = {};
 
 function Header({}: HeaderProps) {
     const [showMobileSearch, setShowMobileSearch] = useState(false);
+    const appName = import.meta.env.VITE_APP_NAME || "Library";
 
     return (
         <header
@@ -16,11 +18,13 @@ function Header({}: HeaderProps) {
         >
             <div className="w-full md:w-auto flex justify-between items-center">
                 <a href="/" className="title-logo flex items-center gap-2">
-                    <div className="logo text-primary">
-                        <LibraryIcon size={32} />
-                    </div>
+                    <img
+                        src={logoPrimary}
+                        alt=""
+                        className="h-10 w-10 shrink-0 md:h-11 md:w-11"
+                    />
                     <div className="title text-lg md:text-2xl font-bold">
-                        <h1>{import.meta.env.VITE_APP_NAME}</h1>
+                        <h1>{appName}</h1>
                     </div>
                 </a>
 

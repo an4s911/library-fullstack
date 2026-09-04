@@ -6,7 +6,7 @@ from django.http import HttpRequest, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
 
-app_name = getenv("APP_NAME")
+app_name = getenv("APP_NAME", "Library")
 
 
 @login_required(login_url="/login/")

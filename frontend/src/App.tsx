@@ -6,7 +6,7 @@ import { ToastContainer } from "react-toastify";
 
 function App() {
     useEffect(() => {
-        document.title = import.meta.env.VITE_APP_NAME;
+        document.title = import.meta.env.VITE_APP_NAME || "Library";
     }, []);
 
     return (

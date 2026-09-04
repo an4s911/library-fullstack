@@ -1,5 +1,6 @@
 import { XIcon } from "lucide-react";
 import { useState } from "react";
+import logoPrimary from "@/assets/logo-primary.svg";
 
 type AppProps = {};
 
@@ -48,6 +49,11 @@ function App({}: AppProps) {
                     </div>
                 )}
                 <div className="border shadow p-10 flex flex-col gap-3 relative rounded-md bg-white">
+                    <img
+                        src={logoPrimary}
+                        alt="Library"
+                        className="h-12 w-12 -mb-1"
+                    />
                     <h1 className="text-2xl font-bold">Login</h1>
                     <form
                         className="flex flex-col gap-4"
