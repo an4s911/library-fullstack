@@ -63,7 +63,7 @@ function FloatingInfo({}: FloatingInfoProps) {
                             <a
                                 className="underline italic font-normal hover:underline-offset-2
                                 hover:decoration-2 hover:decoration-secondary-400"
-                                href={import.meta.env.VITE_GITHUB_URL}
+                                href={import.meta.env.VITE_PORTFOLIO_URL}
                             >
                                 Anas Bashir
                             </a>
