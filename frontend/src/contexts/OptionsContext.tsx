@@ -13,6 +13,8 @@ type OptionsProps = {
     pg_size: number;
 };
 
+export type BookDisplayMode = "paged" | "all";
+
 type OptionsContextType = {
     options: OptionsProps;
     setOptions: React.Dispatch<React.SetStateAction<OptionsProps>>;
@@ -20,6 +22,8 @@ type OptionsContextType = {
     triggerRefresh: (type?: string) => void;
     refreshBooks: boolean;
     refreshFilters: boolean;
+    bookDisplayMode: BookDisplayMode;
+    setBookDisplayMode: React.Dispatch<React.SetStateAction<BookDisplayMode>>;
 };
 
 const OptionsContext = createContext<OptionsContextType | undefined>(undefined);
@@ -46,6 +50,8 @@ export const OptionsProvider = ({ children }: { children: ReactNode }) => {
 
     const [refreshBooks, setRefreshBooks] = useState(false);
     const [refreshFilters, setRefreshFilters] = useState(false);
+    const [bookDisplayMode, setBookDisplayMode] =
+        useState<BookDisplayMode>("paged");
 
     const toQueryParams = (opts: OptionsProps = options) => {
         const params = new URLSearchParams();
@@ -79,6 +85,8 @@ export const OptionsProvider = ({ children }: { children: ReactNode }) => {
                 triggerRefresh,
                 refreshBooks,
                 refreshFilters,
+                bookDisplayMode,
+                setBookDisplayMode,
             }}
         >
             {children}

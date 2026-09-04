@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FilterSection, SortSection } from "@/components/SearchFilter";
 import { BookListGrid, PageNav } from "@/components/Layout";
 import { LayoutToggleBtn } from "@/components/Layout";
 import { FloatingInfo } from "@/components/Widgets";
 import { FilterIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
+import { useOptions } from "@/contexts";
 
 type HomePageProps = {};
 
@@ -12,13 +13,24 @@ function HomePage({}: HomePageProps) {
         JSON.parse(localStorage.getItem("isGrid") || "true"),
     );
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const cardsScrollAreaRef = useRef<HTMLElement>(null);
+    const { bookDisplayMode } = useOptions();
 
     useEffect(() => {
         localStorage.setItem("isGrid", JSON.stringify(isGrid));
     }, [isGrid]);
 
+    useEffect(() => {
+        if (bookDisplayMode === "all") {
+            cardsScrollAreaRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }, [bookDisplayMode]);
+
     return (
-        <main className="w-full h-full overflow-y-auto gap-4 md:gap-8 md:px-20 flex flex-col md:grid md:grid-cols-[250px_1fr]">
+        <main
+            ref={cardsScrollAreaRef}
+            className="w-full h-full overflow-y-auto gap-4 md:gap-8 md:px-20 flex flex-col md:grid md:grid-cols-[250px_1fr]"
+        >
             <div
                 className={`h-max md:sticky md:top-0 md:pt-8 ${isFilterOpen ? "pt-4" : "pt-4"} px-4 md:px-0`}
             >
@@ -57,7 +69,10 @@ function HomePage({}: HomePageProps) {
                     </div>
                 </div>
                 <div className="pb-8 px-4 md:px-0">
-                    <BookListGrid isGrid={isGrid} />
+                    <BookListGrid
+                        isGrid={isGrid}
+                        scrollContainerRef={cardsScrollAreaRef}
+                    />
                 </div>
             </div>
             <FloatingInfo />

@@ -1,50 +1,163 @@
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { BookCard } from "@/components/Book";
 import { BookListGridLoader } from "@/components/SkeletonLoaders";
 import { Book, createBook } from "@/types";
-import { BookXIcon } from "lucide-react";
+import { BookXIcon, LoaderCircle } from "lucide-react";
 import { useOptions, usePageContext } from "@/contexts";
-import { fetchApi } from "@/utils";
 
 type BookListGridProps = {
     isGrid: boolean;
+    scrollContainerRef: RefObject<HTMLElement>;
 };
 
-function BookListGrid({ isGrid }: BookListGridProps) {
+type BookListResponse = {
+    books: Book[];
+    currentPage: number;
+    totalPages: number;
+};
+
+function BookListGrid({ isGrid, scrollContainerRef }: BookListGridProps) {
     const [bookList, setBookList] = useState<Book[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const { options, toQueryParams, refreshBooks } = useOptions();
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [nextPage, setNextPage] = useState(1);
+    const [loadedTotalPages, setLoadedTotalPages] = useState(1);
+    const loadMoreSentinelRef = useRef<HTMLDivElement>(null);
+    const requestIdRef = useRef(0);
+    const isFetchingMoreRef = useRef(false);
+    const { options, toQueryParams, refreshBooks, bookDisplayMode } = useOptions();
     const { setTotalPages, setCurrentPage } = usePageContext();
 
     useEffect(() => {
-        setIsLoading(true);
+        const controller = new AbortController();
+        const requestId = ++requestIdRef.current;
 
-        const searchParamString = toQueryParams(options);
+        isFetchingMoreRef.current = false;
+        setIsInitialLoading(true);
+        setIsLoadingMore(false);
+        setBookList([]);
 
-        fetchApi(
-            `/api/get-books/?${searchParamString}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+        const loadFirstPage = async () => {
+            try {
+                const pageToLoad =
+                    bookDisplayMode === "all" ? 1 : (options.pg_num ?? 1);
+                const searchParamString = toQueryParams({
+                    ...options,
+                    pg_num: pageToLoad,
+                });
+                const response = await fetch(`/api/get-books/?${searchParamString}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    signal: controller.signal,
+                });
+
+                if (!response.ok) throw new Error("Unable to load books.");
+
+                const data: BookListResponse = await response.json();
+                if (requestId !== requestIdRef.current) return;
+
+                setBookList(data.books.map(createBook));
+                setTotalPages(data.totalPages);
+                setCurrentPage(data.currentPage);
+                setLoadedTotalPages(data.totalPages);
+                setNextPage(data.currentPage + 1);
+            } catch (error) {
+                if ((error as Error).name !== "AbortError") {
+                    console.error(error);
+                }
+            } finally {
+                if (requestId === requestIdRef.current) {
+                    setIsInitialLoading(false);
+                }
+            }
+        };
+
+        void loadFirstPage();
+
+        return () => controller.abort();
+    }, [bookDisplayMode, refreshBooks]);
+
+    useEffect(() => {
+        const sentinel = loadMoreSentinelRef.current;
+        const scrollContainer = scrollContainerRef.current;
+        const canLoadMore = nextPage <= loadedTotalPages;
+
+        if (
+            bookDisplayMode !== "all" ||
+            isInitialLoading ||
+            !sentinel ||
+            !scrollContainer ||
+            !canLoadMore
+        ) {
+            return;
+        }
+
+        const requestId = requestIdRef.current;
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (!entries[0].isIntersecting || isFetchingMoreRef.current) return;
+
+                isFetchingMoreRef.current = true;
+                setIsLoadingMore(true);
+
+                const loadNextPage = async () => {
+                    try {
+                        const searchParamString = toQueryParams({
+                            ...options,
+                            pg_num: nextPage,
+                        });
+                        const response = await fetch(
+                            `/api/get-books/?${searchParamString}`,
+                            {
+                                method: "GET",
+                                headers: { "Content-Type": "application/json" },
+                            },
+                        );
+
+                        if (!response.ok) throw new Error("Unable to load more books.");
+
+                        const data: BookListResponse = await response.json();
+                        if (requestId !== requestIdRef.current) return;
+
+                        setBookList((currentBooks) => [
+                            ...currentBooks,
+                            ...data.books.map(createBook),
+                        ]);
+                        setLoadedTotalPages(data.totalPages);
+                        setNextPage(data.currentPage + 1);
+                    } catch (error) {
+                        if ((error as Error).name !== "AbortError") {
+                            console.error(error);
+                        }
+                    } finally {
+                        if (requestId === requestIdRef.current) {
+                            isFetchingMoreRef.current = false;
+                            setIsLoadingMore(false);
+                        }
+                    }
+                };
+
+                void loadNextPage();
             },
             {
-                dataCallback: (data) => {
-                    setBookList(
-                        data.books.map((book: Book) => {
-                            return createBook(book);
-                        }),
-                    );
-                    setTotalPages(data.totalPages);
-                    setCurrentPage(data.currentPage);
-                    setIsLoading(false);
-                },
+                root: scrollContainer,
+                rootMargin: "0px 0px 240px 0px",
             },
         );
-    }, [refreshBooks]);
 
-    if (isLoading) {
+        observer.observe(sentinel);
+        return () => observer.disconnect();
+    }, [
+        bookDisplayMode,
+        isInitialLoading,
+        loadedTotalPages,
+        nextPage,
+        options,
+        scrollContainerRef,
+        toQueryParams,
+    ]);
+
+    if (isInitialLoading) {
         return <BookListGridLoader isGrid={isGrid} />;
     } else {
         return bookList.length > 0 ? (
@@ -56,6 +169,23 @@ function BookListGrid({ isGrid }: BookListGridProps) {
                         return <BookCard isGrid={isGrid} book={book} key={book.id} />;
                     })}
                 </div>
+                {bookDisplayMode === "all" && (
+                    <div
+                        ref={loadMoreSentinelRef}
+                        className="flex min-h-12 items-center justify-center text-sm text-primary-600 dark:text-primary-300"
+                    >
+                        {isLoadingMore ? (
+                            <span className="flex items-center gap-2" role="status">
+                                <LoaderCircle className="animate-spin" size={18} />
+                                Loading more books
+                            </span>
+                        ) : nextPage <= loadedTotalPages ? (
+                            <span>Keep scrolling to load more</span>
+                        ) : (
+                            <span>All matching books are loaded</span>
+                        )}
+                    </div>
+                )}
             </div>
         ) : (
             <div
