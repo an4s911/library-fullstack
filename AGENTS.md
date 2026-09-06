@@ -53,7 +53,7 @@ library-fullstack/
 │   │   ├── main.tsx      # Entry point
 │   │   ├── index.css     # Global Tailwind styles + component-scoped styles
 │   │   ├── components/
-│   │   │   ├── Book/         # BookCard, BookModal, AddBookModal, AddBookBtn
+│   │   │   ├── Book/         # BookCard, BookModal, AddBookModal, EditBookModal, AddBookBtn
 │   │   │   ├── Layout/       # Header, BookListGrid, PageNav, LayoutToggleBtn, ThemeToggle
 │   │   │   ├── UI/           # Modal, GenericButton, GenericSelect, SimpleDropdown, Tag, Card
 │   │   │   ├── SearchFilter/ # Search and filter sidebar components
@@ -70,7 +70,7 @@ library-fullstack/
 │   │       ├── fetchApi.ts       # Thin fetch wrapper with toast/callback support
 │   │       ├── getCSRFToken.ts   # Reads csrftoken from document.cookie
 │   │       └── book/            # Action handlers: handleBorrow, handleUnborrow,
-│   │                              handleDelete, handleChangeAllowBorrow
+│   │                              handleDelete, handleChangeAllowBorrow, handleEditBook
 │   ├── vite.config.ts
 │   ├── tailwind.config.js
 │   ├── package.json
@@ -141,13 +141,14 @@ App
 │       │   ├── FilterSidebar (in SearchFilter/)
 │       │   ├── BookListGrid
 │       │   │   └── BookCard[] → opens BookModal on click
+│       │   │       └── EditBookModal (stacked on BookModal via edit button)
 │       │   └── PageNav
 │       └── ToastContainer
 ```
 
 ### Key Patterns
 
-1. **Modal pattern**: Modals use `createPortal` to render into `<div id="modal">`. The `Modal` component provides the backdrop overlay and close button. Content is passed as children. Modals are opened via local `useState(false)` in the parent.
+1. **Modal pattern**: Modals use `createPortal` to render into `<div id="modal">`. The `Modal` component provides the backdrop overlay, close button, and click event isolation (`onClick={(e) => e.stopPropagation()}` on the content container to prevent synthetic portal events from bubbling to ancestor components such as `BookCard`). Modals can be stacked (e.g. `EditBookModal` renders on top of `BookModal`).
 
 2. **Data refresh**: Components call `triggerRefresh("books")` or `triggerRefresh("filters")` from `OptionsContext` to signal re-fetching. `BookListGrid` listens to `refreshBooks` in a `useEffect` dependency array.
 
@@ -162,14 +163,14 @@ App
 
 5. **Type factory**: Raw API book objects are transformed via `createBook()` which parses the date string into a `Date` object and attaches a `getDateAdded()` formatting method.
 
-6. **Form styling**: The `AddBookModal` uses the CSS class `add-book-modal` which has scoped styles in `index.css` for form labels/inputs.
+6. **Form styling**: Both `AddBookModal` and `EditBookModal` share the CSS class `add-book-modal` which has scoped styles in `index.css` for form labels, inputs, and action buttons.
 
 ### UI Components (`components/UI/`)
 
-| Component        | Purpose                                                     |
-|------------------|-------------------------------------------------------------|
-| `Modal`          | Portal-based modal wrapper with backdrop + close button     |
-| `GenericButton`  | Reusable button with color variants and size options        |
+| Component        | Purpose                                                                 |
+|------------------|-------------------------------------------------------------------------|
+| `Modal`          | Portal-based modal wrapper with backdrop, close button, and click event isolation |
+| `GenericButton`  | Reusable button with color variants and size options                    |
 | `GenericSelect`  | Styled `<select>` dropdown                                  |
 | `SimpleDropdown` | Searchable dropdown with "add new" capability               |
 | `Tag`            | Pill-shaped label (used for genres)                         |
