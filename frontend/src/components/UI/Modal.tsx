@@ -13,7 +13,10 @@ function Modal({ children, onClose }: ModalProps) {
                 className="absolute w-full h-full bg-black opacity-50"
                 onClick={onClose}
             />
-            <div className="relative w-full h-full md:w-auto md:h-auto md:max-h-[90vh] md:max-w-[90vw] overflow-auto md:overflow-visible">
+            <div
+                className="relative w-full h-full md:w-auto md:h-auto md:max-h-[90vh] md:max-w-[90vw] overflow-auto md:overflow-visible"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <button
                     onClick={onClose}
                     className="fixed md:absolute z-50 right-4 top-4 text-slate-800 dark:text-slate-400

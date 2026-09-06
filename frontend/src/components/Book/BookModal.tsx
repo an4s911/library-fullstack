@@ -1,11 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { GenericButton, Modal } from "@/components/UI";
 
-import { AlertCircleIcon, CalendarIcon, Trash2Icon, UserRoundIcon } from "lucide-react";
+import {
+    AlertCircleIcon,
+    CalendarIcon,
+    PencilIcon,
+    Trash2Icon,
+    UserRoundIcon,
+} from "lucide-react";
 
-import { Book } from "@/types";
+import { Book, createBook } from "@/types";
 import { Tag } from "@/components/UI";
 import { useOptions } from "@/contexts";
+import { EditBookModal } from "@/components/Book";
 import {
     handleBorrowBook,
     handleDeleteBook,
@@ -23,14 +30,15 @@ function BookModal({ book, onClose }: BookModalProps) {
     const [borrowerInput, setBorrowerInput] = useState("");
     const { triggerRefresh } = useOptions();
     const [isModified, setIsModified] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
     const [bookInfo, setBookInfo] = useState(book);
     const borrowerInputRef = useRef<HTMLInputElement>(null);
 
     const isBorrowed = !!bookInfo.borrowerName;
     const borrowAllowed = bookInfo.allowBorrow;
 
-    const handleOnClose = (e: any) => {
-        e.stopPropagation();
+    const handleOnClose = (e?: React.MouseEvent) => {
+        e?.stopPropagation();
         if (isModified) {
             triggerRefresh("books");
         }
@@ -70,7 +78,7 @@ function BookModal({ book, onClose }: BookModalProps) {
                         </span>
                     </div>
 
-                    <div className="flex">
+                    <div className="flex items-center">
                         <ul className="flex gap-2 flex-wrap text-xs flex-grow">
                             {bookInfo.genres.map((genre, index) => {
                                 return (
@@ -83,20 +91,32 @@ function BookModal({ book, onClose }: BookModalProps) {
                                 );
                             })}
                         </ul>
-                        <button
-                            className="min-w-6 h-6 px-2"
-                            onClick={() => {
-                                handleDeleteBook({
-                                    book: bookInfo,
-                                    callback: () => {
-                                        triggerRefresh("books");
-                                        onClose();
-                                    },
-                                });
-                            }}
-                        >
-                            <Trash2Icon className="text-error-600 hover:text-error-500 hover:cursor-pointer hover:scale-110 dt" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                            <button
+                                className="min-w-6 h-6 px-2"
+                                title="Edit book"
+                                onClick={() => {
+                                    setIsEditing(true);
+                                }}
+                            >
+                                <PencilIcon className="text-primary-600 dark:text-primary-300 hover:text-primary-500 hover:cursor-pointer hover:scale-110 dt" size={20} />
+                            </button>
+                            <button
+                                className="min-w-6 h-6 px-2"
+                                title="Delete book"
+                                onClick={() => {
+                                    handleDeleteBook({
+                                        book: bookInfo,
+                                        callback: () => {
+                                            triggerRefresh("books");
+                                            onClose();
+                                        },
+                                    });
+                                }}
+                            >
+                                <Trash2Icon className="text-error-600 hover:text-error-500 hover:cursor-pointer hover:scale-110 dt" size={20} />
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <hr className="border-slate-400/40 dark:border-slate-600/40" />
@@ -233,6 +253,23 @@ function BookModal({ book, onClose }: BookModalProps) {
                     </div>
                 </section>
             </div>
+            {isEditing && (
+                <EditBookModal
+                    book={bookInfo}
+                    onClose={() => setIsEditing(false)}
+                    onSave={(updatedBookData) => {
+                        setBookInfo((prev) =>
+                            createBook({
+                                ...prev,
+                                ...updatedBookData,
+                                dateAdded: new Date(updatedBookData.dateAdded),
+                            }),
+                        );
+                        setIsModified(true);
+                        setIsEditing(false);
+                    }}
+                />
+            )}
         </Modal>
     );
 }
